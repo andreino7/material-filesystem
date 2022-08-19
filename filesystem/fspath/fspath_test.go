@@ -15,13 +15,13 @@ func TestFsPath(t *testing.T) {
 		Assertions func(t *testing.T, caseName string, pathInfo *fspath.FileSystemPath)
 	}{
 		{
-			CaseName:   "path is ../test",
+			CaseName:   "path is ../",
 			Path:       "../",
 			WorkingDir: "/root/first",
 			Assertions: func(t *testing.T, caseName string, pathInfo *fspath.FileSystemPath) {
 				assert.Equal(t, pathInfo.AbsolutePath(), "/root")
-				assert.Equal(t, pathInfo.Dir(), "/")
-				assert.Equal(t, pathInfo.Base(), "root")
+				assert.Equal(t, pathInfo.Dir(), ".")
+				assert.Equal(t, pathInfo.Base(), "..")
 			},
 		},
 		{
@@ -30,7 +30,7 @@ func TestFsPath(t *testing.T) {
 			WorkingDir: "/root/first",
 			Assertions: func(t *testing.T, caseName string, pathInfo *fspath.FileSystemPath) {
 				assert.Equal(t, pathInfo.AbsolutePath(), "/root/first/test")
-				assert.Equal(t, pathInfo.Dir(), "/root/first")
+				assert.Equal(t, pathInfo.Dir(), ".")
 				assert.Equal(t, pathInfo.Base(), "test")
 			},
 		},
@@ -50,18 +50,18 @@ func TestFsPath(t *testing.T) {
 			WorkingDir: "/root/first/",
 			Assertions: func(t *testing.T, caseName string, pathInfo *fspath.FileSystemPath) {
 				assert.Equal(t, pathInfo.AbsolutePath(), "/root/fourth")
-				assert.Equal(t, pathInfo.Dir(), "/root")
+				assert.Equal(t, pathInfo.Dir(), "..")
 				assert.Equal(t, pathInfo.Base(), "fourth")
 			},
 		},
 		{
-			CaseName:   "path is ../../../../..",
-			Path:       "../../../../..",
+			CaseName:   "path is ../../.././././../..",
+			Path:       "../../.././././../..",
 			WorkingDir: "/root/first",
 			Assertions: func(t *testing.T, caseName string, pathInfo *fspath.FileSystemPath) {
 				assert.Equal(t, pathInfo.AbsolutePath(), "/")
-				assert.Equal(t, pathInfo.Dir(), "/")
-				assert.Equal(t, pathInfo.Base(), "/")
+				assert.Equal(t, pathInfo.Dir(), "../../../..")
+				assert.Equal(t, pathInfo.Base(), "..")
 			},
 		},
 	}
