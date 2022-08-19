@@ -1,7 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"material/filesystem/filesystem"
+)
 
 func main() {
+	filesystem.NewFileSystem(filesystem.InMemoryFileSystem)
 	fmt.Println("Hello, world.")
 }
