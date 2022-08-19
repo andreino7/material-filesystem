@@ -1,7 +1,12 @@
 package memoryfs
 
-type MemoryFileSystem struct{}
+type MemoryFileSystem struct {
+	root *fileWrapper
+}
 
 func NewMemoryFileSystem() *MemoryFileSystem {
-	return &MemoryFileSystem{}
+	// TODO: make root configurable
+	return &MemoryFileSystem{
+		root: newFileWrapper("/", true),
+	}
 }
