@@ -15,6 +15,10 @@ func (p *FileSystemPath) Dir() string {
 	return filepath.Dir(p.path)
 }
 
+func (p *FileSystemPath) AbsDir() string {
+	return filepath.Dir(p.absolutePath)
+}
+
 // TODO: add test
 func (p *FileSystemPath) Split() ([]string, string) {
 	return splitHelper(p.path)
@@ -44,6 +48,10 @@ func (p *FileSystemPath) Base() string {
 
 func (p *FileSystemPath) AbsolutePath() string {
 	return p.absolutePath
+}
+
+func (p *FileSystemPath) Path() string {
+	return p.path
 }
 
 func toAbsolutePath(path string, workingDirPath string) string {
