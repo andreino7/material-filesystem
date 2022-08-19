@@ -13,9 +13,10 @@ const (
 	InMemoryFileSystem FileSystemType = iota
 )
 
+// TODO: validate workdir - deleted working dir
 type FileSystem interface {
-	Mkdir(path *fspath.FileSystemPath) (*file.File, error)
-	MkdirAll(path *fspath.FileSystemPath) (*file.File, error)
+	Mkdir(path *fspath.FileSystemPath, workingDir file.File) (file.File, error)
+	MkdirAll(path *fspath.FileSystemPath, workingDir file.File) (file.File, error)
 }
 
 func NewFileSystem(fsType FileSystemType) (FileSystem, error) {
