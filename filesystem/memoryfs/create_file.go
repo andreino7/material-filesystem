@@ -15,6 +15,10 @@ func (fs *MemoryFileSystem) MkdirAll(path *fspath.FileSystemPath, workingDir fil
 	return fs.addFileToFs(path, workingDir, true, true)
 }
 
+func (fs *MemoryFileSystem) CreateRegularFile(path *fspath.FileSystemPath, workingDir file.File) (file.File, error) {
+	return fs.addFileToFs(path, workingDir, false, false)
+}
+
 func (fs *MemoryFileSystem) addFileToFs(path *fspath.FileSystemPath, workingDir file.File, isDirectory bool, isRecursive bool) (file.File, error) {
 	fs.mutex.Lock()
 	defer fs.mutex.Unlock()
@@ -28,7 +32,7 @@ func (fs *MemoryFileSystem) addFileToFs(path *fspath.FileSystemPath, workingDir 
 }
 
 func (fs *MemoryFileSystem) createFile(fileName string, isDirectory bool, parent *inMemoryFile) (*inMemoryFile, error) {
-	if _, found := parent.children[fileName]; found {
+	if _, found := parent.fileMap[fileName]; found {
 		return nil, fmt.Errorf("file already exists")
 	}
 	newFile := newInMemoryFile(fileName, isDirectory)
@@ -37,8 +41,8 @@ func (fs *MemoryFileSystem) createFile(fileName string, isDirectory bool, parent
 }
 
 func (fs *MemoryFileSystem) linkToParent(newFile *inMemoryFile, parent *inMemoryFile) {
-	parent.children[newFile.info.Name()] = newFile
-	newFile.children[".."] = parent
+	parent.fileMap[newFile.info.Name()] = newFile
+	newFile.fileMap[".."] = parent
 }
 
 func (fs *MemoryFileSystem) lookupDir(path *fspath.FileSystemPath, workingDir file.File) (*inMemoryFile, error) {
@@ -53,7 +57,7 @@ func (fs *MemoryFileSystem) lookupDirWithCreateMissing(path *fspath.FileSystemPa
 	}
 
 	for _, currentDir := range pathDirs {
-		tmp, found := pathRoot.children[currentDir]
+		tmp, found := pathRoot.fileMap[currentDir]
 		if !found {
 			if createMissing {
 				tmp, err = fs.createFile(currentDir, true, pathRoot)

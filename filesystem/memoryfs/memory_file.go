@@ -14,7 +14,7 @@ type inMemoryFile struct {
 	info      file.FileInfo
 	data      file.FileData
 	isDeleted bool
-	children  map[string]*inMemoryFile
+	fileMap   map[string]*inMemoryFile
 }
 
 func (f inMemoryFile) Info() file.FileInfo {
@@ -39,18 +39,11 @@ func newInMemoryFile(name string, isDirectory bool) *inMemoryFile {
 		isDirectory,
 	}
 
-	if !isDirectory {
-		return &inMemoryFile{
-			info:     info,
-			children: nil,
-		}
-	}
-
 	file := &inMemoryFile{
-		info:     info,
-		children: map[string]*inMemoryFile{},
+		info:    info,
+		fileMap: map[string]*inMemoryFile{},
 	}
 
-	file.children["."] = file
+	file.fileMap["."] = file
 	return file
 }
