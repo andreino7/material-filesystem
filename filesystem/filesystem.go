@@ -2,6 +2,8 @@ package filesystem
 
 import (
 	"fmt"
+	"material/filesystem/filesystem/file"
+	"material/filesystem/filesystem/fspath"
 	"material/filesystem/filesystem/memoryfs"
 )
 
@@ -12,6 +14,8 @@ const (
 )
 
 type FileSystem interface {
+	Mkdir(path *fspath.FileSystemPath) (*file.File, error)
+	MkdirAll(path *fspath.FileSystemPath) (*file.File, error)
 }
 
 func NewFileSystem(fsType FileSystemType) (FileSystem, error) {

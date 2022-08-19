@@ -1,7 +1,10 @@
 package memoryfs
 
+import "sync"
+
 type MemoryFileSystem struct {
-	root *fileWrapper
+	mutex sync.RWMutex
+	root  *fileWrapper
 }
 
 func NewMemoryFileSystem() *MemoryFileSystem {
