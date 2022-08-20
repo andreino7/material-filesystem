@@ -20,8 +20,8 @@ type FileSystem interface {
 	CreateRegularFile(path *fspath.FileSystemPath, workingDir file.File) (file.File, error)
 	DefaultWorkingDirectory() file.File
 	GetDirectory(path *fspath.FileSystemPath, workingDir file.File) (file.File, error)
-	RemoveRegularFile(path *fspath.FileSystemPath, workingDir file.File) error
-	RemoveAll(path *fspath.FileSystemPath, workingDir file.File) error
+	RemoveRegularFile(path *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error)
+	RemoveDirectory(path *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error)
 	// TODO: handle regex in name
 	FindFiles(name string, path *fspath.FileSystemPath, workingDir file.File) ([]file.FileInfo, error)
 	ListFiles(path *fspath.FileSystemPath, workingDir file.File) ([]file.FileInfo, error)

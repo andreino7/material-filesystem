@@ -26,7 +26,7 @@ func (fs *MemoryFileSystem) addFileToFs(path *fspath.FileSystemPath, workingDir 
 	defer fs.mutex.Unlock()
 
 	// lookup parent dir
-	parent, err := fs.lookupParentDirWithCreateMissingDir(path, workingDir, isRecursive)
+	parent, err := fs.lookupPathEndWithCreateMissingDir(path, workingDir, isRecursive)
 	if err != nil {
 		return nil, err
 	}

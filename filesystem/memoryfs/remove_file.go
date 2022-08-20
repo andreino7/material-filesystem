@@ -6,64 +6,72 @@ import (
 	"material/filesystem/filesystem/fspath"
 )
 
-func (fs *MemoryFileSystem) RemoveAll(path *fspath.FileSystemPath, workingDir file.File) error {
+// TODO: handle deleting working dir
+func (fs *MemoryFileSystem) RemoveDirectory(path *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error) {
 	return fs.removeFileWithLock(path, workingDir, true)
 }
 
-func (fs *MemoryFileSystem) RemoveRegularFile(path *fspath.FileSystemPath, workingDir file.File) error {
+func (fs *MemoryFileSystem) RemoveRegularFile(path *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error) {
 	return fs.removeFileWithLock(path, workingDir, false)
 }
 
-func (fs *MemoryFileSystem) removeFileWithLock(path *fspath.FileSystemPath, workingDir file.File, isRecursive bool) error {
+func (fs *MemoryFileSystem) removeFileWithLock(path *fspath.FileSystemPath, workingDir file.File, isRecursive bool) (file.FileInfo, error) {
 	// RW lock the fs
 	fs.mutex.Lock()
 	defer fs.mutex.Unlock()
 
-	// find parent directory
-	parent, err := fs.lookupParentDirWithCreateMissingDir(path, workingDir, false)
+	// find where to remove directory
+	pathEnd, err := fs.lookupPathEndWithCreateMissingDir(path, workingDir, false)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return fs.removeFile(path.Base(), parent, isRecursive)
+	return fs.removeFile(path.Base(), pathEnd, isRecursive)
 }
 
-func (fs *MemoryFileSystem) removeFile(fileName string, parent *inMemoryFile, isRecursive bool) error {
+func (fs *MemoryFileSystem) removeFile(fileName string, pathEnd *inMemoryFile, isRecursive bool) (file.FileInfo, error) {
 	// check if file exists
-	fileToRemove, found := parent.fileMap[fileName]
+	fileToRemove, found := pathEnd.fileMap[fileName]
 	if !found {
-		return fmt.Errorf("no such file or directory")
+		return nil, fmt.Errorf("no such file or directory")
 	}
 
 	// handle directories
 	if fileToRemove.info.IsDirectory() {
-		return fs.removeDirectory(fileToRemove, parent, isRecursive)
+		return fs.removeDirectory(fileToRemove, pathEnd, isRecursive)
 	}
 
 	// unlink regular file
-	fs.unlink(fileToRemove, parent)
-	return nil
+	fs.unlink(fileToRemove)
+	return fileToRemove.Info(), nil
 }
 
-func (fs *MemoryFileSystem) removeDirectory(fileToRemove *inMemoryFile, parent *inMemoryFile, isRecursive bool) error {
+func (fs *MemoryFileSystem) removeDirectory(fileToRemove *inMemoryFile, parent *inMemoryFile, isRecursive bool) (file.FileInfo, error) {
 	if !isRecursive {
-		return fmt.Errorf("file is a directory")
+		return nil, fmt.Errorf("file is a directory")
+	}
+
+	// deleting filesystem root is not supported at the moment
+	if fileToRemove == fs.root {
+		return nil, fmt.Errorf("operation not allowed: deleting filesystem root")
 	}
 
 	// remove current file
-	fs.unlink(fileToRemove, parent)
+	fs.unlink(fileToRemove)
 
 	// remove all children
-	for _, childFile := range fileToRemove.fileMap {
-		if err := fs.removeDirectory(childFile, fileToRemove, true); err != nil {
-			return err
+	for _, nextFile := range fileToRemove.fileMap {
+		if _, err := fs.removeDirectory(nextFile, fileToRemove, true); err != nil {
+			return nil, err
 		}
 	}
 
-	return nil
+	return fileToRemove.info, nil
 }
 
-func (fs *MemoryFileSystem) unlink(fileToRemove *inMemoryFile, parent *inMemoryFile) {
+func (fs *MemoryFileSystem) unlink(fileToRemove *inMemoryFile) {
+	parent := fileToRemove.fileMap[".."]
+
 	delete(parent.fileMap, fileToRemove.info.Name())
 	delete(fileToRemove.fileMap, "..")
 	delete(fileToRemove.fileMap, ".")

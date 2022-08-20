@@ -29,7 +29,7 @@ func (fs *MemoryFileSystem) FindFiles(name string, path *fspath.FileSystemPath, 
 	return matchingFiles, nil
 }
 
-func (fs *MemoryFileSystem) lookupParentDirWithCreateMissingDir(path *fspath.FileSystemPath, workingDir file.File, createMissingDir bool) (*inMemoryFile, error) {
+func (fs *MemoryFileSystem) lookupPathEndWithCreateMissingDir(path *fspath.FileSystemPath, workingDir file.File, createMissingDir bool) (*inMemoryFile, error) {
 	// Find path starting point
 	pathRoot, err := fs.findPathRoot(path, workingDir)
 	if err != nil {
@@ -44,7 +44,7 @@ func (fs *MemoryFileSystem) lookupParentDirWithCreateMissingDir(path *fspath.Fil
 func (fs *MemoryFileSystem) appendMatchingFiles(matchingFiles []file.FileInfo, dir *inMemoryFile, name string) []file.FileInfo {
 	for fileName, file := range dir.fileMap {
 		// skip special keys to avoid infinite cycle
-		if fileName == ".." || fileName == "." {
+		if fileName == ".." || fileName == "." || fileName == "/" {
 			continue
 		}
 

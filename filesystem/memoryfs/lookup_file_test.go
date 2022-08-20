@@ -234,6 +234,37 @@ func TestFindFiles(t *testing.T) {
 				assert.Equal(t, err.Error(), "no such file or directory")
 			},
 		},
+		{
+			CaseName: "Working directory previously deleted",
+			Path:     "../../dir/.",
+			FileName: "target",
+			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
+				fs := memoryfs.NewMemoryFileSystem()
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target", ""), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target", ""), nil); err != nil {
+					return nil, nil, err
+				}
+				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir", ""), nil)
+				if err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target/target/dir/target", ""), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.RemoveDirectory(fspath.NewFileSystemPath(workDir.Info().AbsolutePath(), ""), nil); err != nil {
+					return nil, nil, nil
+				}
+				return fs, workDir, nil
+			},
+			Assertions: func(t *testing.T, files []file.FileInfo, err error) {
+				assert.NotNil(t, err)
+				assert.NotNil(t, files)
+				assert.Len(t, files, 0)
+				assert.Equal(t, err.Error(), "working directory deleted")
+			},
+		},
 	}
 	for _, testCase := range cases {
 		fs, workingDir, err := testCase.Initialize()
