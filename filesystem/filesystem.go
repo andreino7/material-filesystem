@@ -20,6 +20,8 @@ type FileSystem interface {
 	CreateRegularFile(path *fspath.FileSystemPath, workingDir file.File) (file.File, error)
 	DefaultWorkingDirectory() file.File
 	GetDirectory(path *fspath.FileSystemPath, workingDir file.File) (file.File, error)
+	RemoveRegularFile(path *fspath.FileSystemPath, workingDir file.File) error
+	RemoveAll(path *fspath.FileSystemPath, workingDir file.File) error
 }
 
 func NewFileSystem(fsType FileSystemType) (FileSystem, error) {
