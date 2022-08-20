@@ -19,15 +19,8 @@ func (fs *MemoryFileSystem) removeFileWithLock(path *fspath.FileSystemPath, work
 	fs.mutex.Lock()
 	defer fs.mutex.Unlock()
 
-	// Find path starting point
-	pathRoot, err := fs.findPathRoot(path, workingDir)
-	if err != nil {
-		return err
-	}
-
-	// Find where to remove the file
-	pathDirs := pathDirs(path, workingDir)
-	parent, err := fs.lookupDir(pathRoot, pathDirs)
+	// find parent directory
+	parent, err := fs.lookupParentDirWithCreateMissingDir(path, workingDir, false)
 	if err != nil {
 		return err
 	}

@@ -11,7 +11,7 @@ type MemoryFileSystem struct {
 
 func NewMemoryFileSystem() *MemoryFileSystem {
 	// TODO: make root configurable
-	root := newInMemoryFile("/", true)
+	root := newInMemoryFile("/", "/", true)
 	root.fileMap[".."] = root
 
 	return &MemoryFileSystem{

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"material/filesystem/filesystem/file"
 	"material/filesystem/filesystem/fspath"
+	"path/filepath"
 )
 
 // TODO: validate file name
@@ -24,15 +25,8 @@ func (fs *MemoryFileSystem) addFileToFs(path *fspath.FileSystemPath, workingDir 
 	fs.mutex.Lock()
 	defer fs.mutex.Unlock()
 
-	// Find path starting point
-	pathRoot, err := fs.findPathRoot(path, workingDir)
-	if err != nil {
-		return nil, err
-	}
-
-	// Find where to add the file, eventually create intermediate directories
-	pathDirs := pathDirs(path, workingDir)
-	parent, err := fs.lookupDirWithCreateMissing(pathRoot, pathDirs, isRecursive)
+	// lookup parent dir
+	parent, err := fs.lookupParentDirWithCreateMissingDir(path, workingDir, isRecursive)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +38,9 @@ func (fs *MemoryFileSystem) createFile(fileName string, isDirectory bool, parent
 	if _, found := parent.fileMap[fileName]; found {
 		return nil, fmt.Errorf("file already exists")
 	}
-	newFile := newInMemoryFile(fileName, isDirectory)
+
+	absolutePath := filepath.Join(parent.info.AbsolutePath(), fileName)
+	newFile := newInMemoryFile(fileName, absolutePath, isDirectory)
 	fs.linkToParent(newFile, parent)
 	return newFile, nil
 }
