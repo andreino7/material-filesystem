@@ -1,6 +1,8 @@
 package memoryfs
 
-import "sync"
+import (
+	"sync"
+)
 
 type MemoryFileSystem struct {
 	mutex sync.RWMutex

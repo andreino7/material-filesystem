@@ -7,8 +7,10 @@ type inMemoryFileInfo struct {
 	isDirectory bool
 }
 
-type inMemoryFileData struct {
-}
+// TODO: uncomment. Commented to pass static check
+// type inMemoryFileData struct {
+// 	data []byte
+// }
 
 type inMemoryFile struct {
 	info      file.FileInfo

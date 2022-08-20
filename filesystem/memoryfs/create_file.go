@@ -20,10 +20,19 @@ func (fs *MemoryFileSystem) CreateRegularFile(path *fspath.FileSystemPath, worki
 }
 
 func (fs *MemoryFileSystem) addFileToFs(path *fspath.FileSystemPath, workingDir file.File, isDirectory bool, isRecursive bool) (file.File, error) {
+	// RW lock the fs
 	fs.mutex.Lock()
 	defer fs.mutex.Unlock()
 
-	parent, err := fs.lookupDirWithCreateMissing(path, workingDir, isRecursive)
+	// Find path starting point
+	pathRoot, err := fs.findPathRoot(path, workingDir)
+	if err != nil {
+		return nil, err
+	}
+
+	// Find where to add the file, eventually create intermediate directories
+	pathDirs := pathDirs(path, workingDir)
+	parent, err := fs.lookupDirWithCreateMissing(pathRoot, pathDirs, isRecursive)
 	if err != nil {
 		return nil, err
 	}
@@ -43,67 +52,4 @@ func (fs *MemoryFileSystem) createFile(fileName string, isDirectory bool, parent
 func (fs *MemoryFileSystem) linkToParent(newFile *inMemoryFile, parent *inMemoryFile) {
 	parent.fileMap[newFile.info.Name()] = newFile
 	newFile.fileMap[".."] = parent
-}
-
-func (fs *MemoryFileSystem) lookupDir(path *fspath.FileSystemPath, workingDir file.File) (*inMemoryFile, error) {
-	return fs.lookupDirWithCreateMissing(path, workingDir, false)
-}
-
-// TODO: refactor
-func (fs *MemoryFileSystem) lookupDirWithCreateMissing(path *fspath.FileSystemPath, workingDir file.File, createMissing bool) (*inMemoryFile, error) {
-	pathRoot, pathDirs, err := fs.findPathRoot(path, workingDir)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, currentDir := range pathDirs {
-		tmp, found := pathRoot.fileMap[currentDir]
-		if !found {
-			if createMissing {
-				tmp, err = fs.createFile(currentDir, true, pathRoot)
-				if err != nil {
-					return nil, err
-				}
-			} else {
-				return nil, fmt.Errorf("no such file or directory")
-			}
-		}
-
-		if !tmp.info.IsDirectory() {
-			return nil, fmt.Errorf("file is not a directory")
-		}
-
-		pathRoot = tmp
-	}
-
-	return pathRoot, nil
-}
-
-func (fs *MemoryFileSystem) findPathRoot(path *fspath.FileSystemPath, workingDir file.File) (*inMemoryFile, []string, error) {
-	if path.IsAbs() || workingDir == nil {
-		pathDirs, _ := path.SplitAbs()
-		return fs.root, pathDirs, nil
-	}
-
-	pathRoot, err := fs.resolveWorkDir(path, workingDir)
-	if err != nil {
-		return nil, nil, err
-	}
-	pathDirs, _ := path.Split()
-	return pathRoot, pathDirs, nil
-
-}
-
-// TODO: Test directory not attached to fs
-func (fs *MemoryFileSystem) resolveWorkDir(path *fspath.FileSystemPath, workingDir file.File) (*inMemoryFile, error) {
-	currentDir, ok := workingDir.(inMemoryFile)
-	if !ok {
-		return nil, fmt.Errorf("invalid working directory")
-	}
-
-	if currentDir.isDeleted {
-		return nil, fmt.Errorf("working directory deleted")
-	}
-
-	return &currentDir, nil
 }
