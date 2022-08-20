@@ -22,6 +22,8 @@ type FileSystem interface {
 	GetDirectory(path *fspath.FileSystemPath, workingDir file.File) (file.File, error)
 	RemoveRegularFile(path *fspath.FileSystemPath, workingDir file.File) error
 	RemoveAll(path *fspath.FileSystemPath, workingDir file.File) error
+	// TODO: handle regex in name
+	FindFiles(name string, path *fspath.FileSystemPath, workingDir file.File) ([]file.FileInfo, error)
 }
 
 func NewFileSystem(fsType FileSystemType) (FileSystem, error) {
