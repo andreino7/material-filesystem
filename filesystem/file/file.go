@@ -3,6 +3,7 @@ package file
 type FileInfo interface {
 	Name() string
 	IsDirectory() bool
+	AbsolutePath() string
 }
 
 type FileData interface {

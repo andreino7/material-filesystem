@@ -10,7 +10,6 @@ import (
 )
 
 // TODO: add tests for working dir deleted
-// TODO: check file exact location instead of just name
 func TestMkdir(t *testing.T) {
 	cases := []struct {
 		CaseName   string
@@ -28,6 +27,7 @@ func TestMkdir(t *testing.T) {
 				assert.Nil(t, err)
 				assert.NotNil(t, file)
 				assert.Equal(t, file.Info().Name(), "dir1")
+				assert.Equal(t, file.Info().AbsolutePath(), "/dir1")
 				assert.True(t, file.Info().IsDirectory())
 			},
 		},
@@ -48,6 +48,7 @@ func TestMkdir(t *testing.T) {
 				assert.Nil(t, err)
 				assert.NotNil(t, file)
 				assert.Equal(t, file.Info().Name(), "dir2")
+				assert.Equal(t, file.Info().AbsolutePath(), "/dir1/dir2")
 				assert.True(t, file.Info().IsDirectory())
 			},
 		},
@@ -122,6 +123,7 @@ func TestMkdir(t *testing.T) {
 				assert.Nil(t, err)
 				assert.NotNil(t, file)
 				assert.Equal(t, file.Info().Name(), "dir1")
+				assert.Equal(t, file.Info().AbsolutePath(), "/dir1")
 				assert.True(t, file.Info().IsDirectory())
 			},
 		},
@@ -144,6 +146,7 @@ func TestMkdir(t *testing.T) {
 				assert.Nil(t, err)
 				assert.NotNil(t, file)
 				assert.Equal(t, file.Info().Name(), "dir2")
+				assert.Equal(t, file.Info().AbsolutePath(), "/dir1/dir2")
 				assert.True(t, file.Info().IsDirectory())
 			},
 		},
@@ -209,6 +212,32 @@ func TestMkdir(t *testing.T) {
 				assert.Nil(t, file)
 			},
 		},
+		{
+			CaseName: "Working directory previously deleted",
+			Path:     "./dir2/dir3",
+			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
+				fs := memoryfs.NewMemoryFileSystem()
+				workDir, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1", ""), nil)
+				if err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir2", ""), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir4", ""), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.RemoveDirectory(fspath.NewFileSystemPath(workDir.Info().AbsolutePath(), ""), nil); err != nil {
+					return nil, nil, nil
+				}
+				return fs, workDir, nil
+			},
+			Assertions: func(t *testing.T, file file.File, err error) {
+				assert.NotNil(t, err)
+				assert.Equal(t, err.Error(), "working directory deleted")
+				assert.Nil(t, file)
+			},
+		},
 	}
 	for _, testCase := range cases {
 		fs, workingDir, err := testCase.Initialize()
@@ -237,6 +266,7 @@ func TestCreateRegularFile(t *testing.T) {
 				assert.Nil(t, err)
 				assert.NotNil(t, file)
 				assert.Equal(t, file.Info().Name(), "file1")
+				assert.Equal(t, file.Info().AbsolutePath(), "/file1")
 				assert.False(t, file.Info().IsDirectory())
 			},
 		},
@@ -257,6 +287,7 @@ func TestCreateRegularFile(t *testing.T) {
 				assert.Nil(t, err)
 				assert.NotNil(t, file)
 				assert.Equal(t, file.Info().Name(), "file1")
+				assert.Equal(t, file.Info().AbsolutePath(), "/dir1/file1")
 				assert.False(t, file.Info().IsDirectory())
 			},
 		},
@@ -338,6 +369,7 @@ func TestCreateRegularFile(t *testing.T) {
 				assert.Nil(t, err)
 				assert.NotNil(t, file)
 				assert.Equal(t, file.Info().Name(), "file1")
+				assert.Equal(t, file.Info().AbsolutePath(), "/file1")
 				assert.False(t, file.Info().IsDirectory())
 			},
 		},
@@ -359,6 +391,7 @@ func TestCreateRegularFile(t *testing.T) {
 				assert.Nil(t, err)
 				assert.NotNil(t, file)
 				assert.Equal(t, file.Info().Name(), "file1")
+				assert.Equal(t, file.Info().AbsolutePath(), "/dir2/file1")
 				assert.False(t, file.Info().IsDirectory())
 			},
 		},
@@ -402,6 +435,32 @@ func TestCreateRegularFile(t *testing.T) {
 				assert.Nil(t, file)
 			},
 		},
+		{
+			CaseName: "Working directory previously deleted",
+			Path:     "./dir2/dir3",
+			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
+				fs := memoryfs.NewMemoryFileSystem()
+				workDir, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1", ""), nil)
+				if err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir2", ""), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir4", ""), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.RemoveDirectory(fspath.NewFileSystemPath(workDir.Info().AbsolutePath(), ""), nil); err != nil {
+					return nil, nil, nil
+				}
+				return fs, workDir, nil
+			},
+			Assertions: func(t *testing.T, file file.File, err error) {
+				assert.NotNil(t, err)
+				assert.Equal(t, err.Error(), "working directory deleted")
+				assert.Nil(t, file)
+			},
+		},
 	}
 	for _, testCase := range cases {
 		fs, workingDir, err := testCase.Initialize()
@@ -413,7 +472,6 @@ func TestCreateRegularFile(t *testing.T) {
 	}
 }
 
-// TODO: check that every directory in path exists
 func TestMkdirAll(t *testing.T) {
 	cases := []struct {
 		CaseName   string
@@ -431,6 +489,7 @@ func TestMkdirAll(t *testing.T) {
 				assert.Nil(t, err)
 				assert.NotNil(t, file)
 				assert.Equal(t, file.Info().Name(), "dir3")
+				assert.Equal(t, file.Info().AbsolutePath(), "/dir1/dir2/dir3")
 				assert.True(t, file.Info().IsDirectory())
 			},
 		},
@@ -465,6 +524,7 @@ func TestMkdirAll(t *testing.T) {
 				assert.Nil(t, err)
 				assert.NotNil(t, file)
 				assert.Equal(t, file.Info().Name(), "dir3")
+				assert.Equal(t, file.Info().AbsolutePath(), "/dir1/dir1/dir2/dir3")
 				assert.True(t, file.Info().IsDirectory())
 			},
 		},
@@ -481,6 +541,32 @@ func TestMkdirAll(t *testing.T) {
 			Assertions: func(t *testing.T, file file.File, err error) {
 				assert.NotNil(t, err)
 				assert.Equal(t, err.Error(), "file is not a directory")
+				assert.Nil(t, file)
+			},
+		},
+		{
+			CaseName: "Working directory previously deleted",
+			Path:     "./dir2/dir3",
+			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
+				fs := memoryfs.NewMemoryFileSystem()
+				workDir, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1", ""), nil)
+				if err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir2", ""), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir4", ""), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.RemoveDirectory(fspath.NewFileSystemPath(workDir.Info().AbsolutePath(), ""), nil); err != nil {
+					return nil, nil, nil
+				}
+				return fs, workDir, nil
+			},
+			Assertions: func(t *testing.T, file file.File, err error) {
+				assert.NotNil(t, err)
+				assert.Equal(t, err.Error(), "working directory deleted")
 				assert.Nil(t, file)
 			},
 		},

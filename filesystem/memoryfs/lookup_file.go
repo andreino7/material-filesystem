@@ -4,7 +4,62 @@ import (
 	"fmt"
 	"material/filesystem/filesystem/file"
 	"material/filesystem/filesystem/fspath"
+	"sort"
 )
+
+func (fs *MemoryFileSystem) FindFiles(name string, path *fspath.FileSystemPath, workingDir file.File) ([]file.FileInfo, error) {
+	fs.mutex.RLock()
+	defer fs.mutex.RUnlock()
+
+	// Initialize result
+	matchingFiles := []file.FileInfo{}
+
+	// Get directory to start the search
+	dir, err := fs.GetDirectory(path, workingDir)
+	if err != nil {
+		return matchingFiles, err
+	}
+
+	// this cast is safe because GetDirectory always returns "inMemoryFile"
+	inMemoryDir := dir.(*inMemoryFile)
+	matchingFiles = fs.appendMatchingFiles(matchingFiles, inMemoryDir, name)
+
+	// sort lexicographically
+	sort.Sort(ByAbsolutePath(matchingFiles))
+	return matchingFiles, nil
+}
+
+func (fs *MemoryFileSystem) lookupPathEndWithCreateMissingDir(path *fspath.FileSystemPath, workingDir file.File, createMissingDir bool) (*inMemoryFile, error) {
+	// Find path starting point
+	pathRoot, err := fs.findPathRoot(path, workingDir)
+	if err != nil {
+		return nil, err
+	}
+
+	// Find where to add the file, eventually create intermediate directories
+	pathDirs := pathDirs(path, workingDir)
+	return fs.lookupDirWithCreateMissing(pathRoot, pathDirs, createMissingDir)
+}
+
+func (fs *MemoryFileSystem) appendMatchingFiles(matchingFiles []file.FileInfo, dir *inMemoryFile, name string) []file.FileInfo {
+	for fileName, file := range dir.fileMap {
+		// skip special keys to avoid infinite cycle
+		if fileName == ".." || fileName == "." || fileName == "/" {
+			continue
+		}
+
+		// add matching file
+		if fileName == name {
+			matchingFiles = append(matchingFiles, file.Info())
+		}
+
+		// if directory, go down the tree
+		if file.info.IsDirectory() {
+			matchingFiles = fs.appendMatchingFiles(matchingFiles, file, name)
+		}
+	}
+	return matchingFiles
+}
 
 func (fs *MemoryFileSystem) lookupDir(pathRoot *inMemoryFile, pathNames []string) (*inMemoryFile, error) {
 	return fs.lookupDirWithCreateMissing(pathRoot, pathNames, false)

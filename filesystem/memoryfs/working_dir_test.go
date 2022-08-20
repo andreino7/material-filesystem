@@ -213,6 +213,36 @@ func TestGetDirectory(t *testing.T) {
 				assert.Equal(t, err.Error(), "file is not a directory")
 			},
 		},
+		{
+			CaseName: "Working directory previously deleted",
+			Path:     "file1",
+			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
+				fs := memoryfs.NewMemoryFileSystem()
+				workingDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2", ""), nil)
+				if err != nil {
+					return nil, nil, err
+				}
+
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir3", ""), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir5/dir6/dir7", ""), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/dir2/file1", ""), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.RemoveDirectory(fspath.NewFileSystemPath(workingDir.Info().AbsolutePath(), ""), nil); err != nil {
+					return nil, nil, nil
+				}
+				return fs, workingDir, nil
+			},
+			Assertions: func(t *testing.T, file file.File, err error) {
+				assert.NotNil(t, err)
+				assert.Nil(t, file)
+				assert.Equal(t, err.Error(), "working directory deleted")
+			},
+		},
 	}
 	for _, testCase := range cases {
 		fs, workingDir, err := testCase.Initialize()
