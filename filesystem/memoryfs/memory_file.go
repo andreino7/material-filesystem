@@ -1,9 +1,11 @@
 package memoryfs
 
-import "material/filesystem/filesystem/file"
+import (
+	"material/filesystem/filesystem/file"
+	"path/filepath"
+)
 
 type inMemoryFileInfo struct {
-	name         string
 	absolutePath string
 	isDirectory  bool
 }
@@ -14,7 +16,7 @@ type inMemoryFileInfo struct {
 // }
 
 type inMemoryFile struct {
-	info      file.FileInfo
+	info      *inMemoryFileInfo
 	data      file.FileData
 	isDeleted bool
 	fileMap   map[string]*inMemoryFile
@@ -42,21 +44,24 @@ func (f inMemoryFile) Data() file.FileData {
 	return f.data
 }
 
-func (info inMemoryFileInfo) IsDirectory() bool {
+func (info *inMemoryFileInfo) IsDirectory() bool {
 	return info.isDirectory
 }
 
-func (info inMemoryFileInfo) Name() string {
-	return info.name
+func (info *inMemoryFileInfo) Name() string {
+	return filepath.Base(info.absolutePath)
 }
 
-func (info inMemoryFileInfo) AbsolutePath() string {
+func (info *inMemoryFileInfo) AbsolutePath() string {
 	return info.absolutePath
 }
 
-func newInMemoryFile(name string, absolutePath string, isDirectory bool) *inMemoryFile {
+func (info *inMemoryFileInfo) setAbsolutePath(absolutePath string) {
+	info.absolutePath = absolutePath
+}
+
+func newInMemoryFile(absolutePath string, isDirectory bool) *inMemoryFile {
 	info := &inMemoryFileInfo{
-		name,
 		absolutePath,
 		isDirectory,
 	}
