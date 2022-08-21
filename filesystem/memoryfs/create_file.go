@@ -9,14 +9,23 @@ import (
 
 // TODO: validate file name
 func (fs *MemoryFileSystem) Mkdir(path *fspath.FileSystemPath, workingDir file.File) (file.File, error) {
+	if err := checkFilePath(path); err != nil {
+		return nil, err
+	}
 	return fs.addFileToFs(path, workingDir, true, false)
 }
 
 func (fs *MemoryFileSystem) MkdirAll(path *fspath.FileSystemPath, workingDir file.File) (file.File, error) {
+	if err := checkFilePath(path); err != nil {
+		return nil, err
+	}
 	return fs.addFileToFs(path, workingDir, true, true)
 }
 
 func (fs *MemoryFileSystem) CreateRegularFile(path *fspath.FileSystemPath, workingDir file.File) (file.File, error) {
+	if err := checkFilePath(path); err != nil {
+		return nil, err
+	}
 	return fs.addFileToFs(path, workingDir, false, false)
 }
 
@@ -26,7 +35,7 @@ func (fs *MemoryFileSystem) addFileToFs(path *fspath.FileSystemPath, workingDir 
 	defer fs.mutex.Unlock()
 
 	// find where file needs to be added
-	parent, err := fs.moveToEndOfPath(path, workingDir, isRecursive)
+	parent, err := fs.navigateToLastDirInPath(path, workingDir, isRecursive)
 	if err != nil {
 		return nil, err
 	}

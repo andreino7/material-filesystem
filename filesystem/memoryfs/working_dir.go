@@ -21,7 +21,7 @@ func (fs *MemoryFileSystem) GetDirectory(path *fspath.FileSystemPath, workingDir
 		return nil, err
 	}
 
-	// Find new working directory
+	// Find directory
 	pathNames := pathNames(path, workingDir)
 	return fs.lookupDir(pathRoot, pathNames)
 }

@@ -8,24 +8,23 @@ import (
 func (fs *MemoryFileSystem) ListFiles(path *fspath.FileSystemPath, workingDir file.File) ([]file.FileInfo, error) {
 	fs.mutex.RLock()
 	defer fs.mutex.RUnlock()
-	return nil, nil
 
-	// 	// Initialize result
-	// 	files := []file.FileInfo{}
+	// Initialize result
+	files := []file.FileInfo{}
 
-	// 	// lookup parent dir
-	// 	parent, err := fs.lookupPathEndWithCreateMissingDir(path, workingDir, false)
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
+	// Get directory to list files
+	dir, err := fs.GetDirectory(path, workingDir)
+	if err != nil {
+		return files, err
+	}
 
-	// 	for name, file := range parent.fileMap {
-	// 		// skip special entries
-	// 		if name != ".." && name != "." && name != "/" {
-	// 			files = append(files, file.Info())
-	// 		}
-	// 	}
+	// List all files
+	for name, file := range dir.(*inMemoryFile).fileMap {
+		// skip special entries
+		if name != ".." && name != "." && name != "/" {
+			files = append(files, file.Info())
+		}
+	}
 
-	//		return files, nil
-	//	}
+	return files, nil
 }

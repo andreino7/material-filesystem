@@ -26,11 +26,15 @@ var (
 )
 
 func (fs *MemoryFileSystem) FindFiles(name string, path *fspath.FileSystemPath, workingDir file.File) ([]file.FileInfo, error) {
-	fs.mutex.RLock()
-	defer fs.mutex.RUnlock()
-
 	// Initialize result
 	matchingFiles := []file.FileInfo{}
+
+	if err := checkFileName(name); err != nil {
+		return nil, err
+	}
+
+	fs.mutex.RLock()
+	defer fs.mutex.RUnlock()
 
 	// Get directory to start the search
 	dir, err := fs.GetDirectory(path, workingDir)
@@ -47,7 +51,22 @@ func (fs *MemoryFileSystem) FindFiles(name string, path *fspath.FileSystemPath, 
 	return matchingFiles, nil
 }
 
-func (fs *MemoryFileSystem) moveToEndOfPath(path *fspath.FileSystemPath, workingDir file.File, createMissingDir bool) (*inMemoryFile, error) {
+func (fs *MemoryFileSystem) navigateToLastDirInPath(path *fspath.FileSystemPath, workingDir file.File, createMissingDir bool) (*inMemoryFile, error) {
+	// Find path starting point
+	pathRoot, err := fs.findPathRoot(path, workingDir)
+	if err != nil {
+		return nil, err
+	}
+
+	// Move through all the directories in the path, create missing if needed
+	pathDirs := pathDirs(path, workingDir)
+	if createMissingDir {
+		return fs.lookupDirAndCreateMissingDirectories(pathRoot, pathDirs)
+	}
+	return fs.lookupDir(pathRoot, pathDirs)
+}
+
+func (fs *MemoryFileSystem) navigateToEndOfPath(path *fspath.FileSystemPath, workingDir file.File, createMissingDir bool) (*inMemoryFile, error) {
 	// Find path starting point
 	pathRoot, err := fs.findPathRoot(path, workingDir)
 	if err != nil {
@@ -55,11 +74,11 @@ func (fs *MemoryFileSystem) moveToEndOfPath(path *fspath.FileSystemPath, working
 	}
 
 	// Find where to add the file, and create intermediate directories if needed
-	pathDirs := pathDirs(path, workingDir)
+	pathDirs := pathNames(path, workingDir)
 	if createMissingDir {
-		return fs.lookupDirAndCreateMissingDirectories(pathRoot, pathDirs)
+		return fs.lookupFileAndCreateMissingDirectories(pathRoot, pathDirs)
 	}
-	return fs.lookupDir(pathRoot, pathDirs)
+	return fs.lookupFile(pathRoot, pathDirs)
 }
 
 func (fs *MemoryFileSystem) appendMatchingFiles(matchingFiles []file.FileInfo, dir *inMemoryFile, name string) []file.FileInfo {
