@@ -5,6 +5,8 @@ import (
 	"material/filesystem/filesystem/file"
 	"material/filesystem/filesystem/fspath"
 	"strings"
+
+	"github.com/google/uuid"
 )
 
 var invalidFileNames = map[string]bool{
@@ -45,4 +47,9 @@ func checkFileName(name string) error {
 		return fmt.Errorf("invalid file name")
 	}
 	return nil
+}
+
+// TODO: use a better way to fix name conflict, for now using UUID is good enough
+func generateRandomNameFromBaseName(name string) string {
+	return name + "_" + uuid.NewString()
 }

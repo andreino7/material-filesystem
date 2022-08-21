@@ -43,6 +43,7 @@ func (fs *MemoryFileSystem) removeFile(fileName string, pathEnd *inMemoryFile, i
 
 	// unlink regular file
 	fs.unlink(fileToRemove)
+	fileToRemove.isDeleted = true
 	return fileToRemove.Info(), nil
 }
 
@@ -58,6 +59,7 @@ func (fs *MemoryFileSystem) removeDirectory(fileToRemove *inMemoryFile, parent *
 
 	// remove current file
 	fs.unlink(fileToRemove)
+	fileToRemove.isDeleted = true
 
 	// remove all children
 	for _, nextFile := range fileToRemove.fileMap {
@@ -75,5 +77,5 @@ func (fs *MemoryFileSystem) unlink(fileToRemove *inMemoryFile) {
 	delete(parent.fileMap, fileToRemove.info.Name())
 	delete(fileToRemove.fileMap, "..")
 	delete(fileToRemove.fileMap, ".")
-	fileToRemove.isDeleted = true
+
 }
