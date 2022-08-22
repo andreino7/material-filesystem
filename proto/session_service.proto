@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+option go_package = "material/filesystem/proto/session";
+
+package session;
+
+service SessionService {
+    // Creates a new "shell" session
+    rpc NewSession(NewSessionRequest) returns (NewSessionResponse) {}
+    rpc DeleteSession(DeleteSessionRequest) returns (DeleteSessionResponse) {}
+
+}
+
+message NewSessionRequest {
+
+}
+
+message NewSessionResponse {
+    string session_id = 1;
+    string working_directory_name = 2;
+}
+
+message DeleteSessionRequest {
+    string session_id = 1;
+}
+
+message DeleteSessionResponse {
+    string session_id = 1;
+    optional string error = 2;
+}

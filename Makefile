@@ -11,8 +11,16 @@ list-targets:
 build-fs:
 	go build -o ./build/fs ./fs/cmd/main.go
 
-build-daemon:
+build-daemon: generate-protobuf-models
 	go build -o ./build/fs-daemon ./daemon/cmd/main.go
+
+generate-protobuf-models:
+	@rm -rf pb/
+	@mkdir pb
+	protoc --go_out=./pb \
+		   --go-grpc_out=./pb \
+		   --go-grpc_opt module=material/filesystem \
+		   --go_opt module=material/filesystem proto/*.proto
 
 test:
 	go test ./... -cover
