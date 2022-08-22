@@ -12,13 +12,14 @@ func (fs *MemoryFileSystem) ListFiles(path *fspath.FileSystemPath, workingDir fi
 	// Initialize result
 	files := []file.FileInfo{}
 
-	// lookup parent dir
-	parent, err := fs.lookupPathEndWithCreateMissingDir(path, workingDir, false)
+	// Get directory to list files
+	dir, err := fs.GetDirectory(path, workingDir)
 	if err != nil {
-		return nil, err
+		return files, err
 	}
 
-	for name, file := range parent.fileMap {
+	// List all files
+	for name, file := range dir.(*inMemoryFile).fileMap {
 		// skip special entries
 		if name != ".." && name != "." && name != "/" {
 			files = append(files, file.Info())
