@@ -3,6 +3,7 @@ package memoryfs
 import (
 	"material/filesystem/filesystem/file"
 	"material/filesystem/filesystem/fspath"
+	"sort"
 )
 
 func (fs *MemoryFileSystem) ListFiles(path *fspath.FileSystemPath, workingDir file.File) ([]file.FileInfo, error) {
@@ -25,6 +26,7 @@ func (fs *MemoryFileSystem) ListFiles(path *fspath.FileSystemPath, workingDir fi
 			files = append(files, file.Info())
 		}
 	}
+	sort.Sort(ByAbsolutePath(files))
 
 	return files, nil
 }
