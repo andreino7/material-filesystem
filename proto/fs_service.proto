@@ -1,0 +1,97 @@
+syntax = "proto3";
+
+option go_package = "material/filesystem/proto/fsservice";
+
+package fsservice;
+
+service FileSystemService {
+    // Create a new directory, optionally create intermediate directories
+    rpc Mkdir(MkdirRequest) returns (MkdirResponse) {}
+    // Create a new file
+    rpc CreateRegularFile(CreateRegularFileRequest) returns (CreateRegularFileResponse) {}
+    // Change the working directory
+    rpc ChangeWorkingDirectory(ChangeWorkingDirectoryRequest) returns (ChangeWorkingDirectoryResponse) {}
+    // Delete a file or directory
+    rpc Remove(RemoveRequest) returns (RemoveResponse) {}
+    // Find all files matching names in path
+    rpc FindFiles(FindFilesRequest) returns (FindFilesResponse) {}
+    // List files in directory
+    rpc ListFiles(ListFilesRequest) returns (ListFilesResponse) {}
+
+}
+
+message MkdirRequest {
+    // New directory path (absolute or relative)
+    string path = 1;
+    // Optionally create intermediate directories
+    optional bool recursive = 2;
+}
+
+message MkdirResponse {
+    // New directory name
+    optional string name = 1;
+    // Error message 
+    optional string error = 2;
+}
+
+message CreateRegularFileRequest {
+    // New file path (absolute or relative)
+    string path = 1;
+}
+
+message CreateRegularFileResponse {
+    // New file name
+    optional string name = 1;
+    // Error message
+    optional string error = 2;
+}
+
+message ChangeWorkingDirectoryRequest {
+    // New working directory path (absolute or relative)
+    string path = 1;
+}
+
+message ChangeWorkingDirectoryResponse {
+    // New file name
+    optional string name = 1;
+    // Error message
+    optional string error = 2;
+}
+
+message RemoveRequest {
+    // File to remove path (absolute or relative)
+    string path = 1;
+    // If true, remove directory and subdirectory
+    optional bool recursive = 2;
+}
+
+message RemoveResponse {
+    // Error message
+    optional string error = 1;
+}
+
+message FindFilesRequest {
+    // File name to search
+    string name = 1;
+    // Location where to search the file (absolute or relative)
+    string path = 2;
+}
+
+message FindFilesResponse {
+    // List of files matching the search criteria
+    repeated string paths = 1;
+    // Error message
+    optional string error = 2;
+}
+
+message ListFilesRequest {
+    // Location where to list the files (absolute or relative)
+    string path = 1;
+}
+
+message ListFilesResponse {
+    // List of file names in location
+    repeated string names = 1;
+    // Error message
+    optional string error = 2;
+}
