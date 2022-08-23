@@ -1,8 +1,8 @@
 package memoryfs
 
 import (
-	"fmt"
 	"material/filesystem/filesystem/file"
+	"material/filesystem/filesystem/fserrors"
 	"material/filesystem/filesystem/fspath"
 	"sort"
 )
@@ -12,7 +12,7 @@ type onFileFoundFn func(*inMemoryFile) (*inMemoryFile, error)
 
 var (
 	errorOnNotFoundFn = func(filename string, parent *inMemoryFile) (*inMemoryFile, error) {
-		return nil, fmt.Errorf("no such file or directory")
+		return nil, fserrors.ErrNotExist
 	}
 	noopOnFound = func(file *inMemoryFile) (*inMemoryFile, error) {
 		return file, nil
@@ -21,7 +21,7 @@ var (
 		if file.Info().IsDirectory() {
 			return file, nil
 		}
-		return nil, fmt.Errorf("file is not a directory")
+		return nil, fserrors.ErrInvalidFileType
 	}
 )
 

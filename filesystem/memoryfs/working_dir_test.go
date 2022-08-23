@@ -1,7 +1,9 @@
 package memoryfs_test
 
 import (
+	"errors"
 	"material/filesystem/filesystem/file"
+	"material/filesystem/filesystem/fserrors"
 	"material/filesystem/filesystem/fspath"
 	"material/filesystem/filesystem/memoryfs"
 	"testing"
@@ -58,8 +60,10 @@ func TestGetDirectory(t *testing.T) {
 			},
 			Assertions: func(t *testing.T, file file.File, err error) {
 				assert.NotNil(t, err)
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrNotExist)
 				assert.Nil(t, file)
-				assert.Equal(t, err.Error(), "no such file or directory")
 			},
 		},
 		{
@@ -83,8 +87,10 @@ func TestGetDirectory(t *testing.T) {
 			},
 			Assertions: func(t *testing.T, file file.File, err error) {
 				assert.NotNil(t, err)
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrInvalidFileType)
 				assert.Nil(t, file)
-				assert.Equal(t, err.Error(), "file is not a directory")
 			},
 		},
 		{
@@ -182,8 +188,10 @@ func TestGetDirectory(t *testing.T) {
 			},
 			Assertions: func(t *testing.T, file file.File, err error) {
 				assert.NotNil(t, err)
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrNotExist)
 				assert.Nil(t, file)
-				assert.Equal(t, err.Error(), "no such file or directory")
 			},
 		},
 		{
@@ -209,8 +217,10 @@ func TestGetDirectory(t *testing.T) {
 			},
 			Assertions: func(t *testing.T, file file.File, err error) {
 				assert.NotNil(t, err)
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrInvalidFileType)
 				assert.Nil(t, file)
-				assert.Equal(t, err.Error(), "file is not a directory")
 			},
 		},
 		{
@@ -239,8 +249,10 @@ func TestGetDirectory(t *testing.T) {
 			},
 			Assertions: func(t *testing.T, file file.File, err error) {
 				assert.NotNil(t, err)
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrInvalidWorkingDirectory)
 				assert.Nil(t, file)
-				assert.Equal(t, err.Error(), "working directory deleted")
 			},
 		},
 	}

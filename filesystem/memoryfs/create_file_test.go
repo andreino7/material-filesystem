@@ -1,7 +1,9 @@
 package memoryfs_test
 
 import (
+	"errors"
 	"material/filesystem/filesystem/file"
+	"material/filesystem/filesystem/fserrors"
 	"material/filesystem/filesystem/fspath"
 	"material/filesystem/filesystem/memoryfs"
 	"testing"
@@ -70,7 +72,9 @@ func TestMkdir(t *testing.T) {
 			},
 			Assertions: func(t *testing.T, file file.File, err error) {
 				assert.NotNil(t, err)
-				assert.Equal(t, err.Error(), "file already exists")
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrExist)
 				assert.Nil(t, file)
 			},
 		},
@@ -92,7 +96,9 @@ func TestMkdir(t *testing.T) {
 			},
 			Assertions: func(t *testing.T, file file.File, err error) {
 				assert.NotNil(t, err)
-				assert.Equal(t, err.Error(), "no such file or directory")
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrNotExist)
 				assert.Nil(t, file)
 			},
 		},
@@ -107,8 +113,9 @@ func TestMkdir(t *testing.T) {
 				return fs, nil, nil
 			},
 			Assertions: func(t *testing.T, file file.File, err error) {
-				assert.NotNil(t, err)
-				assert.Equal(t, err.Error(), "file is not a directory")
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrInvalidFileType)
 				assert.Nil(t, file)
 			},
 		},
@@ -169,7 +176,9 @@ func TestMkdir(t *testing.T) {
 			},
 			Assertions: func(t *testing.T, file file.File, err error) {
 				assert.NotNil(t, err)
-				assert.Equal(t, err.Error(), "file already exists")
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrExist)
 				assert.Nil(t, file)
 			},
 		},
@@ -192,7 +201,9 @@ func TestMkdir(t *testing.T) {
 			},
 			Assertions: func(t *testing.T, file file.File, err error) {
 				assert.NotNil(t, err)
-				assert.Equal(t, err.Error(), "no such file or directory")
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrNotExist)
 				assert.Nil(t, file)
 			},
 		},
@@ -208,7 +219,9 @@ func TestMkdir(t *testing.T) {
 			},
 			Assertions: func(t *testing.T, file file.File, err error) {
 				assert.NotNil(t, err)
-				assert.Equal(t, err.Error(), "file is not a directory")
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrInvalidFileType)
 				assert.Nil(t, file)
 			},
 		},
@@ -234,7 +247,9 @@ func TestMkdir(t *testing.T) {
 			},
 			Assertions: func(t *testing.T, file file.File, err error) {
 				assert.NotNil(t, err)
-				assert.Equal(t, err.Error(), "working directory deleted")
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrInvalidWorkingDirectory)
 				assert.Nil(t, file)
 			},
 		},
@@ -303,7 +318,9 @@ func TestCreateRegularFile(t *testing.T) {
 			},
 			Assertions: func(t *testing.T, file file.File, err error) {
 				assert.NotNil(t, err)
-				assert.Equal(t, err.Error(), "file already exists")
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrExist)
 				assert.Nil(t, file)
 			},
 		},
@@ -318,7 +335,9 @@ func TestCreateRegularFile(t *testing.T) {
 				return fs, nil, nil
 			},
 			Assertions: func(t *testing.T, file file.File, err error) {
-				assert.NotNil(t, err)
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrExist)
 				assert.Equal(t, err.Error(), "file already exists")
 				assert.Nil(t, file)
 			},
@@ -338,7 +357,9 @@ func TestCreateRegularFile(t *testing.T) {
 			},
 			Assertions: func(t *testing.T, file file.File, err error) {
 				assert.NotNil(t, err)
-				assert.Equal(t, err.Error(), "file already exists")
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrExist)
 				assert.Nil(t, file)
 			},
 		},
@@ -354,7 +375,9 @@ func TestCreateRegularFile(t *testing.T) {
 			},
 			Assertions: func(t *testing.T, file file.File, err error) {
 				assert.NotNil(t, err)
-				assert.Equal(t, err.Error(), "no such file or directory")
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrNotExist)
 				assert.Nil(t, file)
 			},
 		},
@@ -431,7 +454,9 @@ func TestCreateRegularFile(t *testing.T) {
 			},
 			Assertions: func(t *testing.T, file file.File, err error) {
 				assert.NotNil(t, err)
-				assert.Equal(t, err.Error(), "no such file or directory")
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrNotExist)
 				assert.Nil(t, file)
 			},
 		},
@@ -457,7 +482,9 @@ func TestCreateRegularFile(t *testing.T) {
 			},
 			Assertions: func(t *testing.T, file file.File, err error) {
 				assert.NotNil(t, err)
-				assert.Equal(t, err.Error(), "working directory deleted")
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrInvalidWorkingDirectory)
 				assert.Nil(t, file)
 			},
 		},
@@ -505,7 +532,9 @@ func TestMkdirAll(t *testing.T) {
 			},
 			Assertions: func(t *testing.T, file file.File, err error) {
 				assert.NotNil(t, err)
-				assert.Equal(t, err.Error(), "file is not a directory")
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrInvalidFileType)
 				assert.Nil(t, file)
 			},
 		},
@@ -540,7 +569,9 @@ func TestMkdirAll(t *testing.T) {
 			},
 			Assertions: func(t *testing.T, file file.File, err error) {
 				assert.NotNil(t, err)
-				assert.Equal(t, err.Error(), "file is not a directory")
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrInvalidFileType)
 				assert.Nil(t, file)
 			},
 		},
@@ -565,8 +596,9 @@ func TestMkdirAll(t *testing.T) {
 				return fs, workDir, nil
 			},
 			Assertions: func(t *testing.T, file file.File, err error) {
-				assert.NotNil(t, err)
-				assert.Equal(t, err.Error(), "working directory deleted")
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrInvalidWorkingDirectory)
 				assert.Nil(t, file)
 			},
 		},

@@ -1,7 +1,9 @@
 package memoryfs_test
 
 import (
+	"errors"
 	"material/filesystem/filesystem/file"
+	"material/filesystem/filesystem/fserrors"
 	"material/filesystem/filesystem/fspath"
 	"material/filesystem/filesystem/memoryfs"
 	"testing"
@@ -87,7 +89,9 @@ func TestRemove(t *testing.T) {
 			Assertions: func(t *testing.T, fs *memoryfs.MemoryFileSystem, info file.FileInfo, err error) {
 				assert.NotNil(t, err)
 				assert.Nil(t, info)
-				assert.Equal(t, err.Error(), "file is a directory")
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrInvalidFileType)
 
 				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
 				assert.Len(t, files, 5)
@@ -117,7 +121,9 @@ func TestRemove(t *testing.T) {
 			Assertions: func(t *testing.T, fs *memoryfs.MemoryFileSystem, info file.FileInfo, err error) {
 				assert.NotNil(t, err)
 				assert.Nil(t, info)
-				assert.Equal(t, err.Error(), "no such file or directory")
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrNotExist)
 
 				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
 				assert.Len(t, files, 5)
@@ -211,7 +217,9 @@ func TestRemove(t *testing.T) {
 			Assertions: func(t *testing.T, fs *memoryfs.MemoryFileSystem, info file.FileInfo, err error) {
 				assert.NotNil(t, err)
 				assert.Nil(t, info)
-				assert.Equal(t, err.Error(), "file is a directory")
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrInvalidFileType)
 
 				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
 				assert.Len(t, files, 5)
@@ -245,7 +253,9 @@ func TestRemove(t *testing.T) {
 			Assertions: func(t *testing.T, fs *memoryfs.MemoryFileSystem, info file.FileInfo, err error) {
 				assert.NotNil(t, err)
 				assert.Nil(t, info)
-				assert.Equal(t, err.Error(), "no such file or directory")
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrNotExist)
 
 				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
 				assert.Len(t, files, 5)
@@ -282,7 +292,9 @@ func TestRemove(t *testing.T) {
 			Assertions: func(t *testing.T, fs *memoryfs.MemoryFileSystem, info file.FileInfo, err error) {
 				assert.NotNil(t, err)
 				assert.Nil(t, info)
-				assert.Equal(t, err.Error(), "working directory deleted")
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrInvalidWorkingDirectory)
 
 				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
 				assert.Len(t, files, 4)
@@ -380,7 +392,9 @@ func TestRemoveAll(t *testing.T) {
 			Assertions: func(t *testing.T, fs *memoryfs.MemoryFileSystem, info file.FileInfo, err error) {
 				assert.NotNil(t, err)
 				assert.Nil(t, info)
-				assert.Equal(t, err.Error(), "no such file or directory")
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrNotExist)
 
 				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
 				assert.Len(t, files, 5)
@@ -414,7 +428,9 @@ func TestRemoveAll(t *testing.T) {
 			Assertions: func(t *testing.T, fs *memoryfs.MemoryFileSystem, info file.FileInfo, err error) {
 				assert.NotNil(t, err)
 				assert.Nil(t, info)
-				assert.Equal(t, err.Error(), "operation not allowed: deleting filesystem root")
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrOperationNotSupported)
 
 				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
 				assert.Len(t, files, 5)
@@ -507,7 +523,9 @@ func TestRemoveAll(t *testing.T) {
 			Assertions: func(t *testing.T, fs *memoryfs.MemoryFileSystem, info file.FileInfo, err error) {
 				assert.NotNil(t, err)
 				assert.Nil(t, info)
-				assert.Equal(t, err.Error(), "no such file or directory")
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrNotExist)
 
 				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
 				assert.Len(t, files, 5)
@@ -541,7 +559,9 @@ func TestRemoveAll(t *testing.T) {
 			Assertions: func(t *testing.T, fs *memoryfs.MemoryFileSystem, info file.FileInfo, err error) {
 				assert.NotNil(t, err)
 				assert.Nil(t, info)
-				assert.Equal(t, err.Error(), "operation not allowed: deleting filesystem root")
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrOperationNotSupported)
 
 				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
 				assert.Len(t, files, 5)
@@ -578,7 +598,9 @@ func TestRemoveAll(t *testing.T) {
 			Assertions: func(t *testing.T, fs *memoryfs.MemoryFileSystem, info file.FileInfo, err error) {
 				assert.NotNil(t, err)
 				assert.Nil(t, info)
-				assert.Equal(t, err.Error(), "working directory deleted")
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrInvalidWorkingDirectory)
 
 				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
 				assert.Len(t, files, 4)

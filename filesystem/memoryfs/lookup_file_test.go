@@ -1,7 +1,9 @@
 package memoryfs_test
 
 import (
+	"errors"
 	"material/filesystem/filesystem/file"
+	"material/filesystem/filesystem/fserrors"
 	"material/filesystem/filesystem/fspath"
 	"material/filesystem/filesystem/memoryfs"
 	"testing"
@@ -115,9 +117,11 @@ func TestFindFiles(t *testing.T) {
 			},
 			Assertions: func(t *testing.T, files []file.FileInfo, err error) {
 				assert.NotNil(t, err)
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrNotExist)
 				assert.NotNil(t, files)
 				assert.Len(t, files, 0)
-				assert.Equal(t, err.Error(), "no such file or directory")
 			},
 		},
 		{
@@ -229,9 +233,11 @@ func TestFindFiles(t *testing.T) {
 			},
 			Assertions: func(t *testing.T, files []file.FileInfo, err error) {
 				assert.NotNil(t, err)
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrNotExist)
 				assert.NotNil(t, files)
 				assert.Len(t, files, 0)
-				assert.Equal(t, err.Error(), "no such file or directory")
 			},
 		},
 		{
@@ -260,9 +266,11 @@ func TestFindFiles(t *testing.T) {
 			},
 			Assertions: func(t *testing.T, files []file.FileInfo, err error) {
 				assert.NotNil(t, err)
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrInvalidWorkingDirectory)
 				assert.NotNil(t, files)
 				assert.Len(t, files, 0)
-				assert.Equal(t, err.Error(), "working directory deleted")
 			},
 		},
 	}

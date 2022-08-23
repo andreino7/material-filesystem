@@ -1,7 +1,9 @@
 package memoryfs_test
 
 import (
+	"errors"
 	"material/filesystem/filesystem/file"
+	"material/filesystem/filesystem/fserrors"
 	"material/filesystem/filesystem/fspath"
 	"material/filesystem/filesystem/memoryfs"
 	"strings"
@@ -38,9 +40,10 @@ func TestMove(t *testing.T) {
 			},
 			Assertions: func(t *testing.T, fs *memoryfs.MemoryFileSystem, info file.FileInfo, err error) {
 				assert.NotNil(t, err)
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrOperationNotSupported)
 				assert.Nil(t, info)
-
-				assert.Equal(t, err.Error(), "operation not supported, moving root directory")
 			},
 		},
 		{
@@ -62,9 +65,10 @@ func TestMove(t *testing.T) {
 			},
 			Assertions: func(t *testing.T, fs *memoryfs.MemoryFileSystem, info file.FileInfo, err error) {
 				assert.NotNil(t, err)
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrNotExist)
 				assert.Nil(t, info)
-
-				assert.Equal(t, err.Error(), "no such file or directory")
 			},
 		},
 		{
@@ -432,9 +436,10 @@ func TestMove(t *testing.T) {
 			},
 			Assertions: func(t *testing.T, fs *memoryfs.MemoryFileSystem, info file.FileInfo, err error) {
 				assert.NotNil(t, err)
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrOperationNotSupported)
 				assert.Nil(t, info)
-
-				assert.Equal(t, err.Error(), "operation not supported, moving root directory")
 			},
 		},
 		{
@@ -458,8 +463,9 @@ func TestMove(t *testing.T) {
 			Assertions: func(t *testing.T, fs *memoryfs.MemoryFileSystem, info file.FileInfo, err error) {
 				assert.NotNil(t, err)
 				assert.Nil(t, info)
-
-				assert.Equal(t, err.Error(), "no such file or directory")
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrNotExist)
 			},
 		},
 		{

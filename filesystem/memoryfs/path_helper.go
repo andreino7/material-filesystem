@@ -1,8 +1,8 @@
 package memoryfs
 
 import (
-	"fmt"
 	"material/filesystem/filesystem/file"
+	"material/filesystem/filesystem/fserrors"
 	"material/filesystem/filesystem/fspath"
 	"strings"
 
@@ -38,7 +38,7 @@ func checkFilePath(path *fspath.FileSystemPath) error {
 
 func checkFileName(name string) error {
 	if _, found := invalidFileNames[name]; found {
-		return fmt.Errorf("invalid file name")
+		return fserrors.ErrInvalid
 	}
 	return nil
 }
