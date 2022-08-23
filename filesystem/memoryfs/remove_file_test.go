@@ -21,10 +21,10 @@ func TestRemoveRegularFile(t *testing.T) {
 			Path:     "/target",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target", ""), nil); err != nil {
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target", ""), nil); err != nil {
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target"), nil); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -34,7 +34,7 @@ func TestRemoveRegularFile(t *testing.T) {
 				assert.NotNil(t, info)
 				assert.Equal(t, info.AbsolutePath(), "/target")
 
-				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/", ""), nil)
+				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
 				assert.Len(t, files, 1)
 				assert.Equal(t, files[0].AbsolutePath(), "/dir1/dir2/target")
 			},
@@ -44,13 +44,13 @@ func TestRemoveRegularFile(t *testing.T) {
 			Path:     "/dir1/target",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target", ""), nil); err != nil {
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target", ""), nil); err != nil {
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir/target", ""), nil); err != nil {
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir/target"), nil); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -60,7 +60,7 @@ func TestRemoveRegularFile(t *testing.T) {
 				assert.NotNil(t, info)
 				assert.Equal(t, info.AbsolutePath(), "/dir1/target")
 
-				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/", ""), nil)
+				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
 				assert.Len(t, files, 4)
 				assert.Equal(t, files[0].AbsolutePath(), "/dir1/dir2/target")
 				assert.Equal(t, files[1].AbsolutePath(), "/target")
@@ -73,13 +73,13 @@ func TestRemoveRegularFile(t *testing.T) {
 			Path:     "/target/target",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target", ""), nil); err != nil {
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target", ""), nil); err != nil {
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir/target", ""), nil); err != nil {
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir/target"), nil); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -89,7 +89,7 @@ func TestRemoveRegularFile(t *testing.T) {
 				assert.Nil(t, info)
 				assert.Equal(t, err.Error(), "file is a directory")
 
-				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/", ""), nil)
+				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
 				assert.Len(t, files, 5)
 				assert.Equal(t, files[0].AbsolutePath(), "/dir1/dir2/target")
 				assert.Equal(t, files[1].AbsolutePath(), "/dir1/target")
@@ -103,13 +103,13 @@ func TestRemoveRegularFile(t *testing.T) {
 			Path:     "/dir1/dir3/target",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target", ""), nil); err != nil {
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target", ""), nil); err != nil {
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir/target", ""), nil); err != nil {
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir/target"), nil); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -119,7 +119,7 @@ func TestRemoveRegularFile(t *testing.T) {
 				assert.Nil(t, info)
 				assert.Equal(t, err.Error(), "no such file or directory")
 
-				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/", ""), nil)
+				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
 				assert.Len(t, files, 5)
 				assert.Equal(t, files[0].AbsolutePath(), "/dir1/dir2/target")
 				assert.Equal(t, files[1].AbsolutePath(), "/dir1/target")
@@ -133,13 +133,13 @@ func TestRemoveRegularFile(t *testing.T) {
 			Path:     "../../../target",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target", ""), nil); err != nil {
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target", ""), nil); err != nil {
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir3/dir4/di5", ""), nil)
+				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir3/dir4/di5"), nil)
 				if err != nil {
 					return nil, nil, err
 				}
@@ -150,7 +150,7 @@ func TestRemoveRegularFile(t *testing.T) {
 				assert.NotNil(t, info)
 				assert.Equal(t, info.AbsolutePath(), "/target")
 
-				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/", ""), nil)
+				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
 				assert.Len(t, files, 1)
 				assert.Equal(t, files[0].AbsolutePath(), "/dir1/dir2/target")
 			},
@@ -160,17 +160,17 @@ func TestRemoveRegularFile(t *testing.T) {
 			Path:     "./target",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target", ""), nil); err != nil {
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target", ""), nil); err != nil {
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir", ""), nil)
+				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir"), nil)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target/target/dir/target", ""), nil); err != nil {
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target/target/dir/target"), nil); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -180,7 +180,7 @@ func TestRemoveRegularFile(t *testing.T) {
 				assert.NotNil(t, info)
 				assert.Equal(t, info.AbsolutePath(), "/target/target/dir/target")
 
-				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/", ""), nil)
+				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
 				assert.Len(t, files, 4)
 				assert.Equal(t, files[0].AbsolutePath(), "/dir1/dir2/target")
 				assert.Equal(t, files[1].AbsolutePath(), "/dir1/target")
@@ -193,17 +193,17 @@ func TestRemoveRegularFile(t *testing.T) {
 			Path:     ".",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target", ""), nil); err != nil {
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target", ""), nil); err != nil {
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir", ""), nil)
+				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir"), nil)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target/target/dir/target", ""), nil); err != nil {
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target/target/dir/target"), nil); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -213,7 +213,7 @@ func TestRemoveRegularFile(t *testing.T) {
 				assert.Nil(t, info)
 				assert.Equal(t, err.Error(), "file is a directory")
 
-				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/", ""), nil)
+				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
 				assert.Len(t, files, 5)
 				assert.Equal(t, files[0].AbsolutePath(), "/dir1/dir2/target")
 				assert.Equal(t, files[1].AbsolutePath(), "/dir1/target")
@@ -227,17 +227,17 @@ func TestRemoveRegularFile(t *testing.T) {
 			Path:     "../target",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target", ""), nil); err != nil {
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target", ""), nil); err != nil {
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir", ""), nil)
+				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir"), nil)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target/target/dir/target", ""), nil); err != nil {
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target/target/dir/target"), nil); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -247,7 +247,7 @@ func TestRemoveRegularFile(t *testing.T) {
 				assert.Nil(t, info)
 				assert.Equal(t, err.Error(), "no such file or directory")
 
-				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/", ""), nil)
+				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
 				assert.Len(t, files, 5)
 				assert.Equal(t, files[0].AbsolutePath(), "/dir1/dir2/target")
 				assert.Equal(t, files[1].AbsolutePath(), "/dir1/target")
@@ -261,20 +261,20 @@ func TestRemoveRegularFile(t *testing.T) {
 			Path:     "../target",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target", ""), nil); err != nil {
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target", ""), nil); err != nil {
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir", ""), nil)
+				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir"), nil)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target/target/dir/target", ""), nil); err != nil {
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target/target/dir/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.RemoveDirectory(fspath.NewFileSystemPath(workDir.Info().AbsolutePath(), ""), nil); err != nil {
+				if _, err := fs.RemoveDirectory(fspath.NewFileSystemPath(workDir.Info().AbsolutePath()), nil); err != nil {
 					return nil, nil, nil
 				}
 				return fs, workDir, nil
@@ -284,7 +284,7 @@ func TestRemoveRegularFile(t *testing.T) {
 				assert.Nil(t, info)
 				assert.Equal(t, err.Error(), "working directory deleted")
 
-				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/", ""), nil)
+				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
 				assert.Len(t, files, 4)
 				assert.Equal(t, files[0].AbsolutePath(), "/dir1/dir2/target")
 				assert.Equal(t, files[1].AbsolutePath(), "/dir1/target")
@@ -298,7 +298,7 @@ func TestRemoveRegularFile(t *testing.T) {
 		if err != nil {
 			t.Fatal("error initializing file system")
 		}
-		info, err := fs.RemoveRegularFile(fspath.NewFileSystemPath(testCase.Path, ""), workingDir)
+		info, err := fs.RemoveRegularFile(fspath.NewFileSystemPath(testCase.Path), workingDir)
 		testCase.Assertions(t, fs, info, err)
 	}
 }
@@ -315,10 +315,10 @@ func TestRemoveDirectory(t *testing.T) {
 			Path:     "/target",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target", ""), nil); err != nil {
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target", ""), nil); err != nil {
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target"), nil); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -328,7 +328,7 @@ func TestRemoveDirectory(t *testing.T) {
 				assert.NotNil(t, info)
 				assert.Equal(t, info.AbsolutePath(), "/target")
 
-				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/", ""), nil)
+				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
 				assert.Len(t, files, 1)
 				assert.Equal(t, files[0].AbsolutePath(), "/dir1/dir2/target")
 			},
@@ -338,13 +338,13 @@ func TestRemoveDirectory(t *testing.T) {
 			Path:     "/target/target",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target", ""), nil); err != nil {
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target", ""), nil); err != nil {
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir/target", ""), nil); err != nil {
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir/target"), nil); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -354,7 +354,7 @@ func TestRemoveDirectory(t *testing.T) {
 				assert.NotNil(t, info)
 				assert.Equal(t, info.AbsolutePath(), "/target/target")
 
-				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/", ""), nil)
+				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
 				assert.Len(t, files, 3)
 				assert.Equal(t, files[0].AbsolutePath(), "/dir1/dir2/target")
 				assert.Equal(t, files[1].AbsolutePath(), "/dir1/target")
@@ -366,13 +366,13 @@ func TestRemoveDirectory(t *testing.T) {
 			Path:     "/dir1/dir3/target",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target", ""), nil); err != nil {
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target", ""), nil); err != nil {
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir/target", ""), nil); err != nil {
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir/target"), nil); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -382,7 +382,7 @@ func TestRemoveDirectory(t *testing.T) {
 				assert.Nil(t, info)
 				assert.Equal(t, err.Error(), "no such file or directory")
 
-				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/", ""), nil)
+				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
 				assert.Len(t, files, 5)
 				assert.Equal(t, files[0].AbsolutePath(), "/dir1/dir2/target")
 				assert.Equal(t, files[1].AbsolutePath(), "/dir1/target")
@@ -396,17 +396,17 @@ func TestRemoveDirectory(t *testing.T) {
 			Path:     "/",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target", ""), nil); err != nil {
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target", ""), nil); err != nil {
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir", ""), nil)
+				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir"), nil)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target/target/dir/target", ""), nil); err != nil {
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target/target/dir/target"), nil); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -416,7 +416,7 @@ func TestRemoveDirectory(t *testing.T) {
 				assert.Nil(t, info)
 				assert.Equal(t, err.Error(), "operation not allowed: deleting filesystem root")
 
-				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/", ""), nil)
+				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
 				assert.Len(t, files, 5)
 				assert.Equal(t, files[0].AbsolutePath(), "/dir1/dir2/target")
 				assert.Equal(t, files[1].AbsolutePath(), "/dir1/target")
@@ -430,13 +430,13 @@ func TestRemoveDirectory(t *testing.T) {
 			Path:     "../../../target",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target", ""), nil); err != nil {
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/target", ""), nil); err != nil {
+				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir3/dir4/di5", ""), nil)
+				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir3/dir4/di5"), nil)
 				if err != nil {
 					return nil, nil, err
 				}
@@ -447,7 +447,7 @@ func TestRemoveDirectory(t *testing.T) {
 				assert.NotNil(t, info)
 				assert.Equal(t, info.AbsolutePath(), "/target")
 
-				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/", ""), nil)
+				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
 				assert.Len(t, files, 1)
 				assert.Equal(t, files[0].AbsolutePath(), "/dir1/dir2/target")
 			},
@@ -457,17 +457,17 @@ func TestRemoveDirectory(t *testing.T) {
 			Path:     "..",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target", ""), nil); err != nil {
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target", ""), nil); err != nil {
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir", ""), nil)
+				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir"), nil)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target/target/dir/target", ""), nil); err != nil {
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target/target/dir/target"), nil); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -477,7 +477,7 @@ func TestRemoveDirectory(t *testing.T) {
 				assert.NotNil(t, info)
 				assert.Equal(t, info.AbsolutePath(), "/target/target")
 
-				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/", ""), nil)
+				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
 				assert.Len(t, files, 3)
 				assert.Equal(t, files[0].AbsolutePath(), "/dir1/dir2/target")
 				assert.Equal(t, files[1].AbsolutePath(), "/dir1/target")
@@ -489,17 +489,17 @@ func TestRemoveDirectory(t *testing.T) {
 			Path:     "../target",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target", ""), nil); err != nil {
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target", ""), nil); err != nil {
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir", ""), nil)
+				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir"), nil)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target/target/dir/target", ""), nil); err != nil {
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target/target/dir/target"), nil); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -509,7 +509,7 @@ func TestRemoveDirectory(t *testing.T) {
 				assert.Nil(t, info)
 				assert.Equal(t, err.Error(), "no such file or directory")
 
-				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/", ""), nil)
+				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
 				assert.Len(t, files, 5)
 				assert.Equal(t, files[0].AbsolutePath(), "/dir1/dir2/target")
 				assert.Equal(t, files[1].AbsolutePath(), "/dir1/target")
@@ -523,17 +523,17 @@ func TestRemoveDirectory(t *testing.T) {
 			Path:     "../../../../..",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target", ""), nil); err != nil {
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target", ""), nil); err != nil {
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir", ""), nil)
+				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir"), nil)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target/target/dir/target", ""), nil); err != nil {
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target/target/dir/target"), nil); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -543,7 +543,7 @@ func TestRemoveDirectory(t *testing.T) {
 				assert.Nil(t, info)
 				assert.Equal(t, err.Error(), "operation not allowed: deleting filesystem root")
 
-				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/", ""), nil)
+				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
 				assert.Len(t, files, 5)
 				assert.Equal(t, files[0].AbsolutePath(), "/dir1/dir2/target")
 				assert.Equal(t, files[1].AbsolutePath(), "/dir1/target")
@@ -557,20 +557,20 @@ func TestRemoveDirectory(t *testing.T) {
 			Path:     "../target",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target", ""), nil); err != nil {
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target", ""), nil); err != nil {
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir", ""), nil)
+				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir"), nil)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target/target/dir/target", ""), nil); err != nil {
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target/target/dir/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.RemoveDirectory(fspath.NewFileSystemPath(workDir.Info().AbsolutePath(), ""), nil); err != nil {
+				if _, err := fs.RemoveDirectory(fspath.NewFileSystemPath(workDir.Info().AbsolutePath()), nil); err != nil {
 					return nil, nil, nil
 				}
 				return fs, workDir, nil
@@ -580,7 +580,7 @@ func TestRemoveDirectory(t *testing.T) {
 				assert.Nil(t, info)
 				assert.Equal(t, err.Error(), "working directory deleted")
 
-				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/", ""), nil)
+				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
 				assert.Len(t, files, 4)
 				assert.Equal(t, files[0].AbsolutePath(), "/dir1/dir2/target")
 				assert.Equal(t, files[1].AbsolutePath(), "/dir1/target")
@@ -594,7 +594,7 @@ func TestRemoveDirectory(t *testing.T) {
 		if err != nil {
 			t.Fatal("error initializing file system")
 		}
-		info, err := fs.RemoveDirectory(fspath.NewFileSystemPath(testCase.Path, ""), workingDir)
+		info, err := fs.RemoveDirectory(fspath.NewFileSystemPath(testCase.Path), workingDir)
 		testCase.Assertions(t, fs, info, err)
 	}
 }

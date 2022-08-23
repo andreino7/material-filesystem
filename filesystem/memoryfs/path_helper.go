@@ -17,22 +17,16 @@ var invalidFileNames = map[string]bool{
 
 // TODO: refactor duplicate code
 func pathNames(path *fspath.FileSystemPath, workingDir file.File) []string {
-	if path.IsAbs() || workingDir == nil {
-		if path.AbsolutePath() == "/" {
-			return []string{}
-		}
-		return strings.Split(strings.Trim(path.AbsolutePath(), "/"), "/")
+	if path.Path() == "/" {
+		return []string{}
 	}
 
 	return strings.Split(strings.Trim(path.Path(), "/"), "/")
 }
 
 func pathDirs(path *fspath.FileSystemPath, workingDir file.File) []string {
-	if path.IsAbs() || workingDir == nil {
-		if path.AbsDir() == "/" {
-			return []string{}
-		}
-		return strings.Split(strings.Trim(path.AbsDir(), "/"), "/")
+	if path.Dir() == "/" {
+		return []string{}
 	}
 
 	return strings.Split(strings.Trim(path.Dir(), "/"), "/")

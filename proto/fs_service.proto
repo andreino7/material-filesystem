@@ -21,10 +21,12 @@ service FileSystemService {
 }
 
 message MkdirRequest {
+    // The session id
+    string session_id = 1;
     // New directory path (absolute or relative)
-    string path = 1;
+    string path = 2;
     // Optionally create intermediate directories
-    optional bool recursive = 2;
+    optional bool recursive = 3;
 }
 
 message MkdirResponse {
@@ -35,8 +37,10 @@ message MkdirResponse {
 }
 
 message CreateRegularFileRequest {
+    // The session id
+    string session_id = 1;
     // New file path (absolute or relative)
-    string path = 1;
+    string path = 2;
 }
 
 message CreateRegularFileResponse {
@@ -47,8 +51,10 @@ message CreateRegularFileResponse {
 }
 
 message ChangeWorkingDirectoryRequest {
+    // The session id
+    string session_id = 1;
     // New working directory path (absolute or relative)
-    string path = 1;
+    string path = 2;
 }
 
 message ChangeWorkingDirectoryResponse {
@@ -59,10 +65,12 @@ message ChangeWorkingDirectoryResponse {
 }
 
 message RemoveRequest {
+    // The session id
+    string session_id = 1;
     // File to remove path (absolute or relative)
-    string path = 1;
+    string path = 2;
     // If true, remove directory and subdirectory
-    optional bool recursive = 2;
+    optional bool recursive = 3;
 }
 
 message RemoveResponse {
@@ -71,10 +79,12 @@ message RemoveResponse {
 }
 
 message FindFilesRequest {
+    // The session id
+    string session_id = 1;
     // File name to search
-    string name = 1;
+    string name = 2;
     // Location where to search the file (absolute or relative)
-    string path = 2;
+    string path = 3;
 }
 
 message FindFilesResponse {
@@ -85,8 +95,10 @@ message FindFilesResponse {
 }
 
 message ListFilesRequest {
+    // The session id
+    string session_id = 1;
     // Location where to list the files (absolute or relative)
-    string path = 1;
+    string path = 2;
 }
 
 message ListFilesResponse {

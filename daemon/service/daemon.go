@@ -5,7 +5,8 @@ import (
 	"log"
 	"material/filesystem/daemon/session"
 	"material/filesystem/filesystem"
-	pb "material/filesystem/pb/proto/session"
+	pbFs "material/filesystem/pb/proto/fsservice"
+	pbSession "material/filesystem/pb/proto/session"
 
 	"net"
 
@@ -16,7 +17,8 @@ import (
 type FileSystemDaemon struct {
 	fs           filesystem.FileSystem
 	sessionStore session.SessionStore
-	pb.UnimplementedSessionServiceServer
+	pbSession.UnimplementedSessionServiceServer
+	pbFs.UnimplementedFileSystemServiceServer
 }
 
 func NewFileSystemDaemon(fsType filesystem.FileSystemType) (*FileSystemDaemon, error) {
@@ -25,9 +27,10 @@ func NewFileSystemDaemon(fsType filesystem.FileSystemType) (*FileSystemDaemon, e
 		return nil, fmt.Errorf("error creating filesystem: %w", err)
 	}
 	return &FileSystemDaemon{
-		fs:                                fs,
-		sessionStore:                      session.NewSessionStore(),
-		UnimplementedSessionServiceServer: pb.UnimplementedSessionServiceServer{},
+		fs:                                   fs,
+		sessionStore:                         session.NewSessionStore(),
+		UnimplementedSessionServiceServer:    pbSession.UnimplementedSessionServiceServer{},
+		UnimplementedFileSystemServiceServer: pbFs.UnimplementedFileSystemServiceServer{},
 	}, nil
 }
 
@@ -39,7 +42,8 @@ func (daemon *FileSystemDaemon) Run() error {
 	}
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
-	pb.RegisterSessionServiceServer(grpcServer, daemon)
+	pbSession.RegisterSessionServiceServer(grpcServer, daemon)
+	pbFs.RegisterFileSystemServiceServer(grpcServer, daemon)
 	reflection.Register(grpcServer)
 	fmt.Println("Daemon listening on port: 3333")
 	grpcServer.Serve(lis)
