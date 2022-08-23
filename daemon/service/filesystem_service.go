@@ -2,7 +2,9 @@ package daemon
 
 import (
 	"context"
+	"errors"
 	"material/filesystem/filesystem/file"
+	"material/filesystem/filesystem/fserrors"
 	"material/filesystem/filesystem/fspath"
 	pb "material/filesystem/pb/proto/fsservice"
 
@@ -29,8 +31,11 @@ func (daemon *FileSystemDaemon) Mkdir(ctx context.Context, request *pb.MkdirRequ
 	}
 
 	if err != nil {
-		// TODO: extract fs error
-		return nil, err
+		msg, err := extractError(err)
+		if err != nil {
+			return nil, err
+		}
+		return &pb.MkdirResponse{Error: proto.String(msg)}, nil
 	}
 
 	return &pb.MkdirResponse{
@@ -46,8 +51,11 @@ func (daemon *FileSystemDaemon) CreateRegularFile(ctx context.Context, request *
 
 	file, err := daemon.fs.CreateRegularFile(path, workingDir)
 	if err != nil {
-		// TODO: extract fs error
-		return nil, err
+		msg, err := extractError(err)
+		if err != nil {
+			return nil, err
+		}
+		return &pb.CreateRegularFileResponse{Error: proto.String(msg)}, nil
 	}
 
 	return &pb.CreateRegularFileResponse{
@@ -63,9 +71,13 @@ func (daemon *FileSystemDaemon) ChangeWorkingDirectory(ctx context.Context, requ
 
 	file, err := daemon.fs.GetDirectory(path, workingDir)
 	if err != nil {
-		// TODO: extract fs error
-		return nil, err
+		msg, err := extractError(err)
+		if err != nil {
+			return nil, err
+		}
+		return &pb.ChangeWorkingDirectoryResponse{Error: proto.String(msg)}, nil
 	}
+
 	err = daemon.sessionStore.ChangeWorkingDirectory(request.GetSessionId(), file)
 	if err != nil {
 		return nil, err
@@ -90,8 +102,11 @@ func (daemon *FileSystemDaemon) Remove(ctx context.Context, request *pb.RemoveRe
 	}
 
 	if err != nil {
-		// TODO: extract fs error
-		return nil, err
+		msg, err := extractError(err)
+		if err != nil {
+			return nil, err
+		}
+		return &pb.RemoveResponse{Error: proto.String(msg)}, nil
 	}
 
 	if workingDir.Info().AbsolutePath() == file.AbsolutePath() {
@@ -114,8 +129,11 @@ func (daemon *FileSystemDaemon) FindFiles(ctx context.Context, request *pb.FindF
 	// TODO: validate name
 	files, err := daemon.fs.FindFiles(request.GetName(), path, workingDir)
 	if err != nil {
-		// TODO: extract fs error
-		return nil, err
+		msg, err := extractError(err)
+		if err != nil {
+			return nil, err
+		}
+		return &pb.FindFilesResponse{Error: proto.String(msg)}, nil
 	}
 
 	paths := []string{}
@@ -136,8 +154,11 @@ func (daemon *FileSystemDaemon) ListFiles(ctx context.Context, request *pb.ListF
 
 	files, err := daemon.fs.ListFiles(path, workingDir)
 	if err != nil {
-		// TODO: extract fs error
-		return nil, err
+		msg, err := extractError(err)
+		if err != nil {
+			return nil, err
+		}
+		return &pb.ListFilesResponse{Error: proto.String(msg)}, nil
 	}
 
 	names := []string{}
@@ -148,6 +169,14 @@ func (daemon *FileSystemDaemon) ListFiles(ctx context.Context, request *pb.ListF
 	return &pb.ListFilesResponse{
 		Names: names,
 	}, nil
+}
+
+func extractError(err error) (string, error) {
+	target := &fserrors.FileSystemError{}
+	if errors.As(err, &target) {
+		return err.Error(), nil
+	}
+	return "", err
 }
 
 func (daemon *FileSystemDaemon) getPathAndWorkDir(req singlePathRequest) (*fspath.FileSystemPath, file.File, error) {

@@ -173,6 +173,10 @@ func (fs *MemoryFileSystem) doMove(fileToMove *inMemoryFile, dest *inMemoryFile,
 	// check if dest file exists already
 	finalDest, found := dest.fileMap[finalDestName]
 	if found {
+		// check if same filex
+		if finalDest == fileToMove {
+			return nil, fserrors.ErrSameFile
+		}
 		return onFound(fileToMove, finalDest)
 	} else {
 		// rename file

@@ -72,6 +72,31 @@ func TestMove(t *testing.T) {
 			},
 		},
 		{
+			CaseName: "Source dire and dest dir are same dir",
+			SrcPath:  "/dir1",
+			DestPath: "/dir1",
+			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
+				fs := memoryfs.NewMemoryFileSystem()
+				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+					return nil, nil, err
+				}
+				return fs, nil, nil
+			},
+			Assertions: func(t *testing.T, fs *memoryfs.MemoryFileSystem, info file.FileInfo, err error) {
+				assert.NotNil(t, err)
+				target := &fserrors.FileSystemError{}
+				assert.True(t, errors.As(err, &target))
+				assert.Equal(t, err, fserrors.ErrSameFile)
+				assert.Nil(t, info)
+			},
+		},
+		{
 			CaseName: "Rename file, no conflict - absolute path",
 			SrcPath:  "/dir1/file1",
 			DestPath: "/dir1/file3",
