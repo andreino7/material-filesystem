@@ -10,27 +10,6 @@ import (
 type onMoveDestFound func(fileToMove *inMemoryFile, dest *inMemoryFile, isCopy bool) (*inMemoryFile, error)
 type onMoveDestNotFound func(fileToMove *inMemoryFile, dest *inMemoryFile, newName string, isCopy bool) (*inMemoryFile, error)
 
-// Cases:
-// srcPath exists
-//    - destPath exists
-//      - name conflict
-//        - error
-//      - no conflict
-//        - move
-//    - destPath not exist
-//      - parent exist
-//        - name conflict
-//			- error
-//        - no conflict
-//          - move and rename
-//      - parent not exist
-//        - not recursive
-//          - error
-//        - recursive
-//          - create intermediate dirs
-// srcPath not exists
-//    - error
-
 // TODO: handle name conflicts as option
 // TODO: handle recursive as opttion
 func (fs *MemoryFileSystem) Move(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error) {
@@ -109,20 +88,21 @@ func (fs *MemoryFileSystem) mergeDirectories(dirToMove *inMemoryFile, dest *inMe
 	}
 
 	// This is the more complex case: recursively move every file to destination directory
-	for fileName, fileToMove := range dirToMove.fileMap {
-		if fileName == "." || fileName == ".." {
-			continue
-		}
-
+	err := fs.walk(dirToMove, func(fileName string, fileToMove *inMemoryFile) error {
 		if shouldMergeSubDirectories(fileToMove, finalDest) {
 			if _, err := fs.mergeDirectories(fileToMove, finalDest, isCopy); err != nil {
-				return nil, err
+				return err
 			}
 		} else {
 			if _, err := fs.moveLockFree(fileToMove, finalDest, fileName, isCopy); err != nil {
-				return nil, err
+				return err
 			}
 		}
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
 	}
 
 	if !isCopy {
@@ -174,10 +154,14 @@ func (fs *MemoryFileSystem) renameAndMoveRegularFile(fileToMove *inMemoryFile, d
 	newAbsPath := filepath.Join(dest.info.AbsolutePath(), finalName)
 
 	var result *inMemoryFile
+	var err error
 	if isCopy {
-		result = fs.copyFile(fileToMove, newAbsPath)
+		result, err = fs.copyFile(fileToMove, newAbsPath)
 	} else {
 		result = fs.moveFile(fileToMove, newAbsPath)
+	}
+	if err != nil {
+		return nil, err
 	}
 
 	// attach to new dir
@@ -193,16 +177,16 @@ func (fs *MemoryFileSystem) moveFile(fileToMove *inMemoryFile, newAbsPath string
 	return fileToMove
 }
 
-func (fs *MemoryFileSystem) copyFile(fileToMove *inMemoryFile, newAbsPath string) *inMemoryFile {
+func (fs *MemoryFileSystem) copyFile(fileToMove *inMemoryFile, newAbsPath string) (*inMemoryFile, error) {
 	newFile := newInMemoryFile(newAbsPath, fileToMove.info.IsDirectory())
 
 	if fileToMove.info.isDirectory {
-		// TODO: move this to a separate helper function, lot of places are doing this
-		for fileName, file := range fileToMove.fileMap {
-			if fileName == ".." || fileName == "." {
-				continue
-			}
-			fs.renameAndMoveRegularFile(file, newFile, fileName, true)
+		err := fs.walk(fileToMove, func(fileName string, child *inMemoryFile) error {
+			fs.renameAndMoveRegularFile(child, newFile, fileName, true)
+			return nil
+		})
+		if err != nil {
+			return nil, err
 		}
 	} else {
 		var newDataArr []byte
@@ -213,7 +197,7 @@ func (fs *MemoryFileSystem) copyFile(fileToMove *inMemoryFile, newAbsPath string
 		newFile.data = newData
 	}
 
-	return newFile
+	return newFile, nil
 }
 
 func (fs *MemoryFileSystem) doMove(fileToMove *inMemoryFile, dest *inMemoryFile, finalDestName string, onFound onMoveDestFound, onNotFound onMoveDestNotFound, isCopy bool) (*inMemoryFile, error) {

@@ -44,7 +44,10 @@ func (fs *MemoryFileSystem) FindFiles(name string, path *fspath.FileSystemPath, 
 
 	// this cast is safe because GetDirectory always returns "inMemoryFile"
 	inMemoryDir := dir.(*inMemoryFile)
-	matchingFiles = fs.appendMatchingFiles(matchingFiles, inMemoryDir, name)
+	matchingFiles, err = fs.appendMatchingFiles(matchingFiles, inMemoryDir, name)
+	if err != nil {
+		return matchingFiles, err
+	}
 
 	// sort lexicographically
 	sort.Sort(ByAbsolutePath(matchingFiles))
@@ -81,13 +84,9 @@ func (fs *MemoryFileSystem) navigateToEndOfPath(path *fspath.FileSystemPath, wor
 	return fs.lookupFile(pathRoot, pathDirs)
 }
 
-func (fs *MemoryFileSystem) appendMatchingFiles(matchingFiles []file.FileInfo, dir *inMemoryFile, name string) []file.FileInfo {
-	for fileName, file := range dir.fileMap {
-		// skip special keys to avoid infinite cycle
-		if fileName == ".." || fileName == "." || fileName == "/" {
-			continue
-		}
-
+func (fs *MemoryFileSystem) appendMatchingFiles(matchingFiles []file.FileInfo, dir *inMemoryFile, name string) ([]file.FileInfo, error) {
+	err := fs.walk(dir, func(fileName string, file *inMemoryFile) error {
+		var err error
 		// add matching file
 		if fileName == name {
 			matchingFiles = append(matchingFiles, file.Info())
@@ -95,10 +94,12 @@ func (fs *MemoryFileSystem) appendMatchingFiles(matchingFiles []file.FileInfo, d
 
 		// if directory, go down the tree
 		if file.info.IsDirectory() {
-			matchingFiles = fs.appendMatchingFiles(matchingFiles, file, name)
+			matchingFiles, err = fs.appendMatchingFiles(matchingFiles, file, name)
 		}
-	}
-	return matchingFiles
+		return err
+	})
+
+	return matchingFiles, err
 }
 
 func (fs *MemoryFileSystem) lookupDirAndCreateMissingDirectories(pathRoot *inMemoryFile, pathNames []string) (*inMemoryFile, error) {
