@@ -76,7 +76,32 @@ func (daemon *FileSystemDaemon) ChangeWorkingDirectory(ctx context.Context, requ
 }
 
 func (daemon *FileSystemDaemon) Remove(ctx context.Context, request *pb.RemoveRequest) (*pb.RemoveResponse, error) {
-	return nil, nil
+	path, workingDir, err := daemon.getPathAndWorkDir(request)
+	if err != nil {
+		return nil, err
+	}
+
+	var file file.FileInfo
+	if request.GetRecursive() {
+		file, err = daemon.fs.RemoveAll(path, workingDir)
+	} else {
+		file, err = daemon.fs.Remove(path, workingDir)
+	}
+
+	if err != nil {
+		// TODO: extract fs error
+		return nil, err
+	}
+
+	if workingDir.Info().AbsolutePath() == file.AbsolutePath() {
+		err = daemon.sessionStore.ChangeWorkingDirectory(request.GetSessionId(), daemon.fs.DefaultWorkingDirectory())
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// TODO: add working dir to resp
+	return &pb.RemoveResponse{}, nil
 }
 
 func (daemon *FileSystemDaemon) FindFiles(ctx context.Context, request *pb.FindFilesRequest) (*pb.FindFilesResponse, error) {

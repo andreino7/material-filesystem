@@ -10,14 +10,13 @@ type inMemoryFileInfo struct {
 	isDirectory  bool
 }
 
-// TODO: uncomment. Commented to pass static check
-// type inMemoryFileData struct {
-// 	data []byte
-// }
+type inMemoryFileData struct {
+	data []byte
+}
 
 type inMemoryFile struct {
 	info      *inMemoryFileInfo
-	data      file.FileData
+	data      *inMemoryFileData
 	isDeleted bool
 	fileMap   map[string]*inMemoryFile
 }
@@ -58,6 +57,10 @@ func (info *inMemoryFileInfo) AbsolutePath() string {
 
 func (info *inMemoryFileInfo) setAbsolutePath(absolutePath string) {
 	info.absolutePath = absolutePath
+}
+
+func (data *inMemoryFileData) Data() []byte {
+	return data.data
 }
 
 func newInMemoryFile(absolutePath string, isDirectory bool) *inMemoryFile {

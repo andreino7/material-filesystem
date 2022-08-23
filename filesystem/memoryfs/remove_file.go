@@ -7,12 +7,12 @@ import (
 )
 
 // TODO: handle deleting working dir
-func (fs *MemoryFileSystem) RemoveDirectory(path *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error) {
-	return fs.removeFileWithLock(path, workingDir, true)
+func (fs *MemoryFileSystem) Remove(path *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error) {
+	return fs.removeFileWithLock(path, workingDir, false)
 }
 
-func (fs *MemoryFileSystem) RemoveRegularFile(path *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error) {
-	return fs.removeFileWithLock(path, workingDir, false)
+func (fs *MemoryFileSystem) RemoveAll(path *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error) {
+	return fs.removeFileWithLock(path, workingDir, true)
 }
 
 func (fs *MemoryFileSystem) removeFileWithLock(path *fspath.FileSystemPath, workingDir file.File, isRecursive bool) (file.FileInfo, error) {

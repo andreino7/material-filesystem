@@ -253,8 +253,8 @@ func TestFindFiles(t *testing.T) {
 				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target/target/dir/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.RemoveDirectory(fspath.NewFileSystemPath(workDir.Info().AbsolutePath()), nil); err != nil {
-					return nil, nil, nil
+				if _, err := fs.RemoveAll(fspath.NewFileSystemPath(workDir.Info().AbsolutePath()), nil); err != nil {
+					return nil, nil, err
 				}
 				return fs, workDir, nil
 			},

@@ -232,8 +232,8 @@ func TestGetDirectory(t *testing.T) {
 				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/dir2/file1"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.RemoveDirectory(fspath.NewFileSystemPath(workingDir.Info().AbsolutePath()), nil); err != nil {
-					return nil, nil, nil
+				if _, err := fs.RemoveAll(fspath.NewFileSystemPath(workingDir.Info().AbsolutePath()), nil); err != nil {
+					return nil, nil, err
 				}
 				return fs, workingDir, nil
 			},

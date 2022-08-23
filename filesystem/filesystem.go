@@ -20,11 +20,12 @@ type FileSystem interface {
 	CreateRegularFile(path *fspath.FileSystemPath, workingDir file.File) (file.File, error)
 	DefaultWorkingDirectory() file.File
 	GetDirectory(path *fspath.FileSystemPath, workingDir file.File) (file.File, error)
-	RemoveRegularFile(path *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error)
-	RemoveDirectory(path *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error)
+	Remove(path *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error)
+	RemoveAll(path *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error)
 	// TODO: handle regex in name
 	FindFiles(name string, path *fspath.FileSystemPath, workingDir file.File) ([]file.FileInfo, error)
 	ListFiles(path *fspath.FileSystemPath, workingDir file.File) ([]file.FileInfo, error)
+	Move(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error)
 }
 
 func NewFileSystem(fsType FileSystemType) (FileSystem, error) {

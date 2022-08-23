@@ -16,7 +16,7 @@ import (
 
 type FileSystemDaemon struct {
 	fs           filesystem.FileSystem
-	sessionStore session.SessionStore
+	sessionStore *session.SessionStore
 	pbSession.UnimplementedSessionServiceServer
 	pbFs.UnimplementedFileSystemServiceServer
 }

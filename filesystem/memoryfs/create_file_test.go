@@ -227,8 +227,8 @@ func TestMkdir(t *testing.T) {
 				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir4"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.RemoveDirectory(fspath.NewFileSystemPath(workDir.Info().AbsolutePath()), nil); err != nil {
-					return nil, nil, nil
+				if _, err := fs.RemoveAll(fspath.NewFileSystemPath(workDir.Info().AbsolutePath()), nil); err != nil {
+					return nil, nil, err
 				}
 				return fs, workDir, nil
 			},
@@ -450,8 +450,8 @@ func TestCreateRegularFile(t *testing.T) {
 				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir4"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.RemoveDirectory(fspath.NewFileSystemPath(workDir.Info().AbsolutePath()), nil); err != nil {
-					return nil, nil, nil
+				if _, err := fs.RemoveAll(fspath.NewFileSystemPath(workDir.Info().AbsolutePath()), nil); err != nil {
+					return nil, nil, err
 				}
 				return fs, workDir, nil
 			},
@@ -559,8 +559,8 @@ func TestMkdirAll(t *testing.T) {
 				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir4"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.RemoveDirectory(fspath.NewFileSystemPath(workDir.Info().AbsolutePath()), nil); err != nil {
-					return nil, nil, nil
+				if _, err := fs.RemoveAll(fspath.NewFileSystemPath(workDir.Info().AbsolutePath()), nil); err != nil {
+					return nil, nil, err
 				}
 				return fs, workDir, nil
 			},

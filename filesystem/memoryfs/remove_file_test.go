@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRemoveRegularFile(t *testing.T) {
+func TestRemove(t *testing.T) {
 	cases := []struct {
 		CaseName   string
 		Path       string
@@ -274,8 +274,8 @@ func TestRemoveRegularFile(t *testing.T) {
 				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target/target/dir/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.RemoveDirectory(fspath.NewFileSystemPath(workDir.Info().AbsolutePath()), nil); err != nil {
-					return nil, nil, nil
+				if _, err := fs.RemoveAll(fspath.NewFileSystemPath(workDir.Info().AbsolutePath()), nil); err != nil {
+					return nil, nil, err
 				}
 				return fs, workDir, nil
 			},
@@ -298,12 +298,12 @@ func TestRemoveRegularFile(t *testing.T) {
 		if err != nil {
 			t.Fatal("error initializing file system")
 		}
-		info, err := fs.RemoveRegularFile(fspath.NewFileSystemPath(testCase.Path), workingDir)
+		info, err := fs.Remove(fspath.NewFileSystemPath(testCase.Path), workingDir)
 		testCase.Assertions(t, fs, info, err)
 	}
 }
 
-func TestRemoveDirectory(t *testing.T) {
+func TestRemoveAll(t *testing.T) {
 	cases := []struct {
 		CaseName   string
 		Path       string
@@ -570,8 +570,8 @@ func TestRemoveDirectory(t *testing.T) {
 				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target/target/dir/target"), nil); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.RemoveDirectory(fspath.NewFileSystemPath(workDir.Info().AbsolutePath()), nil); err != nil {
-					return nil, nil, nil
+				if _, err := fs.RemoveAll(fspath.NewFileSystemPath(workDir.Info().AbsolutePath()), nil); err != nil {
+					return nil, nil, err
 				}
 				return fs, workDir, nil
 			},
@@ -594,7 +594,7 @@ func TestRemoveDirectory(t *testing.T) {
 		if err != nil {
 			t.Fatal("error initializing file system")
 		}
-		info, err := fs.RemoveDirectory(fspath.NewFileSystemPath(testCase.Path), workingDir)
+		info, err := fs.RemoveAll(fspath.NewFileSystemPath(testCase.Path), workingDir)
 		testCase.Assertions(t, fs, info, err)
 	}
 }
