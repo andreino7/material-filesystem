@@ -55,11 +55,11 @@ func (fs *MemoryFileSystem) createFile(fileName string, isDirectory bool, parent
 
 	absolutePath := filepath.Join(parent.info.AbsolutePath(), fileName)
 	newFile := newInMemoryFile(absolutePath, isDirectory)
-	fs.linkToParent(newFile, parent)
+	fs.attachToParent(newFile, parent)
 	return newFile, nil
 }
 
-func (fs *MemoryFileSystem) linkToParent(newFile *inMemoryFile, parent *inMemoryFile) {
+func (fs *MemoryFileSystem) attachToParent(newFile *inMemoryFile, parent *inMemoryFile) {
 	parent.fileMap[newFile.info.Name()] = newFile
 	newFile.fileMap[".."] = parent
 }

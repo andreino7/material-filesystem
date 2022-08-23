@@ -71,7 +71,12 @@ func newInMemoryFile(absolutePath string, isDirectory bool) *inMemoryFile {
 
 	file := &inMemoryFile{
 		info:    info,
+		data:    &inMemoryFileData{},
 		fileMap: map[string]*inMemoryFile{},
+	}
+
+	if !isDirectory {
+		file.data = &inMemoryFileData{}
 	}
 
 	file.fileMap["."] = file
