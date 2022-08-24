@@ -1,6 +1,7 @@
 package memoryfs
 
 import (
+	"material/filesystem/filesystem/file"
 	"sync"
 )
 
@@ -11,7 +12,7 @@ type MemoryFileSystem struct {
 
 func NewMemoryFileSystem() *MemoryFileSystem {
 	// TODO: make root configurable
-	root := newInMemoryFile("/", true)
+	root := newInMemoryFile("/", file.Directory)
 	root.fileMap[".."] = root
 	root.fileMap["."] = root
 	root.fileMap["/"] = root

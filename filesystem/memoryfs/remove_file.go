@@ -37,7 +37,7 @@ func (fs *MemoryFileSystem) removeFile(fileName string, pathEnd *inMemoryFile, i
 	}
 
 	// handle directories
-	if fileToRemove.info.IsDirectory() {
+	if fileToRemove.info.fileType == file.Directory {
 		return fs.removeDirectory(fileToRemove, pathEnd, isRecursive)
 	}
 

@@ -14,12 +14,12 @@ var (
 	errorOnNotFoundFn = func(filename string, parent *inMemoryFile) (*inMemoryFile, error) {
 		return nil, fserrors.ErrNotExist
 	}
-	noopOnFound = func(file *inMemoryFile) (*inMemoryFile, error) {
-		return file, nil
+	noopOnFound = func(imf *inMemoryFile) (*inMemoryFile, error) {
+		return imf, nil
 	}
-	checkIfDirectory = func(file *inMemoryFile) (*inMemoryFile, error) {
-		if file.Info().IsDirectory() {
-			return file, nil
+	checkIfDirectory = func(imf *inMemoryFile) (*inMemoryFile, error) {
+		if imf.info.fileType == file.Directory {
+			return imf, nil
 		}
 		return nil, fserrors.ErrInvalidFileType
 	}
@@ -85,16 +85,16 @@ func (fs *MemoryFileSystem) navigateToEndOfPath(path *fspath.FileSystemPath, wor
 }
 
 func (fs *MemoryFileSystem) appendMatchingFiles(matchingFiles []file.FileInfo, dir *inMemoryFile, name string) ([]file.FileInfo, error) {
-	err := fs.walk(dir, func(fileName string, file *inMemoryFile) error {
+	err := fs.walk(dir, func(fileName string, imf *inMemoryFile) error {
 		var err error
 		// add matching file
 		if fileName == name {
-			matchingFiles = append(matchingFiles, file.Info())
+			matchingFiles = append(matchingFiles, imf.Info())
 		}
 
 		// if directory, go down the tree
-		if file.info.IsDirectory() {
-			matchingFiles, err = fs.appendMatchingFiles(matchingFiles, file, name)
+		if imf.info.fileType == file.Directory {
+			matchingFiles, err = fs.appendMatchingFiles(matchingFiles, imf, name)
 		}
 		return err
 	})

@@ -7,7 +7,8 @@ import (
 
 type inMemoryFileInfo struct {
 	absolutePath string
-	isDirectory  bool
+	fileType     file.FileType
+	link         string
 }
 
 type inMemoryFileData struct {
@@ -43,8 +44,8 @@ func (f inMemoryFile) Data() file.FileData {
 	return f.data
 }
 
-func (info *inMemoryFileInfo) IsDirectory() bool {
-	return info.isDirectory
+func (info *inMemoryFileInfo) FileType() file.FileType {
+	return info.fileType
 }
 
 func (info *inMemoryFileInfo) Name() string {
@@ -59,22 +60,39 @@ func (data *inMemoryFileData) Data() []byte {
 	return data.data
 }
 
-func newInMemoryFile(absolutePath string, isDirectory bool) *inMemoryFile {
+func newInMemoryFile(absolutePath string, fileType file.FileType) *inMemoryFile {
 	info := &inMemoryFileInfo{
-		absolutePath,
-		isDirectory,
+		absolutePath: absolutePath,
+		fileType:     fileType,
 	}
 
-	file := &inMemoryFile{
+	newFile := &inMemoryFile{
 		info:    info,
 		data:    &inMemoryFileData{},
 		fileMap: map[string]*inMemoryFile{},
 	}
 
-	if !isDirectory {
-		file.data = &inMemoryFileData{}
+	if fileType == file.RegularFile {
+		newFile.data = &inMemoryFileData{}
 	}
 
-	file.fileMap["."] = file
-	return file
+	newFile.fileMap["."] = newFile
+	return newFile
+}
+
+func newSymbolicLink(srcPath string, targetPath string) *inMemoryFile {
+	info := &inMemoryFileInfo{
+		absolutePath: srcPath,
+		fileType:     file.SymbolicLink,
+		link:         targetPath,
+	}
+
+	newFile := &inMemoryFile{
+		info:    info,
+		data:    &inMemoryFileData{},
+		fileMap: map[string]*inMemoryFile{},
+	}
+
+	newFile.fileMap["."] = newFile
+	return newFile
 }

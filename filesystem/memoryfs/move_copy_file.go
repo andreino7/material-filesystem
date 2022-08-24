@@ -49,7 +49,7 @@ func (fs *MemoryFileSystem) moveOrCopy(srcPath *fspath.FileSystemPath, destPath 
 
 // This method should be called only if the caller has already acquired a lock
 func (fs *MemoryFileSystem) moveOrCopyLockFree(fileToMove *inMemoryFile, dest *inMemoryFile, finalDestName string, isCopy bool) (*inMemoryFile, error) {
-	if fileToMove.info.isDirectory {
+	if fileToMove.info.fileType == file.Directory {
 		return fs.moveOrCopyDirectory(fileToMove, dest, finalDestName, isCopy)
 	}
 	return fs.moveOrCopyRegularFile(fileToMove, dest, finalDestName, isCopy)
@@ -67,7 +67,7 @@ func (fs *MemoryFileSystem) renameAndMoveOrCopyDirectory(fileToMove *inMemoryFil
 // If destination is a directory, the source directory and destination directory are merged.
 // if destination is a regular file, the source directory is moved/copied to the destination's parent.
 func (fs *MemoryFileSystem) moveOrCopyDirectoryToExistingDestination(fileToMove *inMemoryFile, dest *inMemoryFile, isCopy bool) (*inMemoryFile, error) {
-	if dest.info.isDirectory {
+	if dest.info.fileType == file.Directory {
 		return fs.mergeDirectories(fileToMove, dest, isCopy)
 	}
 
@@ -115,7 +115,7 @@ func (fs *MemoryFileSystem) mergeDirectories(dirToMove *inMemoryFile, dest *inMe
 // Directories should be merged only if source is a directory and destination
 // contains a directory with the same name.
 func shouldMergeSubDirectories(fileToMove *inMemoryFile, dest *inMemoryFile) bool {
-	if !fileToMove.info.isDirectory {
+	if fileToMove.info.fileType != file.Directory {
 		return false
 	}
 
@@ -135,7 +135,7 @@ func (fs *MemoryFileSystem) moveOrCopyRegularFileToExistingDestination(fileToMov
 	newName := fileToMove.info.Name()
 
 	// Moving to a file, i.e. need to rename
-	if !dest.info.isDirectory {
+	if dest.info.fileType != file.Directory {
 		finalDir = dest.fileMap[".."]
 		newName = dest.Info().Name()
 	}
@@ -185,9 +185,9 @@ func (fs *MemoryFileSystem) moveFile(fileToMove *inMemoryFile, newAbsPath string
 // This method creates a copy of the original file.
 // If the file is a directory recursively copies every file in it
 func (fs *MemoryFileSystem) copyFile(fileToMove *inMemoryFile, newAbsPath string) (*inMemoryFile, error) {
-	newFile := newInMemoryFile(newAbsPath, fileToMove.info.IsDirectory())
+	newFile := newInMemoryFile(newAbsPath, fileToMove.info.fileType)
 
-	if fileToMove.info.isDirectory {
+	if fileToMove.info.fileType == file.Directory {
 		err := fs.walk(fileToMove, func(fileName string, child *inMemoryFile) error {
 			fs.renameAndMoveOrCopyRegularFile(child, newFile, fileName, true)
 			return nil
