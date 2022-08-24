@@ -55,10 +55,6 @@ func (info *inMemoryFileInfo) AbsolutePath() string {
 	return info.absolutePath
 }
 
-func (info *inMemoryFileInfo) setAbsolutePath(absolutePath string) {
-	info.absolutePath = absolutePath
-}
-
 func (data *inMemoryFileData) Data() []byte {
 	return data.data
 }
