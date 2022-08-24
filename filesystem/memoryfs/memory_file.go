@@ -8,7 +8,6 @@ import (
 type inMemoryFileInfo struct {
 	absolutePath string
 	fileType     file.FileType
-	link         string
 }
 
 type inMemoryFileData struct {
@@ -20,6 +19,7 @@ type inMemoryFile struct {
 	data      *inMemoryFileData
 	isDeleted bool
 	fileMap   map[string]*inMemoryFile
+	link      string
 }
 
 // Implement sort interface
@@ -74,23 +74,6 @@ func newInMemoryFile(absolutePath string, fileType file.FileType) *inMemoryFile 
 
 	if fileType == file.RegularFile {
 		newFile.data = &inMemoryFileData{}
-	}
-
-	newFile.fileMap["."] = newFile
-	return newFile
-}
-
-func newSymbolicLink(srcPath string, targetPath string) *inMemoryFile {
-	info := &inMemoryFileInfo{
-		absolutePath: srcPath,
-		fileType:     file.SymbolicLink,
-		link:         targetPath,
-	}
-
-	newFile := &inMemoryFile{
-		info:    info,
-		data:    &inMemoryFileData{},
-		fileMap: map[string]*inMemoryFile{},
 	}
 
 	newFile.fileMap["."] = newFile

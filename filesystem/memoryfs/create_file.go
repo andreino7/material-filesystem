@@ -9,33 +9,41 @@ import (
 
 // TODO: validate file name
 func (fs *MemoryFileSystem) Mkdir(path *fspath.FileSystemPath, workingDir file.File) (file.File, error) {
-	if err := checkFilePath(path); err != nil {
-		return nil, err
-	}
-	return fs.addFileToFs(path, workingDir, file.Directory, false)
-}
-
-func (fs *MemoryFileSystem) MkdirAll(path *fspath.FileSystemPath, workingDir file.File) (file.File, error) {
-	if err := checkFilePath(path); err != nil {
-		return nil, err
-	}
-	return fs.addFileToFs(path, workingDir, file.Directory, true)
-}
-
-func (fs *MemoryFileSystem) CreateRegularFile(path *fspath.FileSystemPath, workingDir file.File) (file.File, error) {
-	if err := checkFilePath(path); err != nil {
-		return nil, err
-	}
-	return fs.addFileToFs(path, workingDir, file.RegularFile, false)
-}
-
-func (fs *MemoryFileSystem) addFileToFs(path *fspath.FileSystemPath, workingDir file.File, fileType file.FileType, isRecursive bool) (file.File, error) {
 	// RW lock the fs
 	fs.mutex.Lock()
 	defer fs.mutex.Unlock()
 
+	if err := checkFilePath(path); err != nil {
+		return nil, err
+	}
+	return fs.addFileToFsLockFree(path, workingDir, file.Directory, false)
+}
+
+func (fs *MemoryFileSystem) MkdirAll(path *fspath.FileSystemPath, workingDir file.File) (file.File, error) {
+	// RW lock the fs
+	fs.mutex.Lock()
+	defer fs.mutex.Unlock()
+
+	if err := checkFilePath(path); err != nil {
+		return nil, err
+	}
+	return fs.addFileToFsLockFree(path, workingDir, file.Directory, true)
+}
+
+func (fs *MemoryFileSystem) CreateRegularFile(path *fspath.FileSystemPath, workingDir file.File) (file.File, error) {
+	// RW lock the fs
+	fs.mutex.Lock()
+	defer fs.mutex.Unlock()
+
+	if err := checkFilePath(path); err != nil {
+		return nil, err
+	}
+	return fs.addFileToFsLockFree(path, workingDir, file.RegularFile, false)
+}
+
+func (fs *MemoryFileSystem) addFileToFsLockFree(path *fspath.FileSystemPath, workingDir file.File, fileType file.FileType, isRecursive bool) (*inMemoryFile, error) {
 	// find where file needs to be added
-	parent, err := fs.navigateToLastDirInPath(path, workingDir, isRecursive)
+	parent, err := fs.navigateToLastDirInPath(path, workingDir, isRecursive, 0)
 	if err != nil {
 		return nil, err
 	}

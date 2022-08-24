@@ -21,7 +21,7 @@ func (fs *MemoryFileSystem) removeFileWithLock(path *fspath.FileSystemPath, work
 	defer fs.mutex.Unlock()
 
 	// find where to remove directory
-	pathEnd, err := fs.navigateToLastDirInPath(path, workingDir, false)
+	pathEnd, err := fs.navigateToLastDirInPath(path, workingDir, false, 0)
 	if err != nil {
 		return nil, err
 	}

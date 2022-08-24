@@ -25,7 +25,7 @@ func (fs *MemoryFileSystem) moveOrCopy(srcPath *fspath.FileSystemPath, destPath 
 	defer fs.mutex.Unlock()
 
 	// find the file/directory that needs to be moved/copied
-	fileToMove, err := fs.navigateToEndOfPath(srcPath, workingDir, false)
+	fileToMove, err := fs.navigateToEndOfPath(srcPath, workingDir, false, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +35,7 @@ func (fs *MemoryFileSystem) moveOrCopy(srcPath *fspath.FileSystemPath, destPath 
 	}
 
 	// find last directory in the destination path
-	dest, err := fs.navigateToLastDirInPath(destPath, workingDir, true)
+	dest, err := fs.navigateToLastDirInPath(destPath, workingDir, true, 0)
 	if err != nil {
 		return nil, err
 	}
