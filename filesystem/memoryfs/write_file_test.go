@@ -128,6 +128,24 @@ func TestAppendToFile(t *testing.T) {
 				assert.Equal(t, err, fserrors.ErrInvalidFileType)
 			},
 		},
+		{
+			CaseName: "Append to symlink - absolute path",
+			Path:     "/file1-link",
+			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
+				fs := memoryfs.NewMemoryFileSystem()
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/file1"), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.CreateSymbolicLink(fspath.NewFileSystemPath("/file1"), fspath.NewFileSystemPath("/file1-link"), nil); err != nil {
+					return nil, nil, err
+				}
+				return fs, nil, nil
+			},
+			Assertions: func(t *testing.T, data []byte, err error) {
+				assert.Nil(t, err)
+				assert.Equal(t, data, []byte("Hello world!"))
+			},
+		},
 	}
 	for _, testCase := range cases {
 		fs, workingDir, err := testCase.Initialize()

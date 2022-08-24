@@ -135,6 +135,36 @@ func TestRemove(t *testing.T) {
 			},
 		},
 		{
+			CaseName: "Remove symlink using absolute path",
+			Path:     "/target-link",
+			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
+				fs := memoryfs.NewMemoryFileSystem()
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target"), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.CreateSymbolicLink(fspath.NewFileSystemPath("/target"), fspath.NewFileSystemPath("/target-link"), nil); err != nil {
+					return nil, nil, err
+				}
+				return fs, nil, nil
+			},
+			Assertions: func(t *testing.T, fs *memoryfs.MemoryFileSystem, info file.FileInfo, err error) {
+				assert.Nil(t, err)
+				assert.NotNil(t, info)
+				assert.Equal(t, info.AbsolutePath(), "/target-link")
+
+				files, _ := fs.FindFiles("target", fspath.NewFileSystemPath("/"), nil)
+				assert.Len(t, files, 2)
+				assert.Equal(t, files[0].AbsolutePath(), "/dir1/dir2/target")
+				assert.Equal(t, files[1].AbsolutePath(), "/target")
+
+				files, _ = fs.FindFiles("target-link", fspath.NewFileSystemPath("/"), nil)
+				assert.Len(t, files, 0)
+			},
+		},
+		{
 			CaseName: "Remove file in root using relative path",
 			Path:     "../../../target",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {

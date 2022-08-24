@@ -4,7 +4,6 @@ import (
 	"material/filesystem/filesystem/file"
 	"material/filesystem/filesystem/fserrors"
 	"material/filesystem/filesystem/fspath"
-	"sort"
 )
 
 type onFileNotFoundFn func(string, *inMemoryFile) (*inMemoryFile, error)
@@ -29,35 +28,6 @@ var (
 		return nil, fserrors.ErrInvalidFileType
 	}
 )
-
-func (fs *MemoryFileSystem) FindFiles(name string, path *fspath.FileSystemPath, workingDir file.File) ([]file.FileInfo, error) {
-	// Initialize result
-	matchingFiles := []file.FileInfo{}
-
-	if err := checkFileName(name); err != nil {
-		return nil, err
-	}
-
-	fs.mutex.RLock()
-	defer fs.mutex.RUnlock()
-
-	// Get directory to start the search
-	dir, err := fs.GetDirectory(path, workingDir)
-	if err != nil {
-		return matchingFiles, err
-	}
-
-	// this cast is safe because GetDirectory always returns "inMemoryFile"
-	inMemoryDir := dir.(*inMemoryFile)
-	matchingFiles, err = fs.appendMatchingFiles(matchingFiles, inMemoryDir, name)
-	if err != nil {
-		return matchingFiles, err
-	}
-
-	// sort lexicographically
-	sort.Sort(ByAbsolutePath(matchingFiles))
-	return matchingFiles, nil
-}
 
 // navigateToLastDirInPath navigates to the last Dir returned by filepath.Dir() in the path following symbolic links.
 // If specied it creates any missing intermediate directories.
@@ -161,7 +131,7 @@ func (fs *MemoryFileSystem) moveToNextFile(currentFile *inMemoryFile, nextFileNa
 		return onFound(nextFile)
 	}
 
-	return fs.resolveSymlink(currentFile, linkDepth)
+	return fs.resolveSymlink(nextFile, linkDepth)
 }
 
 // resolveSymlink tries to resolve symlink and returns an error if the link points to a file

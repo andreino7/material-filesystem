@@ -255,6 +255,34 @@ func TestGetDirectory(t *testing.T) {
 				assert.Nil(t, res)
 			},
 		},
+		{
+			CaseName: "Get directory should follow symlink - relative path (../../), work dir not nil",
+			Path:     "../../",
+			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
+				fs := memoryfs.NewMemoryFileSystem()
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2"), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir3"), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.CreateSymbolicLink(fspath.NewFileSystemPath("/dir1/dir2"), fspath.NewFileSystemPath("/dir5"), nil); err != nil {
+					return nil, nil, err
+				}
+				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir5/dir6/dir7"), nil)
+				if err != nil {
+					return nil, nil, err
+				}
+
+				return fs, workDir, nil
+			},
+			Assertions: func(t *testing.T, res file.File, err error) {
+				assert.Nil(t, err)
+				assert.NotNil(t, res)
+				assert.Equal(t, res.Info().AbsolutePath(), "/dir1/dir2")
+				assert.Equal(t, res.Info().FileType(), file.Directory)
+			},
+		},
 	}
 	for _, testCase := range cases {
 		fs, workingDir, err := testCase.Initialize()

@@ -264,6 +264,62 @@ func TestListFiles(t *testing.T) {
 			},
 		},
 		{
+			CaseName: "List files in symlink - relative path",
+			Path:     "../../../dir2/dir1/dir5/dir6",
+			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
+				fs := memoryfs.NewMemoryFileSystem()
+				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir3/dir4"), nil)
+				if err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir5/dir6"), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file3"), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/dir3/file4"), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/dir5/file5"), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/dir5/dir6/file6"), nil); err != nil {
+					return nil, nil, err
+				}
+
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir2/dir1/dir5/"), nil); err != nil {
+					return nil, nil, err
+				}
+
+				if _, err := fs.CreateSymbolicLink(fspath.NewFileSystemPath("/dir2/dir1/"), fspath.NewFileSystemPath("/dir2/dir1/dir5/dir6"), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir2/dir1/file3"), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir2/dir1/file8"), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir2/dir1/dir5/file5"), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir2/dir1/dir5/dir6/file9"), nil); err != nil {
+					return nil, nil, err
+				}
+				return fs, workDir, nil
+			},
+			Assertions: func(t *testing.T, files []file.FileInfo, err error) {
+				assert.Nil(t, err)
+				assert.NotNil(t, files)
+				assert.Len(t, files, 4)
+				assert.Equal(t, files[0].Name(), "dir5")
+				assert.Equal(t, files[1].Name(), "file3")
+				assert.Equal(t, files[2].Name(), "file8")
+				assert.Equal(t, files[3].Name(), "file9")
+			},
+		},
+		{
 			CaseName: "No such file or directory - relative path",
 			Path:     "dir10/",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {

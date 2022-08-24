@@ -442,6 +442,30 @@ func TestMove(t *testing.T) {
 			},
 		},
 		{
+			CaseName: "Moving symlink - absolute path",
+			SrcPath:  "/dir2/",
+			DestPath: "/dir3/dir4/",
+			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
+				fs := memoryfs.NewMemoryFileSystem()
+				workDir, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil)
+				if err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.CreateSymbolicLink(fspath.NewFileSystemPath("/dir1"), fspath.NewFileSystemPath("/dir2"), nil); err != nil {
+					return nil, nil, err
+				}
+				return fs, workDir, nil
+			},
+			Assertions: func(t *testing.T, fs *memoryfs.MemoryFileSystem, info file.FileInfo, err error) {
+				assert.Nil(t, err)
+				assert.NotNil(t, info)
+
+				assert.Equal(t, info.AbsolutePath(), "/dir3/dir4")
+				dir, _ := fs.GetDirectory(fspath.NewFileSystemPath("/dir3/dir4"), nil)
+				assert.Equal(t, dir.Info().AbsolutePath(), "/dir1")
+			},
+		},
+		{
 			CaseName: "Moving root directory is not allowed - relative path",
 			SrcPath:  "..",
 			DestPath: "/dir1/file3",
@@ -1561,6 +1585,33 @@ func TestCopy(t *testing.T) {
 
 				files, _ = fs.FindFiles("dir1", fspath.NewFileSystemPath("/dir2"), nil)
 				assert.Len(t, files, 1)
+			},
+		},
+		{
+			CaseName: "Copying symlink should copy the orignal file/directory - absolute path",
+			SrcPath:  "/dir2/",
+			DestPath: "/dir3/dir4/",
+			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
+				fs := memoryfs.NewMemoryFileSystem()
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir3/"), nil); err != nil {
+					return nil, nil, err
+				}
+				workDir, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil)
+				if err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.CreateSymbolicLink(fspath.NewFileSystemPath("/dir1"), fspath.NewFileSystemPath("/dir2"), nil); err != nil {
+					return nil, nil, err
+				}
+				return fs, workDir, nil
+			},
+			Assertions: func(t *testing.T, fs *memoryfs.MemoryFileSystem, info file.FileInfo, err error) {
+				assert.Nil(t, err)
+				assert.NotNil(t, info)
+
+				assert.Equal(t, info.AbsolutePath(), "/dir3/dir4")
+				dir, _ := fs.ListFiles(fspath.NewFileSystemPath("/dir3/dir4"), nil)
+				assert.Len(t, dir, 2)
 			},
 		},
 	}

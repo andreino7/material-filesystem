@@ -11,7 +11,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TODO: add tests for working dir deleted
 func TestMkdir(t *testing.T) {
 	cases := []struct {
 		CaseName   string
@@ -117,6 +116,26 @@ func TestMkdir(t *testing.T) {
 				assert.True(t, errors.As(err, &target))
 				assert.Equal(t, err, fserrors.ErrInvalidFileType)
 				assert.Nil(t, res)
+			},
+		},
+		{
+			CaseName: "Create directory following symlink - absolute path",
+			Path:     "/dir2/dir3",
+			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
+				fs := memoryfs.NewMemoryFileSystem()
+				workDir, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil)
+				if err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.CreateSymbolicLink(fspath.NewFileSystemPath("/dir1"), fspath.NewFileSystemPath("/dir2"), nil); err != nil {
+					return nil, nil, err
+				}
+				return fs, workDir, nil
+			},
+			Assertions: func(t *testing.T, res file.File, err error) {
+				assert.Nil(t, err)
+				assert.NotNil(t, res)
+				assert.Equal(t, "/dir1/dir3", res.Info().AbsolutePath())
 			},
 		},
 		{
@@ -253,6 +272,26 @@ func TestMkdir(t *testing.T) {
 				assert.Nil(t, res)
 			},
 		},
+		{
+			CaseName: "Create directory following symlink - relative path",
+			Path:     "../dir2/dir3",
+			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
+				fs := memoryfs.NewMemoryFileSystem()
+				workDir, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil)
+				if err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.CreateSymbolicLink(fspath.NewFileSystemPath("/dir1"), fspath.NewFileSystemPath("/dir2"), nil); err != nil {
+					return nil, nil, err
+				}
+				return fs, workDir, nil
+			},
+			Assertions: func(t *testing.T, res file.File, err error) {
+				assert.Nil(t, err)
+				assert.NotNil(t, res)
+				assert.Equal(t, "/dir1/dir3", res.Info().AbsolutePath())
+			},
+		},
 	}
 	for _, testCase := range cases {
 		fs, workingDir, err := testCase.Initialize()
@@ -382,6 +421,26 @@ func TestCreateRegularFile(t *testing.T) {
 			},
 		},
 		{
+			CaseName: "Create file following symlink - absolute path",
+			Path:     "/dir2/file1",
+			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
+				fs := memoryfs.NewMemoryFileSystem()
+				workDir, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil)
+				if err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.CreateSymbolicLink(fspath.NewFileSystemPath("/dir1"), fspath.NewFileSystemPath("/dir2"), nil); err != nil {
+					return nil, nil, err
+				}
+				return fs, workDir, nil
+			},
+			Assertions: func(t *testing.T, res file.File, err error) {
+				assert.Nil(t, err)
+				assert.NotNil(t, res)
+				assert.Equal(t, "/dir1/file1", res.Info().AbsolutePath())
+			},
+		},
+		{
 			CaseName: "Create file in root - relative path, work dir not nil",
 			Path:     "file1",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
@@ -486,6 +545,26 @@ func TestCreateRegularFile(t *testing.T) {
 				assert.True(t, errors.As(err, &target))
 				assert.Equal(t, err, fserrors.ErrInvalidWorkingDirectory)
 				assert.Nil(t, res)
+			},
+		},
+		{
+			CaseName: "Create file following symlink - relative path",
+			Path:     "../dir2/file1",
+			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
+				fs := memoryfs.NewMemoryFileSystem()
+				workDir, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil)
+				if err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.CreateSymbolicLink(fspath.NewFileSystemPath("/dir1"), fspath.NewFileSystemPath("/dir2"), nil); err != nil {
+					return nil, nil, err
+				}
+				return fs, workDir, nil
+			},
+			Assertions: func(t *testing.T, res file.File, err error) {
+				assert.Nil(t, err)
+				assert.NotNil(t, res)
+				assert.Equal(t, "/dir1/file1", res.Info().AbsolutePath())
 			},
 		},
 	}

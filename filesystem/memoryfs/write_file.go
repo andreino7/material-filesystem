@@ -12,12 +12,7 @@ func (fs *MemoryFileSystem) AppendToFile(path *fspath.FileSystemPath, content []
 	fs.mutex.Lock()
 	defer fs.mutex.Unlock()
 
-	parentDir, err := fs.navigateToLastDirInPath(path, workingDir, true, 0)
-	if err != nil {
-		return err
-	}
-
-	fileToWrite, err := fs.getFileToWrite(path, parentDir)
+	fileToWrite, err := fs.getFileToWrite(path, workingDir, true, 0)
 	if err != nil {
 		return err
 	}
@@ -26,19 +21,29 @@ func (fs *MemoryFileSystem) AppendToFile(path *fspath.FileSystemPath, content []
 	return nil
 }
 
-func (fs *MemoryFileSystem) getFileToWrite(path *fspath.FileSystemPath, parentDir *inMemoryFile) (*inMemoryFile, error) {
-	if parentDir.info.fileType != file.Directory {
-		return nil, fserrors.ErrInvalidFileType
+func (fs *MemoryFileSystem) getFileToWrite(path *fspath.FileSystemPath, workingDir file.File, createIntermediateDir bool, linkDepth int) (*inMemoryFile, error) {
+	parentDir, err := fs.navigateToLastDirInPath(path, workingDir, createIntermediateDir, linkDepth)
+	if err != nil {
+		return nil, err
 	}
 
 	fileToWrite, found := parentDir.fileMap[path.Base()]
 	if !found {
-		return fs.createFile(path.Base(), file.RegularFile, parentDir)
+		if parentDir.info.fileType != file.Directory {
+			return nil, fserrors.ErrInvalidFileType
+		} else {
+			return fs.createFile(path.Base(), file.RegularFile, parentDir)
+		}
 	}
 
-	if fileToWrite.info.FileType() != file.RegularFile {
+	if fileToWrite.info.FileType() == file.RegularFile {
+		return fileToWrite, nil
+	}
+
+	if fileToWrite.info.FileType() == file.Directory {
 		return nil, fserrors.ErrInvalidFileType
 	}
 
-	return fileToWrite, nil
+	// symbolic link
+	return fs.getFileToWrite(fspath.NewFileSystemPath(fileToWrite.link), nil, false, linkDepth+1)
 }

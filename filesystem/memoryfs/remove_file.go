@@ -41,7 +41,7 @@ func (fs *MemoryFileSystem) removeFile(fileName string, pathEnd *inMemoryFile, i
 		return fs.removeDirectory(fileToRemove, pathEnd, isRecursive)
 	}
 
-	// unlink regular file
+	// unlink regular file (or symlink)
 	fs.detachFromParent(fileToRemove)
 	fileToRemove.isDeleted = true
 	return fileToRemove.Info(), nil
