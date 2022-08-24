@@ -20,13 +20,14 @@ func (fs *MemoryFileSystem) ListFiles(path *fspath.FileSystemPath, workingDir fi
 	}
 
 	// List all files
-	for name, file := range dir.(*inMemoryFile).fileMap {
-		// skip special entries
-		if name != ".." && name != "." && name != "/" {
-			files = append(files, file.Info())
-		}
+	err = fs.walk(dir.(*inMemoryFile), func(_ string, curr *inMemoryFile) error {
+		files = append(files, curr.Info())
+		return nil
+	})
+	if err != nil {
+		return files, err
 	}
-	sort.Sort(ByAbsolutePath(files))
 
+	sort.Sort(ByAbsolutePath(files))
 	return files, nil
 }
