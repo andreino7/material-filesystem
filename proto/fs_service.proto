@@ -17,7 +17,10 @@ service FileSystemService {
     rpc FindFiles(FindFilesRequest) returns (FindFilesResponse) {}
     // List files in directory
     rpc ListFiles(ListFilesRequest) returns (ListFilesResponse) {}
-
+    // Move file or directory to a new location
+    rpc Move(MoveRequest) returns (MoveResponse) {}
+    // Copy file or directory to a given location
+    rpc Copy(CopyRequest) returns (CopyResponse) {}
 }
 
 message MkdirRequest {
@@ -105,5 +108,37 @@ message ListFilesResponse {
     // List of file names in location
     repeated string names = 1;
     // Error message
+    optional string error = 2;
+}
+
+message CopyRequest {
+    // The session id
+    string session_id = 1;
+    // Location frome where to copy the file/directory from
+    string src_path = 2;
+    // Destination of the new file/directory
+    string dest_path = 3;
+}
+
+message CopyResponse {
+    // New directory/file name
+    optional string name = 1;
+    // Error message 
+    optional string error = 2;
+}
+
+message MoveRequest {
+    // The session id
+    string session_id = 1;
+    // Location frome where to move the file/directory from
+    string src_path = 2;
+    // Destination of the file/directory
+    string dest_path = 3;
+}
+
+message MoveResponse {
+    // Moved directory/file name
+    optional string name = 1;
+    // Error message 
     optional string error = 2;
 }
