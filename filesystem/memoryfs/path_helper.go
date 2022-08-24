@@ -1,8 +1,8 @@
 package memoryfs
 
 import (
-	"fmt"
 	"material/filesystem/filesystem/file"
+	"material/filesystem/filesystem/fserrors"
 	"material/filesystem/filesystem/fspath"
 	"strings"
 
@@ -17,22 +17,16 @@ var invalidFileNames = map[string]bool{
 
 // TODO: refactor duplicate code
 func pathNames(path *fspath.FileSystemPath, workingDir file.File) []string {
-	if path.IsAbs() || workingDir == nil {
-		if path.AbsolutePath() == "/" {
-			return []string{}
-		}
-		return strings.Split(strings.Trim(path.AbsolutePath(), "/"), "/")
+	if path.Path() == "/" {
+		return []string{}
 	}
 
 	return strings.Split(strings.Trim(path.Path(), "/"), "/")
 }
 
 func pathDirs(path *fspath.FileSystemPath, workingDir file.File) []string {
-	if path.IsAbs() || workingDir == nil {
-		if path.AbsDir() == "/" {
-			return []string{}
-		}
-		return strings.Split(strings.Trim(path.AbsDir(), "/"), "/")
+	if path.Dir() == "/" {
+		return []string{}
 	}
 
 	return strings.Split(strings.Trim(path.Dir(), "/"), "/")
@@ -44,7 +38,7 @@ func checkFilePath(path *fspath.FileSystemPath) error {
 
 func checkFileName(name string) error {
 	if _, found := invalidFileNames[name]; found {
-		return fmt.Errorf("invalid file name")
+		return fserrors.ErrInvalid
 	}
 	return nil
 }

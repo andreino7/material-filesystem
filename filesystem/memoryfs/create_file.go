@@ -1,8 +1,8 @@
 package memoryfs
 
 import (
-	"fmt"
 	"material/filesystem/filesystem/file"
+	"material/filesystem/filesystem/fserrors"
 	"material/filesystem/filesystem/fspath"
 	"path/filepath"
 )
@@ -50,7 +50,7 @@ func (fs *MemoryFileSystem) createDirectory(fileName string, parent *inMemoryFil
 
 func (fs *MemoryFileSystem) createFile(fileName string, isDirectory bool, parent *inMemoryFile) (*inMemoryFile, error) {
 	if _, found := parent.fileMap[fileName]; found {
-		return nil, fmt.Errorf("file already exists")
+		return nil, fserrors.ErrExist
 	}
 
 	absolutePath := filepath.Join(parent.info.AbsolutePath(), fileName)

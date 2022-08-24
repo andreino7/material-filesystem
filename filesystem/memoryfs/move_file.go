@@ -1,8 +1,8 @@
 package memoryfs
 
 import (
-	"fmt"
 	"material/filesystem/filesystem/file"
+	"material/filesystem/filesystem/fserrors"
 	"material/filesystem/filesystem/fspath"
 	"path/filepath"
 )
@@ -44,7 +44,7 @@ func (fs *MemoryFileSystem) Move(srcPath *fspath.FileSystemPath, destPath *fspat
 	}
 
 	if fileToMove == fs.root {
-		return nil, fmt.Errorf("operation not supported, moving root directory")
+		return nil, fserrors.ErrOperationNotSupported
 	}
 
 	// find last directory in the destination path
@@ -173,6 +173,10 @@ func (fs *MemoryFileSystem) doMove(fileToMove *inMemoryFile, dest *inMemoryFile,
 	// check if dest file exists already
 	finalDest, found := dest.fileMap[finalDestName]
 	if found {
+		// check if same filex
+		if finalDest == fileToMove {
+			return nil, fserrors.ErrSameFile
+		}
 		return onFound(fileToMove, finalDest)
 	} else {
 		// rename file

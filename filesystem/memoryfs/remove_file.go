@@ -1,18 +1,18 @@
 package memoryfs
 
 import (
-	"fmt"
 	"material/filesystem/filesystem/file"
+	"material/filesystem/filesystem/fserrors"
 	"material/filesystem/filesystem/fspath"
 )
 
 // TODO: handle deleting working dir
-func (fs *MemoryFileSystem) RemoveDirectory(path *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error) {
-	return fs.removeFileWithLock(path, workingDir, true)
+func (fs *MemoryFileSystem) Remove(path *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error) {
+	return fs.removeFileWithLock(path, workingDir, false)
 }
 
-func (fs *MemoryFileSystem) RemoveRegularFile(path *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error) {
-	return fs.removeFileWithLock(path, workingDir, false)
+func (fs *MemoryFileSystem) RemoveAll(path *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error) {
+	return fs.removeFileWithLock(path, workingDir, true)
 }
 
 func (fs *MemoryFileSystem) removeFileWithLock(path *fspath.FileSystemPath, workingDir file.File, isRecursive bool) (file.FileInfo, error) {
@@ -33,7 +33,7 @@ func (fs *MemoryFileSystem) removeFile(fileName string, pathEnd *inMemoryFile, i
 	// check if file exists
 	fileToRemove, found := pathEnd.fileMap[fileName]
 	if !found {
-		return nil, fmt.Errorf("no such file or directory")
+		return nil, fserrors.ErrNotExist
 	}
 
 	// handle directories
@@ -49,12 +49,12 @@ func (fs *MemoryFileSystem) removeFile(fileName string, pathEnd *inMemoryFile, i
 
 func (fs *MemoryFileSystem) removeDirectory(fileToRemove *inMemoryFile, parent *inMemoryFile, isRecursive bool) (file.FileInfo, error) {
 	if !isRecursive {
-		return nil, fmt.Errorf("file is a directory")
+		return nil, fserrors.ErrInvalidFileType
 	}
 
 	// deleting filesystem root is not supported at the moment
 	if fileToRemove == fs.root {
-		return nil, fmt.Errorf("operation not allowed: deleting filesystem root")
+		return nil, fserrors.ErrOperationNotSupported
 	}
 
 	// remove current file

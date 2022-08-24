@@ -1,8 +1,8 @@
 package memoryfs
 
 import (
-	"fmt"
 	"material/filesystem/filesystem/file"
+	"material/filesystem/filesystem/fserrors"
 	"material/filesystem/filesystem/fspath"
 )
 
@@ -26,15 +26,10 @@ func (fs *MemoryFileSystem) GetDirectory(path *fspath.FileSystemPath, workingDir
 	return fs.lookupDir(pathRoot, pathNames)
 }
 
-// TODO: Test directory deleted
 func (fs *MemoryFileSystem) resolveWorkDir(path *fspath.FileSystemPath, workingDir file.File) (*inMemoryFile, error) {
 	currentDir, ok := workingDir.(*inMemoryFile)
-	if !ok {
-		return nil, fmt.Errorf("invalid working directory")
-	}
-
-	if currentDir.isDeleted {
-		return nil, fmt.Errorf("working directory deleted")
+	if !ok || currentDir.isDeleted {
+		return nil, fserrors.ErrInvalidWorkingDirectory
 	}
 
 	return currentDir, nil

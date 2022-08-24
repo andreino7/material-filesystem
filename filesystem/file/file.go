@@ -7,6 +7,7 @@ type FileInfo interface {
 }
 
 type FileData interface {
+	Data() []byte
 }
 
 type File interface {
