@@ -55,7 +55,7 @@ func (fs *MemoryFileSystem) getFileToWrite(path *fspath.FileSystemPath, workingD
 		if parentDir.info.fileType != file.Directory {
 			return nil, fserrors.ErrInvalidFileType
 		} else {
-			return fs.createFile(path.Base(), file.RegularFile, parentDir)
+			return fs.createFile(path.Base(), parentDir)
 		}
 	}
 

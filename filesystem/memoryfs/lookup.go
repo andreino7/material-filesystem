@@ -86,24 +86,24 @@ func (fs *MemoryFileSystem) appendMatchingFiles(matchingFiles []file.FileInfo, d
 }
 
 func (fs *MemoryFileSystem) lookupDirAndCreateMissingDirectories(pathRoot *inMemoryFile, pathNames []string, linkDepth int) (*inMemoryFile, error) {
-	return fs.doLookupFile(pathRoot, pathNames, checkIfDirectory, fs.createDirectory, linkDepth)
+	return fs.traverse(pathRoot, pathNames, checkIfDirectory, fs.createDirectory, linkDepth)
 }
 
 func (fs *MemoryFileSystem) lookupDir(pathRoot *inMemoryFile, pathNames []string, linkDepth int) (*inMemoryFile, error) {
-	return fs.doLookupFile(pathRoot, pathNames, checkIfDirectory, errorOnNotFoundFn, linkDepth)
+	return fs.traverse(pathRoot, pathNames, checkIfDirectory, errorOnNotFoundFn, linkDepth)
 }
 
 func (fs *MemoryFileSystem) lookupFileAndCreateMissingDirectories(pathRoot *inMemoryFile, pathNames []string, linkDepth int) (*inMemoryFile, error) {
-	return fs.doLookupFile(pathRoot, pathNames, noopOnFound, fs.createDirectory, linkDepth)
+	return fs.traverse(pathRoot, pathNames, noopOnFound, fs.createDirectory, linkDepth)
 }
 
 func (fs *MemoryFileSystem) lookupFile(pathRoot *inMemoryFile, pathNames []string, linkDepth int) (*inMemoryFile, error) {
-	return fs.doLookupFile(pathRoot, pathNames, noopOnFound, errorOnNotFoundFn, linkDepth)
+	return fs.traverse(pathRoot, pathNames, noopOnFound, errorOnNotFoundFn, linkDepth)
 }
 
 // doLookupFile moves through every directory/file in pathnames untile it reaches the end of the array or
 // an error occurs
-func (fs *MemoryFileSystem) doLookupFile(pathRoot *inMemoryFile, pathNames []string, onFound onFileFoundFn, onNotFound onFileNotFoundFn, linkDepth int) (*inMemoryFile, error) {
+func (fs *MemoryFileSystem) traverse(pathRoot *inMemoryFile, pathNames []string, onFound onFileFoundFn, onNotFound onFileNotFoundFn, linkDepth int) (*inMemoryFile, error) {
 	currentFile := pathRoot
 	for _, nextFileName := range pathNames {
 		var err error

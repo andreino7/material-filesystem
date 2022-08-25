@@ -24,7 +24,7 @@ func (fs *MemoryFileSystem) CreateHardLink(srcPath *fspath.FileSystemPath, destP
 	}
 
 	// Create an empty file
-	hardLink, err := fs.addFileToFsLockFree(destPath, workingDir, file.RegularFile, true)
+	hardLink, err := fs.createAt(destPath, workingDir, file.RegularFile, true)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func (fs *MemoryFileSystem) CreateSymbolicLink(srcPath *fspath.FileSystemPath, d
 	defer fs.mutex.Unlock()
 
 	// Create an empty file
-	symLink, err := fs.addFileToFsLockFree(destPath, workingDir, file.SymbolicLink, false)
+	symLink, err := fs.createAt(destPath, workingDir, file.SymbolicLink, false)
 	if err != nil {
 		return nil, err
 	}
