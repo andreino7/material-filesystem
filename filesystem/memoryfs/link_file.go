@@ -1,0 +1,65 @@
+package memoryfs
+
+import (
+	"material/filesystem/filesystem/file"
+	"material/filesystem/filesystem/fserrors"
+	"material/filesystem/filesystem/fspath"
+)
+
+// Hard link to file
+// hard link to directory
+// hard link create intermediate dirs
+// hard link to symlink file
+// hard link to symlink directory
+
+// Symlink to file
+// symlink to directory
+// symlink to symlink file
+// symlink to symlink directory
+// symlink infite cycle
+// symlink to not existent file
+
+// TODO: validate file name
+// TODO: make create intermediate directories configurable
+func (fs *MemoryFileSystem) CreateHardLink(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error) {
+	fs.mutex.Lock()
+	defer fs.mutex.Unlock()
+
+	// Locate file to link
+	fileToLink, err := fs.navigateToEndOfPath(srcPath, workingDir, false, 0)
+	if err != nil {
+		return nil, err
+	}
+
+	// Only hard links to regular file supported
+	if fileToLink.info.fileType != file.RegularFile {
+		return nil, fserrors.ErrInvalidFileType
+	}
+
+	// Create an empty file
+	hardLink, err := fs.addFileToFsLockFree(destPath, workingDir, file.RegularFile, true)
+	if err != nil {
+		return nil, err
+	}
+
+	// Point the file to the same underline data
+	hardLink.data = fileToLink.data
+	return hardLink.info, nil
+}
+
+// TODO: make create intermediate directories configurable
+// TODO: document symbolic links to not existing file should work
+func (fs *MemoryFileSystem) CreateSymbolicLink(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error) {
+	fs.mutex.Lock()
+	defer fs.mutex.Unlock()
+
+	// Create an empty file
+	symLink, err := fs.addFileToFsLockFree(destPath, workingDir, file.SymbolicLink, false)
+	if err != nil {
+		return nil, err
+	}
+
+	// Point the file to the original file
+	symLink.link = toAbsolutePath(srcPath, workingDir)
+	return symLink.info, nil
+}

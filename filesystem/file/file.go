@@ -1,8 +1,16 @@
 package file
 
+type FileType int
+
+const (
+	RegularFile FileType = iota
+	Directory
+	SymbolicLink
+)
+
 type FileInfo interface {
 	Name() string
-	IsDirectory() bool
+	FileType() FileType
 	AbsolutePath() string
 }
 

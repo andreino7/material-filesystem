@@ -21,7 +21,7 @@ func (fs *MemoryFileSystem) removeFileWithLock(path *fspath.FileSystemPath, work
 	defer fs.mutex.Unlock()
 
 	// find where to remove directory
-	pathEnd, err := fs.navigateToLastDirInPath(path, workingDir, false)
+	pathEnd, err := fs.navigateToLastDirInPath(path, workingDir, false, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -37,11 +37,11 @@ func (fs *MemoryFileSystem) removeFile(fileName string, pathEnd *inMemoryFile, i
 	}
 
 	// handle directories
-	if fileToRemove.info.IsDirectory() {
+	if fileToRemove.info.fileType == file.Directory {
 		return fs.removeDirectory(fileToRemove, pathEnd, isRecursive)
 	}
 
-	// unlink regular file
+	// unlink regular file (or symlink)
 	fs.detachFromParent(fileToRemove)
 	fileToRemove.isDeleted = true
 	return fileToRemove.Info(), nil

@@ -23,7 +23,7 @@ func (fs *MemoryFileSystem) GetDirectory(path *fspath.FileSystemPath, workingDir
 
 	// Find directory
 	pathNames := pathNames(path, workingDir)
-	return fs.lookupDir(pathRoot, pathNames)
+	return fs.lookupDir(pathRoot, pathNames, 0)
 }
 
 func (fs *MemoryFileSystem) resolveWorkDir(path *fspath.FileSystemPath, workingDir file.File) (*inMemoryFile, error) {

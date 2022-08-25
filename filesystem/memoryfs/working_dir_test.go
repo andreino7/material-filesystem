@@ -35,11 +35,11 @@ func TestGetDirectory(t *testing.T) {
 
 				return fs, nil, nil
 			},
-			Assertions: func(t *testing.T, file file.File, err error) {
+			Assertions: func(t *testing.T, res file.File, err error) {
 				assert.Nil(t, err)
-				assert.NotNil(t, file)
-				assert.Equal(t, file.Info().Name(), "dir6")
-				assert.True(t, file.Info().IsDirectory())
+				assert.NotNil(t, res)
+				assert.Equal(t, res.Info().Name(), "dir6")
+				assert.Equal(t, res.Info().FileType(), file.Directory)
 			},
 		},
 		{
@@ -58,12 +58,12 @@ func TestGetDirectory(t *testing.T) {
 				}
 				return fs, nil, nil
 			},
-			Assertions: func(t *testing.T, file file.File, err error) {
+			Assertions: func(t *testing.T, res file.File, err error) {
 				assert.NotNil(t, err)
 				target := &fserrors.FileSystemError{}
 				assert.True(t, errors.As(err, &target))
 				assert.Equal(t, err, fserrors.ErrNotExist)
-				assert.Nil(t, file)
+				assert.Nil(t, res)
 			},
 		},
 		{
@@ -85,12 +85,12 @@ func TestGetDirectory(t *testing.T) {
 				}
 				return fs, nil, nil
 			},
-			Assertions: func(t *testing.T, file file.File, err error) {
+			Assertions: func(t *testing.T, res file.File, err error) {
 				assert.NotNil(t, err)
 				target := &fserrors.FileSystemError{}
 				assert.True(t, errors.As(err, &target))
 				assert.Equal(t, err, fserrors.ErrInvalidFileType)
-				assert.Nil(t, file)
+				assert.Nil(t, res)
 			},
 		},
 		{
@@ -111,11 +111,11 @@ func TestGetDirectory(t *testing.T) {
 
 				return fs, workDir, nil
 			},
-			Assertions: func(t *testing.T, file file.File, err error) {
+			Assertions: func(t *testing.T, res file.File, err error) {
 				assert.Nil(t, err)
-				assert.NotNil(t, file)
-				assert.Equal(t, file.Info().Name(), "dir5")
-				assert.True(t, file.Info().IsDirectory())
+				assert.NotNil(t, res)
+				assert.Equal(t, res.Info().Name(), "dir5")
+				assert.Equal(t, res.Info().FileType(), file.Directory)
 			},
 		},
 		{
@@ -136,11 +136,11 @@ func TestGetDirectory(t *testing.T) {
 
 				return fs, workDir, nil
 			},
-			Assertions: func(t *testing.T, file file.File, err error) {
+			Assertions: func(t *testing.T, res file.File, err error) {
 				assert.Nil(t, err)
-				assert.NotNil(t, file)
-				assert.Equal(t, file.Info().Name(), "dir2")
-				assert.True(t, file.Info().IsDirectory())
+				assert.NotNil(t, res)
+				assert.Equal(t, res.Info().Name(), "dir2")
+				assert.Equal(t, res.Info().FileType(), file.Directory)
 			},
 		},
 		{
@@ -161,11 +161,11 @@ func TestGetDirectory(t *testing.T) {
 
 				return fs, workDir, nil
 			},
-			Assertions: func(t *testing.T, file file.File, err error) {
+			Assertions: func(t *testing.T, res file.File, err error) {
 				assert.Nil(t, err)
-				assert.NotNil(t, file)
-				assert.Equal(t, file.Info().Name(), "/")
-				assert.True(t, file.Info().IsDirectory())
+				assert.NotNil(t, res)
+				assert.Equal(t, res.Info().Name(), "/")
+				assert.Equal(t, res.Info().FileType(), file.Directory)
 			},
 		},
 		{
@@ -186,12 +186,12 @@ func TestGetDirectory(t *testing.T) {
 
 				return fs, workDir, nil
 			},
-			Assertions: func(t *testing.T, file file.File, err error) {
+			Assertions: func(t *testing.T, res file.File, err error) {
 				assert.NotNil(t, err)
 				target := &fserrors.FileSystemError{}
 				assert.True(t, errors.As(err, &target))
 				assert.Equal(t, err, fserrors.ErrNotExist)
-				assert.Nil(t, file)
+				assert.Nil(t, res)
 			},
 		},
 		{
@@ -215,12 +215,12 @@ func TestGetDirectory(t *testing.T) {
 				}
 				return fs, workingDir, nil
 			},
-			Assertions: func(t *testing.T, file file.File, err error) {
+			Assertions: func(t *testing.T, res file.File, err error) {
 				assert.NotNil(t, err)
 				target := &fserrors.FileSystemError{}
 				assert.True(t, errors.As(err, &target))
 				assert.Equal(t, err, fserrors.ErrInvalidFileType)
-				assert.Nil(t, file)
+				assert.Nil(t, res)
 			},
 		},
 		{
@@ -247,12 +247,40 @@ func TestGetDirectory(t *testing.T) {
 				}
 				return fs, workingDir, nil
 			},
-			Assertions: func(t *testing.T, file file.File, err error) {
+			Assertions: func(t *testing.T, res file.File, err error) {
 				assert.NotNil(t, err)
 				target := &fserrors.FileSystemError{}
 				assert.True(t, errors.As(err, &target))
 				assert.Equal(t, err, fserrors.ErrInvalidWorkingDirectory)
-				assert.Nil(t, file)
+				assert.Nil(t, res)
+			},
+		},
+		{
+			CaseName: "Get directory should follow symlink - relative path (../../), work dir not nil",
+			Path:     "../../",
+			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
+				fs := memoryfs.NewMemoryFileSystem()
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2"), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir3"), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.CreateSymbolicLink(fspath.NewFileSystemPath("/dir1/dir2"), fspath.NewFileSystemPath("/dir5"), nil); err != nil {
+					return nil, nil, err
+				}
+				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir5/dir6/dir7"), nil)
+				if err != nil {
+					return nil, nil, err
+				}
+
+				return fs, workDir, nil
+			},
+			Assertions: func(t *testing.T, res file.File, err error) {
+				assert.Nil(t, err)
+				assert.NotNil(t, res)
+				assert.Equal(t, res.Info().AbsolutePath(), "/dir1/dir2")
+				assert.Equal(t, res.Info().FileType(), file.Directory)
 			},
 		},
 	}
@@ -273,10 +301,10 @@ func TestDefaultWorkingDirectory(t *testing.T) {
 	}{
 		{
 			CaseName: "Default working directory is /",
-			Assertions: func(t *testing.T, file file.File) {
-				assert.NotNil(t, file)
-				assert.Equal(t, file.Info().Name(), "/")
-				assert.True(t, file.Info().IsDirectory())
+			Assertions: func(t *testing.T, res file.File) {
+				assert.NotNil(t, res)
+				assert.Equal(t, res.Info().Name(), "/")
+				assert.Equal(t, res.Info().FileType(), file.Directory)
 			},
 		},
 	}

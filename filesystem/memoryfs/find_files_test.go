@@ -273,6 +273,35 @@ func TestFindFiles(t *testing.T) {
 				assert.Len(t, files, 0)
 			},
 		},
+		{
+			CaseName: "Find all files and directory matching names using symlink",
+			Path:     "/target-link",
+			FileName: "target",
+			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
+				fs := memoryfs.NewMemoryFileSystem()
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target"), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir/target"), nil); err != nil {
+					return nil, nil, err
+				}
+				if _, err := fs.CreateSymbolicLink(fspath.NewFileSystemPath("/target"), fspath.NewFileSystemPath("/target-link"), nil); err != nil {
+					return nil, nil, err
+				}
+				return fs, nil, nil
+			},
+			Assertions: func(t *testing.T, files []file.FileInfo, err error) {
+				assert.Nil(t, err)
+				assert.NotNil(t, files)
+				assert.Len(t, files, 2)
+
+				assert.Equal(t, files[0].AbsolutePath(), "/target/target")
+				assert.Equal(t, files[1].AbsolutePath(), "/target/target/dir/target")
+			},
+		},
 	}
 	for _, testCase := range cases {
 		fs, workingDir, err := testCase.Initialize()

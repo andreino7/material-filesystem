@@ -10,6 +10,7 @@ var (
 	ErrOperationNotSupported   = &FileSystemError{err: errors.New("operation not supported")}
 	ErrInvalidWorkingDirectory = &FileSystemError{err: errors.New("invalid working directory")}
 	ErrSameFile                = &FileSystemError{err: errors.New("same file")}
+	ErrTooManyLinks            = &FileSystemError{err: errors.New("too many links")}
 )
 
 type FileSystemError struct {
