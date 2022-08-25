@@ -12,7 +12,7 @@ import (
 
 // TODO: add tests for working dir deleted
 // TODO: add tests for symlink
-func TestAppendToFile(t *testing.T) {
+func TestAppendAll(t *testing.T) {
 	cases := []struct {
 		CaseName   string
 		Path       string
@@ -153,11 +153,11 @@ func TestAppendToFile(t *testing.T) {
 			t.Fatal("error initializing file system")
 		}
 		path := fspath.NewFileSystemPath(testCase.Path)
-		err = fs.AppendToFile(path, []byte("Hello world!"), workingDir)
+		err = fs.AppendAll(path, []byte("Hello world!"), workingDir)
 		if err != nil {
 			testCase.Assertions(t, nil, err)
 		} else {
-			data, _ := fs.ReadFile(path, workingDir)
+			data, _ := fs.ReadAll(path, workingDir)
 			testCase.Assertions(t, data, err)
 		}
 	}

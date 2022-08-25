@@ -11,6 +11,7 @@ var (
 	ErrInvalidWorkingDirectory = &FileSystemError{err: errors.New("invalid working directory")}
 	ErrSameFile                = &FileSystemError{err: errors.New("same file")}
 	ErrTooManyLinks            = &FileSystemError{err: errors.New("too many links")}
+	ErrNotOpen                 = &FileSystemError{err: errors.New("file is not open")}
 )
 
 type FileSystemError struct {

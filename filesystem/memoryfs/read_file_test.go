@@ -12,7 +12,7 @@ import (
 
 // TODO: add tests for working dir deleted
 // TODO: add tests for symlink
-func TestReadFile(t *testing.T) {
+func TestReadAll(t *testing.T) {
 	cases := []struct {
 		CaseName   string
 		Path       string
@@ -27,7 +27,7 @@ func TestReadFile(t *testing.T) {
 				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/file1"), nil); err != nil {
 					return nil, nil, err
 				}
-				if err := fs.AppendToFile(fspath.NewFileSystemPath("/file1"), []byte("Hello world!"), nil); err != nil {
+				if err := fs.AppendAll(fspath.NewFileSystemPath("/file1"), []byte("Hello world!"), nil); err != nil {
 					return nil, nil, err
 				}
 
@@ -73,7 +73,7 @@ func TestReadFile(t *testing.T) {
 				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/file1"), nil); err != nil {
 					return nil, nil, err
 				}
-				if err := fs.AppendToFile(fspath.NewFileSystemPath("/file1"), []byte("Hello world!"), nil); err != nil {
+				if err := fs.AppendAll(fspath.NewFileSystemPath("/file1"), []byte("Hello world!"), nil); err != nil {
 					return nil, nil, err
 				}
 
@@ -119,7 +119,7 @@ func TestReadFile(t *testing.T) {
 				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/file1"), nil); err != nil {
 					return nil, nil, err
 				}
-				if err := fs.AppendToFile(fspath.NewFileSystemPath("/file1"), []byte("Hello world!"), nil); err != nil {
+				if err := fs.AppendAll(fspath.NewFileSystemPath("/file1"), []byte("Hello world!"), nil); err != nil {
 					return nil, nil, err
 				}
 				if _, err := fs.CreateSymbolicLink(fspath.NewFileSystemPath("/file1"), fspath.NewFileSystemPath("/file1-link"), nil); err != nil {
@@ -140,7 +140,7 @@ func TestReadFile(t *testing.T) {
 			t.Fatal("error initializing file system")
 		}
 		path := fspath.NewFileSystemPath(testCase.Path)
-		data, err := fs.ReadFile(path, workingDir)
+		data, err := fs.ReadAll(path, workingDir)
 		testCase.Assertions(t, data, err)
 	}
 }

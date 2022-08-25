@@ -7,7 +7,7 @@ import (
 )
 
 // TODO: handle read from location instead of all content
-func (fs *MemoryFileSystem) ReadFile(path *fspath.FileSystemPath, workingDir file.File) ([]byte, error) {
+func (fs *MemoryFileSystem) ReadAll(path *fspath.FileSystemPath, workingDir file.File) ([]byte, error) {
 	fs.mutex.Lock()
 	defer fs.mutex.Unlock()
 
@@ -17,6 +17,26 @@ func (fs *MemoryFileSystem) ReadFile(path *fspath.FileSystemPath, workingDir fil
 	}
 
 	return fs.getFileData(fileToRead)
+}
+
+func (fs *MemoryFileSystem) ReadAt(fileDescriptor string, startPos int, endPos int) ([]byte, error) {
+	// Read lock the open file table
+	fs.openFiles.mutex.RLock()
+
+	data, found := fs.openFiles.table[fileDescriptor]
+	if !found {
+		fs.openFiles.mutex.RUnlock()
+		return nil, fserrors.ErrNotOpen
+	}
+
+	// Write lock file
+	data.data.mutex.RLock()
+	defer data.data.mutex.RUnlock()
+
+	// Unlock file table
+	fs.openFiles.mutex.RUnlock()
+
+	return data.data.readAt(startPos, endPos), nil
 }
 
 func (fs *MemoryFileSystem) getFileData(fileToRead *inMemoryFile) ([]byte, error) {

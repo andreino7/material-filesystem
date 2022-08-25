@@ -28,8 +28,12 @@ type FileSystem interface {
 	Move(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error)
 	Copy(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error)
 	CreateHardLink(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error)
-	AppendToFile(path *fspath.FileSystemPath, content []byte, workingDir file.File) error
-	ReadFile(path *fspath.FileSystemPath, workingDir file.File) ([]byte, error)
+	AppendAll(path *fspath.FileSystemPath, content []byte, workingDir file.File) error
+	ReadAll(path *fspath.FileSystemPath, workingDir file.File) ([]byte, error)
+	Open(path *fspath.FileSystemPath, workingDir file.File) (string, error)
+	Close(fileDescriptor string)
+	ReadAt(fileDescriptor string, startPos int, endPos int) ([]byte, error)
+	WriteAt(fileDescriptor string, content []byte, pos int) (int, error)
 }
 
 func NewFileSystem(fsType FileSystemType) (FileSystem, error) {

@@ -10,10 +10,6 @@ type inMemoryFileInfo struct {
 	fileType     file.FileType
 }
 
-type inMemoryFileData struct {
-	data []byte
-}
-
 type inMemoryFile struct {
 	info      *inMemoryFileInfo
 	data      *inMemoryFileData
@@ -54,10 +50,6 @@ func (info *inMemoryFileInfo) Name() string {
 
 func (info *inMemoryFileInfo) AbsolutePath() string {
 	return info.absolutePath
-}
-
-func (data *inMemoryFileData) Data() []byte {
-	return data.data
 }
 
 func newInMemoryFile(absolutePath string, fileType file.FileType) *inMemoryFile {

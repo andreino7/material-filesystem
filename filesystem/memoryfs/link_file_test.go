@@ -35,8 +35,8 @@ func TestCreateHardLink(t *testing.T) {
 				assert.Equal(t, res.AbsolutePath(), "/file2")
 
 				// Modifying src file should modify hardlinked file
-				fs.AppendToFile(src, []byte("Hello world!"), nil)
-				data, _ := fs.ReadFile(fspath.NewFileSystemPath(res.AbsolutePath()), nil)
+				fs.AppendAll(src, []byte("Hello world!"), nil)
+				data, _ := fs.ReadAll(fspath.NewFileSystemPath(res.AbsolutePath()), nil)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -57,9 +57,9 @@ func TestCreateHardLink(t *testing.T) {
 				assert.Equal(t, res.AbsolutePath(), "/file2")
 
 				// Modifying src file should modify hardlinked file
-				fs.AppendToFile(src, []byte("Hello world!"), nil)
+				fs.AppendAll(src, []byte("Hello world!"), nil)
 				fs.Remove(src, nil)
-				data, _ := fs.ReadFile(fspath.NewFileSystemPath(res.AbsolutePath()), nil)
+				data, _ := fs.ReadAll(fspath.NewFileSystemPath(res.AbsolutePath()), nil)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -80,9 +80,9 @@ func TestCreateHardLink(t *testing.T) {
 				assert.Equal(t, res.AbsolutePath(), "/file2")
 
 				// Modifying src file should modify hardlinked file
-				fs.AppendToFile(src, []byte("Hello world!"), nil)
+				fs.AppendAll(src, []byte("Hello world!"), nil)
 				fs.Remove(fspath.NewFileSystemPath(res.AbsolutePath()), nil)
-				data, _ := fs.ReadFile(src, nil)
+				data, _ := fs.ReadAll(src, nil)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -120,8 +120,8 @@ func TestCreateHardLink(t *testing.T) {
 				assert.Equal(t, res.AbsolutePath(), "/dir2/dir3/dir4/file1")
 
 				// Modifying src file should modify hardlinked file
-				fs.AppendToFile(src, []byte("Hello world!"), nil)
-				data, _ := fs.ReadFile(fspath.NewFileSystemPath(res.AbsolutePath()), nil)
+				fs.AppendAll(src, []byte("Hello world!"), nil)
+				data, _ := fs.ReadAll(fspath.NewFileSystemPath(res.AbsolutePath()), nil)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -165,9 +165,9 @@ func TestCreateHardLink(t *testing.T) {
 				assert.Equal(t, res.AbsolutePath(), "/file3")
 
 				// Modifying src file should modify hardlinked file
-				fs.AppendToFile(fspath.NewFileSystemPath("/file1"), []byte("Hello world!"), nil)
+				fs.AppendAll(fspath.NewFileSystemPath("/file1"), []byte("Hello world!"), nil)
 				fs.Remove(fspath.NewFileSystemPath(res.AbsolutePath()), nil)
-				data, _ := fs.ReadFile(src, nil)
+				data, _ := fs.ReadAll(src, nil)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -208,8 +208,8 @@ func TestCreateHardLink(t *testing.T) {
 				assert.Equal(t, res.AbsolutePath(), "/file2")
 
 				// Modifying src file should modify hardlinked file
-				fs.AppendToFile(src, []byte("Hello world!"), nil)
-				data, _ := fs.ReadFile(fspath.NewFileSystemPath(res.AbsolutePath()), nil)
+				fs.AppendAll(src, []byte("Hello world!"), nil)
+				data, _ := fs.ReadAll(fspath.NewFileSystemPath(res.AbsolutePath()), nil)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -230,9 +230,9 @@ func TestCreateHardLink(t *testing.T) {
 				assert.Equal(t, res.AbsolutePath(), "/file2")
 
 				// Modifying src file should modify hardlinked file
-				fs.AppendToFile(src, []byte("Hello world!"), nil)
+				fs.AppendAll(src, []byte("Hello world!"), nil)
 				fs.Remove(src, nil)
-				data, _ := fs.ReadFile(fspath.NewFileSystemPath(res.AbsolutePath()), nil)
+				data, _ := fs.ReadAll(fspath.NewFileSystemPath(res.AbsolutePath()), nil)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -270,8 +270,8 @@ func TestCreateHardLink(t *testing.T) {
 				assert.Equal(t, res.AbsolutePath(), "/dir2/dir3/dir4/file1")
 
 				// Modifying src file should modify hardlinked file
-				fs.AppendToFile(src, []byte("Hello world!"), nil)
-				data, _ := fs.ReadFile(fspath.NewFileSystemPath(res.AbsolutePath()), nil)
+				fs.AppendAll(src, []byte("Hello world!"), nil)
+				data, _ := fs.ReadAll(fspath.NewFileSystemPath(res.AbsolutePath()), nil)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -315,9 +315,9 @@ func TestCreateHardLink(t *testing.T) {
 				assert.Equal(t, res.AbsolutePath(), "/file3")
 
 				// Modifying src file should modify hardlinked file
-				fs.AppendToFile(fspath.NewFileSystemPath("/file1"), []byte("Hello world!"), nil)
+				fs.AppendAll(fspath.NewFileSystemPath("/file1"), []byte("Hello world!"), nil)
 				fs.Remove(fspath.NewFileSystemPath(res.AbsolutePath()), nil)
-				data, _ := fs.ReadFile(src, nil)
+				data, _ := fs.ReadAll(src, nil)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -379,8 +379,8 @@ func TestCreateSymbolicLink(t *testing.T) {
 				assert.NotNil(t, res)
 				assert.Equal(t, res.AbsolutePath(), "/file2")
 
-				fs.AppendToFile(src, []byte("Hello world!"), nil)
-				data, _ := fs.ReadFile(fspath.NewFileSystemPath(res.AbsolutePath()), nil)
+				fs.AppendAll(src, []byte("Hello world!"), nil)
+				data, _ := fs.ReadAll(fspath.NewFileSystemPath(res.AbsolutePath()), nil)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -437,8 +437,8 @@ func TestCreateSymbolicLink(t *testing.T) {
 				assert.NotNil(t, res)
 				assert.Equal(t, res.AbsolutePath(), "/file3-link")
 
-				fs.AppendToFile(fspath.NewFileSystemPath(res.AbsolutePath()), []byte("Hello world!"), nil)
-				data, _ := fs.ReadFile(src, nil)
+				fs.AppendAll(fspath.NewFileSystemPath(res.AbsolutePath()), []byte("Hello world!"), nil)
+				data, _ := fs.ReadAll(src, nil)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -467,8 +467,8 @@ func TestCreateSymbolicLink(t *testing.T) {
 				assert.NotNil(t, res)
 				assert.Equal(t, res.AbsolutePath(), "/file3-link")
 
-				fs.AppendToFile(src, []byte("Hello world!"), nil)
-				data, _ := fs.ReadFile(fspath.NewFileSystemPath(res.AbsolutePath()), nil)
+				fs.AppendAll(src, []byte("Hello world!"), nil)
+				data, _ := fs.ReadAll(fspath.NewFileSystemPath(res.AbsolutePath()), nil)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -548,8 +548,8 @@ func TestCreateSymbolicLink(t *testing.T) {
 				assert.NotNil(t, res)
 				assert.Equal(t, res.AbsolutePath(), "/file2")
 
-				fs.AppendToFile(src, []byte("Hello world!"), nil)
-				data, _ := fs.ReadFile(fspath.NewFileSystemPath(res.AbsolutePath()), nil)
+				fs.AppendAll(src, []byte("Hello world!"), nil)
+				data, _ := fs.ReadAll(fspath.NewFileSystemPath(res.AbsolutePath()), nil)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -608,8 +608,8 @@ func TestCreateSymbolicLink(t *testing.T) {
 				assert.NotNil(t, res)
 				assert.Equal(t, res.AbsolutePath(), "/file3-link")
 
-				fs.AppendToFile(fspath.NewFileSystemPath(res.AbsolutePath()), []byte("Hello world!"), nil)
-				data, _ := fs.ReadFile(src, nil)
+				fs.AppendAll(fspath.NewFileSystemPath(res.AbsolutePath()), []byte("Hello world!"), nil)
+				data, _ := fs.ReadAll(src, nil)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -638,8 +638,8 @@ func TestCreateSymbolicLink(t *testing.T) {
 				assert.NotNil(t, res)
 				assert.Equal(t, res.AbsolutePath(), "/file3-link")
 
-				fs.AppendToFile(src, []byte("Hello world!"), nil)
-				data, _ := fs.ReadFile(fspath.NewFileSystemPath(res.AbsolutePath()), nil)
+				fs.AppendAll(src, []byte("Hello world!"), nil)
+				data, _ := fs.ReadAll(fspath.NewFileSystemPath(res.AbsolutePath()), nil)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},

@@ -8,17 +8,40 @@ import (
 
 // TODO: create missing directories is an option
 // TODO: handle keeping the file open for one single writer and multipe readers
-func (fs *MemoryFileSystem) AppendToFile(path *fspath.FileSystemPath, content []byte, workingDir file.File) error {
+func (fs *MemoryFileSystem) AppendAll(path *fspath.FileSystemPath, content []byte, workingDir file.File) error {
 	fs.mutex.Lock()
-	defer fs.mutex.Unlock()
 
 	fileToWrite, err := fs.getFileToWrite(path, workingDir, true, 0)
 	if err != nil {
+		fs.mutex.Unlock()
 		return err
 	}
+	fileToWrite.data.mutex.Lock()
+	defer fileToWrite.data.mutex.Unlock()
+	fs.mutex.Unlock()
 
-	fileToWrite.data.data = append(fileToWrite.data.data, content...)
+	fileToWrite.data.append(content)
 	return nil
+}
+
+func (fs *MemoryFileSystem) WriteAt(fileDescriptor string, content []byte, pos int) (int, error) {
+	// Read lock the open file table
+	fs.openFiles.mutex.RLock()
+
+	data, found := fs.openFiles.table[fileDescriptor]
+	if !found {
+		fs.openFiles.mutex.RUnlock()
+		return 0, fserrors.ErrNotOpen
+	}
+
+	// Write lock file
+	data.data.mutex.Lock()
+	defer data.data.mutex.Unlock()
+
+	// Unlock file table
+	fs.openFiles.mutex.RUnlock()
+
+	return data.data.writeAt(content, pos), nil
 }
 
 func (fs *MemoryFileSystem) getFileToWrite(path *fspath.FileSystemPath, workingDir file.File, createIntermediateDir bool, linkDepth int) (*inMemoryFile, error) {

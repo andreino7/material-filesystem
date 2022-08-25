@@ -6,19 +6,6 @@ import (
 	"material/filesystem/filesystem/fspath"
 )
 
-// Hard link to file
-// hard link to directory
-// hard link create intermediate dirs
-// hard link to symlink file
-// hard link to symlink directory
-
-// Symlink to file
-// symlink to directory
-// symlink to symlink file
-// symlink to symlink directory
-// symlink infite cycle
-// symlink to not existent file
-
 // TODO: validate file name
 // TODO: make create intermediate directories configurable
 func (fs *MemoryFileSystem) CreateHardLink(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error) {
