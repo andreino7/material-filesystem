@@ -12,20 +12,20 @@ type onMoveOrCopyDestNotFound func(fileToMove *inMemoryFile, dest *inMemoryFile,
 
 // TODO: handle name conflicts as option
 // TODO: handle recursive as opttion
-func (fs *MemoryFileSystem) Move(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error) {
-	return fs.moveOrCopy(srcPath, destPath, workingDir, false)
+func (fs *MemoryFileSystem) Move(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath) (file.FileInfo, error) {
+	return fs.moveOrCopy(srcPath, destPath, false)
 }
 
-func (fs *MemoryFileSystem) Copy(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error) {
-	return fs.moveOrCopy(srcPath, destPath, workingDir, true)
+func (fs *MemoryFileSystem) Copy(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath) (file.FileInfo, error) {
+	return fs.moveOrCopy(srcPath, destPath, true)
 }
 
-func (fs *MemoryFileSystem) moveOrCopy(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath, workingDir file.File, isCopy bool) (file.FileInfo, error) {
+func (fs *MemoryFileSystem) moveOrCopy(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath, isCopy bool) (file.FileInfo, error) {
 	fs.mutex.Lock()
 	defer fs.mutex.Unlock()
 
 	// find the file/directory that needs to be moved/copied
-	fileToMove, err := fs.traverseToBaseWithSkipLastLink(srcPath, workingDir, !isCopy)
+	fileToMove, err := fs.traverseToBaseWithSkipLastLink(srcPath, !isCopy)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +35,7 @@ func (fs *MemoryFileSystem) moveOrCopy(srcPath *fspath.FileSystemPath, destPath 
 	}
 
 	// find last directory in the destination path
-	dest, err := fs.traverseToDirAndCreateIntermediateDirs(destPath, workingDir)
+	dest, err := fs.traverseToDirAndCreateIntermediateDirs(destPath)
 	if err != nil {
 		return nil, err
 	}

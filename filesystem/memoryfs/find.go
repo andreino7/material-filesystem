@@ -6,7 +6,7 @@ import (
 	"sort"
 )
 
-func (fs *MemoryFileSystem) FindFiles(name string, path *fspath.FileSystemPath, workingDir file.File) ([]file.FileInfo, error) {
+func (fs *MemoryFileSystem) FindFiles(name string, path *fspath.FileSystemPath) ([]file.FileInfo, error) {
 	// Initialize result
 	matchingFiles := []file.FileInfo{}
 
@@ -18,7 +18,7 @@ func (fs *MemoryFileSystem) FindFiles(name string, path *fspath.FileSystemPath, 
 	defer fs.mutex.RUnlock()
 
 	// Get directory to start the search
-	dir, err := fs.GetDirectory(path, workingDir)
+	dir, err := fs.GetDirectory(path)
 	if err != nil {
 		return matchingFiles, err
 	}

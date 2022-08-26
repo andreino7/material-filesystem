@@ -1,12 +1,19 @@
 package fspath
 
 import (
+	"fmt"
+	"material/filesystem/filesystem/file"
 	"path/filepath"
 	"strings"
 )
 
 type FileSystemPath struct {
-	path string
+	path       string
+	workingDir file.File
+}
+
+func (p *FileSystemPath) WorkingDir() file.File {
+	return p.workingDir
 }
 
 func (p *FileSystemPath) Dir() string {
@@ -32,6 +39,14 @@ func (p *FileSystemPath) IsAbs() bool {
 	return filepath.IsAbs(p.path)
 }
 
+func (p *FileSystemPath) AbsolutePath() string {
+	if p.IsAbs() {
+		return p.path
+	}
+
+	return filepath.Clean(filepath.Join(p.workingDir.Info().AbsolutePath(), p.path))
+}
+
 func (p *FileSystemPath) Base() string {
 	return filepath.Base(p.path)
 }
@@ -40,8 +55,13 @@ func (p *FileSystemPath) Path() string {
 	return p.path
 }
 
-func NewFileSystemPath(path string) *FileSystemPath {
-	return &FileSystemPath{
-		path: filepath.Clean(path),
+func NewFileSystemPath(path string, workingDir file.File) (*FileSystemPath, error) {
+	cleanPath := filepath.Clean(path)
+	if workingDir == nil && !filepath.IsAbs(path) {
+		return nil, fmt.Errorf("invalid path")
 	}
+	return &FileSystemPath{
+		path:       cleanPath,
+		workingDir: workingDir,
+	}, nil
 }

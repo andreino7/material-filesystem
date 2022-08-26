@@ -8,10 +8,10 @@ import (
 
 // TODO: create missing directories is an option
 // TODO: handle keeping the file open for one single writer and multipe readers
-func (fs *MemoryFileSystem) AppendAll(path *fspath.FileSystemPath, content []byte, workingDir file.File) error {
+func (fs *MemoryFileSystem) AppendAll(path *fspath.FileSystemPath, content []byte) error {
 	fs.mutex.Lock()
 
-	fileToWrite, err := fs.traverseToBaseAndCreateIntermediateDirs(path, workingDir)
+	fileToWrite, err := fs.traverseToBaseAndCreateIntermediateDirs(path)
 	if err != nil && err == fserrors.ErrNotExist {
 		fs.mutex.Unlock()
 		return err

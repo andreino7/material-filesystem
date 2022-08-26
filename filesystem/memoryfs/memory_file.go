@@ -2,6 +2,7 @@ package memoryfs
 
 import (
 	"material/filesystem/filesystem/file"
+	"material/filesystem/filesystem/fspath"
 	"path/filepath"
 )
 
@@ -15,7 +16,7 @@ type inMemoryFile struct {
 	data      *inMemoryFileData
 	isDeleted bool
 	fileMap   map[string]*inMemoryFile
-	link      string
+	link      *fspath.FileSystemPath
 }
 
 // Implement sort interface

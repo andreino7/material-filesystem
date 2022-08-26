@@ -6,7 +6,7 @@ import (
 	"sort"
 )
 
-func (fs *MemoryFileSystem) ListFiles(path *fspath.FileSystemPath, workingDir file.File) ([]file.FileInfo, error) {
+func (fs *MemoryFileSystem) ListFiles(path *fspath.FileSystemPath) ([]file.FileInfo, error) {
 	fs.mutex.RLock()
 	defer fs.mutex.RUnlock()
 
@@ -14,7 +14,7 @@ func (fs *MemoryFileSystem) ListFiles(path *fspath.FileSystemPath, workingDir fi
 	files := []file.FileInfo{}
 
 	// Get directory to list files
-	dir, err := fs.GetDirectory(path, workingDir)
+	dir, err := fs.GetDirectory(path)
 	if err != nil {
 		return files, err
 	}

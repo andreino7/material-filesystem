@@ -7,21 +7,21 @@ import (
 	"path/filepath"
 )
 
-func (fs *MemoryFileSystem) Mkdir(path *fspath.FileSystemPath, workingDir file.File) (file.File, error) {
+func (fs *MemoryFileSystem) Mkdir(path *fspath.FileSystemPath) (file.File, error) {
 	// RW lock the fs
 	fs.mutex.Lock()
 	defer fs.mutex.Unlock()
-	return fs.createAt(path, workingDir, file.Directory, false)
+	return fs.createAt(path, file.Directory, false)
 }
 
-func (fs *MemoryFileSystem) MkdirAll(path *fspath.FileSystemPath, workingDir file.File) (file.File, error) {
+func (fs *MemoryFileSystem) MkdirAll(path *fspath.FileSystemPath) (file.File, error) {
 	// RW lock the fs
 	fs.mutex.Lock()
 	defer fs.mutex.Unlock()
-	return fs.createAt(path, workingDir, file.Directory, true)
+	return fs.createAt(path, file.Directory, true)
 }
 
-func (fs *MemoryFileSystem) CreateRegularFile(path *fspath.FileSystemPath, workingDir file.File) (file.File, error) {
+func (fs *MemoryFileSystem) CreateRegularFile(path *fspath.FileSystemPath) (file.File, error) {
 	// RW lock the fs
 	fs.mutex.Lock()
 	defer fs.mutex.Unlock()
@@ -29,17 +29,17 @@ func (fs *MemoryFileSystem) CreateRegularFile(path *fspath.FileSystemPath, worki
 	if err := checkFilePath(path); err != nil {
 		return nil, err
 	}
-	return fs.createAt(path, workingDir, file.RegularFile, false)
+	return fs.createAt(path, file.RegularFile, false)
 }
 
 // TODO: validate file name
 // TODO: make create intermediate directories configurable
-func (fs *MemoryFileSystem) CreateHardLink(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error) {
+func (fs *MemoryFileSystem) CreateHardLink(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath) (file.FileInfo, error) {
 	fs.mutex.Lock()
 	defer fs.mutex.Unlock()
 
 	// Locate file to link
-	fileToLink, err := fs.traverseToBase(srcPath, workingDir)
+	fileToLink, err := fs.traverseToBase(srcPath)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func (fs *MemoryFileSystem) CreateHardLink(srcPath *fspath.FileSystemPath, destP
 	}
 
 	// Create an empty file
-	hardLink, err := fs.createAt(destPath, workingDir, file.RegularFile, true)
+	hardLink, err := fs.createAt(destPath, file.RegularFile, true)
 	if err != nil {
 		return nil, err
 	}
@@ -62,29 +62,34 @@ func (fs *MemoryFileSystem) CreateHardLink(srcPath *fspath.FileSystemPath, destP
 
 // TODO: make create intermediate directories configurable
 // TODO: document symbolic links to not existing file should work
-func (fs *MemoryFileSystem) CreateSymbolicLink(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error) {
+func (fs *MemoryFileSystem) CreateSymbolicLink(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath) (file.FileInfo, error) {
 	fs.mutex.Lock()
 	defer fs.mutex.Unlock()
 
 	// Create an empty file
-	symLink, err := fs.createAt(destPath, workingDir, file.SymbolicLink, false)
+	symLink, err := fs.createAt(destPath, file.SymbolicLink, false)
 	if err != nil {
 		return nil, err
 	}
 
 	// Point the file to the original file
-	symLink.link = toAbsolutePath(srcPath, workingDir)
+	pathLink, err := fspath.NewFileSystemPath(srcPath.AbsolutePath(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	symLink.link = pathLink
 	return symLink.info, nil
 }
 
-func (fs *MemoryFileSystem) createAt(path *fspath.FileSystemPath, workingDir file.File, fileType file.FileType, isRecursive bool) (*inMemoryFile, error) {
+func (fs *MemoryFileSystem) createAt(path *fspath.FileSystemPath, fileType file.FileType, isRecursive bool) (*inMemoryFile, error) {
 	// TODO: validate file name (alphanumeric for simplicity)
 	if err := checkFilePath(path); err != nil {
 		return nil, err
 	}
 
 	// find where file needs to be added
-	parent, err := fs.traverseToDirWithCreateIntermediateDirs(path, workingDir, isRecursive)
+	parent, err := fs.traverseToDirWithCreateIntermediateDirs(path, isRecursive)
 	if err != nil {
 		return nil, err
 	}

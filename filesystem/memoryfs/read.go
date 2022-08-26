@@ -7,11 +7,11 @@ import (
 )
 
 // TODO: handle read from location instead of all content
-func (fs *MemoryFileSystem) ReadAll(path *fspath.FileSystemPath, workingDir file.File) ([]byte, error) {
+func (fs *MemoryFileSystem) ReadAll(path *fspath.FileSystemPath) ([]byte, error) {
 	fs.mutex.Lock()
 	defer fs.mutex.Unlock()
 
-	fileToRead, err := fs.traverseToBase(path, workingDir)
+	fileToRead, err := fs.traverseToBase(path)
 	if err != nil {
 		return nil, err
 	}

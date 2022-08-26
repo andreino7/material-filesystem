@@ -19,11 +19,11 @@ type FileTable struct {
 	mutex sync.RWMutex
 }
 
-func (fs *MemoryFileSystem) Open(path *fspath.FileSystemPath, workingDir file.File) (string, error) {
+func (fs *MemoryFileSystem) Open(path *fspath.FileSystemPath) (string, error) {
 	fs.mutex.Lock()
 	defer fs.mutex.Unlock()
 
-	fileToOpen, err := fs.traverseToBase(path, workingDir)
+	fileToOpen, err := fs.traverseToBase(path)
 	if err != nil {
 		return "", err
 	}

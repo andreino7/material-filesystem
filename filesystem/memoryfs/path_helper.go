@@ -1,10 +1,8 @@
 package memoryfs
 
 import (
-	"material/filesystem/filesystem/file"
 	"material/filesystem/filesystem/fserrors"
 	"material/filesystem/filesystem/fspath"
-	"path/filepath"
 	"strings"
 
 	"github.com/google/uuid"
@@ -16,7 +14,7 @@ var invalidFileNames = map[string]bool{
 	"/":  true,
 }
 
-func pathDirs(path *fspath.FileSystemPath, workingDir file.File) []string {
+func pathDirs(path *fspath.FileSystemPath) []string {
 	if path.Dir() == "/" {
 		return []string{}
 	}
@@ -38,12 +36,4 @@ func checkFileName(name string) error {
 // TODO: use a better way to fix name conflict, for now using UUID is good enough
 func generateRandomNameFromBaseName(name string) string {
 	return name + "_" + uuid.NewString()
-}
-
-func toAbsolutePath(path *fspath.FileSystemPath, workingDir file.File) string {
-	if path.IsAbs() {
-		return filepath.Clean(path.Path())
-	}
-
-	return filepath.Clean(filepath.Join(workingDir.Info().AbsolutePath(), path.Path()))
 }

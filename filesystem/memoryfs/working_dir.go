@@ -10,13 +10,13 @@ func (fs *MemoryFileSystem) DefaultWorkingDirectory() file.File {
 	return fs.root
 }
 
-func (fs *MemoryFileSystem) GetDirectory(path *fspath.FileSystemPath, workingDir file.File) (file.File, error) {
+func (fs *MemoryFileSystem) GetDirectory(path *fspath.FileSystemPath) (file.File, error) {
 	// RLock the fs
 	fs.mutex.RLock()
 	defer fs.mutex.RUnlock()
 
 	// Find path starting point
-	dir, err := fs.traverseToBase(path, workingDir)
+	dir, err := fs.traverseToBase(path)
 	if err != nil {
 		return nil, err
 	}
@@ -28,8 +28,8 @@ func (fs *MemoryFileSystem) GetDirectory(path *fspath.FileSystemPath, workingDir
 	return dir, nil
 }
 
-func (fs *MemoryFileSystem) resolveWorkDir(workingDir file.File) (*inMemoryFile, error) {
-	currentDir, ok := workingDir.(*inMemoryFile)
+func (fs *MemoryFileSystem) resolveWorkDir(path *fspath.FileSystemPath) (*inMemoryFile, error) {
+	currentDir, ok := path.WorkingDir().(*inMemoryFile)
 	if !ok || currentDir.isDeleted {
 		return nil, fserrors.ErrInvalidWorkingDirectory
 	}

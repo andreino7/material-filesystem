@@ -7,21 +7,21 @@ import (
 )
 
 // TODO: handle deleting working dir
-func (fs *MemoryFileSystem) Remove(path *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error) {
-	return fs.removeFileWithLock(path, workingDir, false)
+func (fs *MemoryFileSystem) Remove(path *fspath.FileSystemPath) (file.FileInfo, error) {
+	return fs.removeFileWithLock(path, false)
 }
 
-func (fs *MemoryFileSystem) RemoveAll(path *fspath.FileSystemPath, workingDir file.File) (file.FileInfo, error) {
-	return fs.removeFileWithLock(path, workingDir, true)
+func (fs *MemoryFileSystem) RemoveAll(path *fspath.FileSystemPath) (file.FileInfo, error) {
+	return fs.removeFileWithLock(path, true)
 }
 
-func (fs *MemoryFileSystem) removeFileWithLock(path *fspath.FileSystemPath, workingDir file.File, isRecursive bool) (file.FileInfo, error) {
+func (fs *MemoryFileSystem) removeFileWithLock(path *fspath.FileSystemPath, isRecursive bool) (file.FileInfo, error) {
 	// RW lock the fs
 	fs.mutex.Lock()
 	defer fs.mutex.Unlock()
 
 	// find where to remove directory
-	pathEnd, err := fs.traverseToDir(path, workingDir)
+	pathEnd, err := fs.traverseToDir(path)
 	if err != nil {
 		return nil, err
 	}
