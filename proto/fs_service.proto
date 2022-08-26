@@ -6,139 +6,137 @@ package fsservice;
 
 service FileSystemService {
     // Create a new directory, optionally create intermediate directories
-    rpc Mkdir(MkdirRequest) returns (MkdirResponse) {}
+    rpc Mkdir(Request) returns (Response) {}
     // Create a new file
-    rpc CreateRegularFile(CreateRegularFileRequest) returns (CreateRegularFileResponse) {}
+    rpc CreateRegularFile(Request) returns (Response) {}
     // Change the working directory
-    rpc ChangeWorkingDirectory(ChangeWorkingDirectoryRequest) returns (ChangeWorkingDirectoryResponse) {}
+    rpc ChangeWorkingDirectory(Request) returns (Response) {}
     // Delete a file or directory
-    rpc Remove(RemoveRequest) returns (RemoveResponse) {}
+    rpc Remove(Request) returns (Response) {}
     // Find all files matching names in path
-    rpc FindFiles(FindFilesRequest) returns (FindFilesResponse) {}
+    rpc FindFiles(Request) returns (Response) {}
     // List files in directory
-    rpc ListFiles(ListFilesRequest) returns (ListFilesResponse) {}
+    rpc ListFiles(Request) returns (Response) {}
     // Move file or directory to a new location
-    rpc Move(MoveRequest) returns (MoveResponse) {}
+    rpc Move(Request) returns (Response) {}
     // Copy file or directory to a given location
-    rpc Copy(CopyRequest) returns (CopyResponse) {}
+    rpc Copy(Request) returns (Response) {}
+}
+
+message Request {
+    // The session id
+    string session_id = 1;
+    oneof request {
+        MkdirRequest mkdir = 2;
+        CreateRegularFileRequest create_regular_file = 3;
+        ChangeWorkingDirectoryRequest change_working_directory = 4;
+        RemoveRequest remove = 5;
+        FindFilesRequest find = 6;
+        ListFilesRequest list = 7;
+        CopyRequest copy = 8;
+        MoveRequest move = 9;
+    }
+}
+
+message Response {
+    // The session id
+    optional string error = 1;
+    oneof response {
+        MkdirResponse mkdir = 2;
+        CreateRegularFileResponse create_regular_file = 3;
+        ChangeWorkingDirectoryResponse change_working_directory = 4;
+        RemoveResponse remove = 5;
+        FindFilesResponse find = 6;
+        ListFilesResponse list = 7;
+        CopyResponse copy = 8;
+        MoveResponse move = 9;
+    }
 }
 
 message MkdirRequest {
-    // The session id
-    string session_id = 1;
     // New directory path (absolute or relative)
-    string path = 2;
+    string path = 1;
     // Optionally create intermediate directories
-    optional bool recursive = 3;
+    optional bool recursive = 2;
 }
 
 message MkdirResponse {
     // New directory name
-    optional string name = 1;
-    // Error message 
-    optional string error = 2;
+    string name = 1;
 }
 
 message CreateRegularFileRequest {
-    // The session id
-    string session_id = 1;
     // New file path (absolute or relative)
-    string path = 2;
+    string path = 1;
 }
 
 message CreateRegularFileResponse {
     // New file name
-    optional string name = 1;
-    // Error message
-    optional string error = 2;
+    string name = 1;
 }
 
 message ChangeWorkingDirectoryRequest {
-    // The session id
-    string session_id = 1;
     // New working directory path (absolute or relative)
-    string path = 2;
+    string path = 1;
 }
 
 message ChangeWorkingDirectoryResponse {
     // New file name
-    optional string name = 1;
-    // Error message
-    optional string error = 2;
+    string name = 1;
 }
 
 message RemoveRequest {
-    // The session id
-    string session_id = 1;
     // File to remove path (absolute or relative)
-    string path = 2;
+    string path = 1;
     // If true, remove directory and subdirectory
-    optional bool recursive = 3;
+    optional bool recursive = 2;
 }
 
 message RemoveResponse {
-    // Error message
-    optional string error = 1;
 }
 
 message FindFilesRequest {
-    // The session id
-    string session_id = 1;
     // File name to search
-    string name = 2;
+    string name = 1;
     // Location where to search the file (absolute or relative)
-    string path = 3;
+    string path = 2;
 }
 
 message FindFilesResponse {
     // List of files matching the search criteria
     repeated string paths = 1;
-    // Error message
-    optional string error = 2;
 }
 
 message ListFilesRequest {
-    // The session id
-    string session_id = 1;
     // Location where to list the files (absolute or relative)
-    string path = 2;
+    string path = 1;
 }
 
 message ListFilesResponse {
     // List of file names in location
     repeated string names = 1;
-    // Error message
-    optional string error = 2;
 }
 
 message CopyRequest {
-    // The session id
-    string session_id = 1;
     // Location frome where to copy the file/directory from
-    string src_path = 2;
+    string src_path = 1;
     // Destination of the new file/directory
-    string dest_path = 3;
+    string dest_path = 2;
 }
 
 message CopyResponse {
     // New directory/file name
-    optional string name = 1;
-    // Error message 
-    optional string error = 2;
+    string name = 1;
 }
 
 message MoveRequest {
-    // The session id
-    string session_id = 1;
     // Location frome where to move the file/directory from
-    string src_path = 2;
+    string src_path = 1;
     // Destination of the file/directory
-    string dest_path = 3;
+    string dest_path = 2;
 }
 
 message MoveResponse {
     // Moved directory/file name
-    optional string name = 1;
-    // Error message 
-    optional string error = 2;
+    string name = 1;
 }

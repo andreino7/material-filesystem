@@ -2,26 +2,35 @@ package daemon
 
 import (
 	"context"
+	"fmt"
 	pb "material/filesystem/pb/proto/fsservice"
-
-	"google.golang.org/protobuf/proto"
 )
 
-func (daemon *FileSystemDaemon) Copy(ctx context.Context, request *pb.CopyRequest) (*pb.CopyResponse, error) {
-	srcPath, destPath, workingDir, err := daemon.getSrcPathDestPathAndWorkDir(request)
+func (daemon *FileSystemDaemon) Copy(ctx context.Context, request *pb.Request) (*pb.Response, error) {
+	cpReq := request.GetCopy()
+	if cpReq == nil {
+		return nil, fmt.Errorf("invalid request")
+	}
+
+	srcPath, err := daemon.getPath(request, func() string { return cpReq.GetSrcPath() })
 	if err != nil {
 		return nil, err
 	}
 
-	file, err := daemon.fs.Copy(srcPath, destPath, workingDir)
-
+	destPath, err := daemon.getPath(request, func() string { return cpReq.GetDestPath() })
 	if err != nil {
-		msg, err := daemon.extractError(request.GetSessionId(), err)
-		if err != nil {
-			return nil, err
-		}
-		return &pb.CopyResponse{Error: proto.String(msg)}, nil
+		return nil, err
 	}
 
-	return &pb.CopyResponse{Name: proto.String(file.Name())}, nil
+	file, err := daemon.fs.Copy(srcPath, destPath)
+
+	if err != nil {
+		return daemon.extractError(request.GetSessionId(), err)
+	}
+
+	return &pb.Response{
+		Response: &pb.Response_Copy{
+			Copy: &pb.CopyResponse{Name: file.Name()},
+		},
+	}, nil
 }
