@@ -2,6 +2,7 @@ package memoryfs
 
 import (
 	"material/filesystem/filesystem/file"
+	"material/filesystem/filesystem/fserrors"
 	"material/filesystem/filesystem/fspath"
 	"sync"
 
@@ -22,9 +23,13 @@ func (fs *MemoryFileSystem) Open(path *fspath.FileSystemPath, workingDir file.Fi
 	fs.mutex.Lock()
 	defer fs.mutex.Unlock()
 
-	fileToOpen, err := fs.navigateToEndOfPath(path, workingDir, false, 0)
+	fileToOpen, err := fs.traverseToBase(path, workingDir)
 	if err != nil {
 		return "", err
+	}
+
+	if fileToOpen.info.fileType != file.RegularFile {
+		return "", fserrors.ErrInvalidFileType
 	}
 
 	fs.openFiles.mutex.Lock()

@@ -25,7 +25,7 @@ func (fs *MemoryFileSystem) moveOrCopy(srcPath *fspath.FileSystemPath, destPath 
 	defer fs.mutex.Unlock()
 
 	// find the file/directory that needs to be moved/copied
-	fileToMove, err := fs.getTargetFile(srcPath, workingDir, isCopy)
+	fileToMove, err := fs.traverseToBaseWithSkipLastLink(srcPath, workingDir, !isCopy)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +35,7 @@ func (fs *MemoryFileSystem) moveOrCopy(srcPath *fspath.FileSystemPath, destPath 
 	}
 
 	// find last directory in the destination path
-	dest, err := fs.navigateToLastDirInPath(destPath, workingDir, true, 0)
+	dest, err := fs.traverseToDirAndCreateIntermediateDirs(destPath, workingDir)
 	if err != nil {
 		return nil, err
 	}
@@ -45,32 +45,6 @@ func (fs *MemoryFileSystem) moveOrCopy(srcPath *fspath.FileSystemPath, destPath 
 		return nil, err
 	}
 	return newFile.info, nil
-}
-
-// getTargetFile locates the file that needs to be moved/copied.
-// If the file needs to be copied and it's a symbolic link then the link is resolved.
-// If the file needs to be moved and it's a symbolic link then the link is not resolved.
-// TODO: should this be moved elsewhere?
-func (fs *MemoryFileSystem) getTargetFile(srcPath *fspath.FileSystemPath, workingDir file.File, isCopy bool) (*inMemoryFile, error) {
-	if isCopy {
-		return fs.navigateToEndOfPath(srcPath, workingDir, false, 0)
-	}
-
-	parent, err := fs.navigateToLastDirInPath(srcPath, workingDir, false, 0)
-	if err != nil {
-		return nil, err
-	}
-
-	if parent.info.fileType != file.Directory {
-		return nil, fserrors.ErrInvalidFileType
-	}
-
-	fileToMove, found := parent.fileMap[srcPath.Base()]
-	if !found {
-		return nil, fserrors.ErrNotExist
-	}
-
-	return fileToMove, nil
 }
 
 // This method should be called only if the caller has already acquired a lock

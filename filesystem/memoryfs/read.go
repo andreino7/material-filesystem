@@ -11,7 +11,7 @@ func (fs *MemoryFileSystem) ReadAll(path *fspath.FileSystemPath, workingDir file
 	fs.mutex.Lock()
 	defer fs.mutex.Unlock()
 
-	fileToRead, err := fs.navigateToEndOfPath(path, workingDir, false, 0)
+	fileToRead, err := fs.traverseToBase(path, workingDir)
 	if err != nil {
 		return nil, err
 	}

@@ -16,15 +16,6 @@ var invalidFileNames = map[string]bool{
 	"/":  true,
 }
 
-// TODO: refactor duplicate code
-func pathNames(path *fspath.FileSystemPath, workingDir file.File) []string {
-	if path.Path() == "/" {
-		return []string{}
-	}
-
-	return strings.Split(strings.Trim(path.Path(), "/"), "/")
-}
-
 func pathDirs(path *fspath.FileSystemPath, workingDir file.File) []string {
 	if path.Dir() == "/" {
 		return []string{}

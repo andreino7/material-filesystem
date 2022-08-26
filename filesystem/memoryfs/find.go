@@ -34,3 +34,23 @@ func (fs *MemoryFileSystem) FindFiles(name string, path *fspath.FileSystemPath, 
 	sort.Sort(ByAbsolutePath(matchingFiles))
 	return matchingFiles, nil
 }
+
+// appendMatchingFiles walks the file system and appends any file matching the specified name.
+// if current file is a directory, recursively append every matching file in the subtree.
+func (fs *MemoryFileSystem) appendMatchingFiles(matchingFiles []file.FileInfo, dir *inMemoryFile, name string) ([]file.FileInfo, error) {
+	err := fs.walk(dir, func(fileName string, imf *inMemoryFile) error {
+		var err error
+		// add matching file
+		if fileName == name {
+			matchingFiles = append(matchingFiles, imf.Info())
+		}
+
+		// if directory, go down the tree
+		if imf.info.fileType == file.Directory {
+			matchingFiles, err = fs.appendMatchingFiles(matchingFiles, imf, name)
+		}
+		return err
+	})
+
+	return matchingFiles, err
+}

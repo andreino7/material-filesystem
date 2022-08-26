@@ -16,17 +16,19 @@ func (fs *MemoryFileSystem) GetDirectory(path *fspath.FileSystemPath, workingDir
 	defer fs.mutex.RUnlock()
 
 	// Find path starting point
-	pathRoot, err := fs.findPathRoot(path, workingDir)
+	dir, err := fs.traverseToBase(path, workingDir)
 	if err != nil {
 		return nil, err
 	}
 
-	// Find directory
-	pathNames := pathNames(path, workingDir)
-	return fs.lookupDir(pathRoot, pathNames, 0)
+	if dir.info.fileType != file.Directory {
+		return nil, fserrors.ErrInvalidFileType
+	}
+
+	return dir, nil
 }
 
-func (fs *MemoryFileSystem) resolveWorkDir(path *fspath.FileSystemPath, workingDir file.File) (*inMemoryFile, error) {
+func (fs *MemoryFileSystem) resolveWorkDir(workingDir file.File) (*inMemoryFile, error) {
 	currentDir, ok := workingDir.(*inMemoryFile)
 	if !ok || currentDir.isDeleted {
 		return nil, fserrors.ErrInvalidWorkingDirectory
