@@ -27,19 +27,23 @@ func (fs *MemoryFileSystem) removeFileWithLock(path *fspath.FileSystemPath, isRe
 		return nil, err
 	}
 
-	return fs.removeFile(path.Base(), pathEnd, isRecursive)
+	return fs.removeFile(path.Base(), pathEnd, isRecursive, user)
 }
 
-func (fs *MemoryFileSystem) removeFile(fileName string, pathEnd *inMemoryFile, isRecursive bool) (file.FileInfo, error) {
+func (fs *MemoryFileSystem) removeFile(fileName string, pathEnd *inMemoryFile, isRecursive bool, user user.User) (file.FileInfo, error) {
 	// check if file exists
 	fileToRemove, found := pathEnd.fileMap[fileName]
 	if !found {
 		return nil, fserrors.ErrNotExist
 	}
 
+	if err := checkWritePermission(fileToRemove, user); err != nil {
+		return nil, err
+	}
+
 	// handle directories
 	if fileToRemove.info.fileType == file.Directory {
-		return fs.removeDirectory(fileToRemove, pathEnd, isRecursive)
+		return fs.removeDirectory(fileToRemove, pathEnd, isRecursive, user)
 	}
 
 	// unlink regular file (or symlink)
@@ -48,7 +52,7 @@ func (fs *MemoryFileSystem) removeFile(fileName string, pathEnd *inMemoryFile, i
 	return fileToRemove.Info(), nil
 }
 
-func (fs *MemoryFileSystem) removeDirectory(fileToRemove *inMemoryFile, parent *inMemoryFile, isRecursive bool) (file.FileInfo, error) {
+func (fs *MemoryFileSystem) removeDirectory(fileToRemove *inMemoryFile, parent *inMemoryFile, isRecursive bool, user user.User) (file.FileInfo, error) {
 	if !isRecursive {
 		return nil, fserrors.ErrInvalidFileType
 	}
@@ -63,8 +67,8 @@ func (fs *MemoryFileSystem) removeDirectory(fileToRemove *inMemoryFile, parent *
 	fileToRemove.isDeleted = true
 
 	// remove all children
-	err := fs.walk(fileToRemove, func(_ string, file *inMemoryFile) error {
-		_, err := fs.removeDirectory(file, fileToRemove, true)
+	err := fs.walk(fileToRemove, user, func(_ string, file *inMemoryFile) error {
+		_, err := fs.removeDirectory(file, fileToRemove, true, user)
 		return err
 	})
 	if err != nil {

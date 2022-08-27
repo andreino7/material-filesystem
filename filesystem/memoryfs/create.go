@@ -106,6 +106,10 @@ func (fs *MemoryFileSystem) create(fileName string, fileType file.FileType, pare
 		return nil, fserrors.ErrExist
 	}
 
+	if err := checkWritePermission(parent, user); err != nil {
+		return nil, err
+	}
+
 	absolutePath := filepath.Join(parent.info.AbsolutePath(), fileName)
 	newFile := newInMemoryFile(absolutePath, fileType, user.Id(), user.PrimaryGroup())
 	fs.attachToParent(newFile, parent)

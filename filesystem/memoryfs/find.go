@@ -26,7 +26,7 @@ func (fs *MemoryFileSystem) FindFiles(name string, path *fspath.FileSystemPath, 
 
 	// this cast is safe because GetDirectory always returns "inMemoryFile"
 	inMemoryDir := dir.(*inMemoryFile)
-	matchingFiles, err = fs.appendMatchingFiles(matchingFiles, inMemoryDir, name)
+	matchingFiles, err = fs.appendMatchingFiles(matchingFiles, inMemoryDir, name, user)
 	if err != nil {
 		return matchingFiles, err
 	}
@@ -38,8 +38,8 @@ func (fs *MemoryFileSystem) FindFiles(name string, path *fspath.FileSystemPath, 
 
 // appendMatchingFiles walks the file system and appends any file matching the specified name.
 // if current file is a directory, recursively append every matching file in the subtree.
-func (fs *MemoryFileSystem) appendMatchingFiles(matchingFiles []file.FileInfo, dir *inMemoryFile, name string) ([]file.FileInfo, error) {
-	err := fs.walk(dir, func(fileName string, imf *inMemoryFile) error {
+func (fs *MemoryFileSystem) appendMatchingFiles(matchingFiles []file.FileInfo, dir *inMemoryFile, name string, user user.User) ([]file.FileInfo, error) {
+	err := fs.walk(dir, user, func(fileName string, imf *inMemoryFile) error {
 		var err error
 		// add matching file
 		if fileName == name {
@@ -48,7 +48,7 @@ func (fs *MemoryFileSystem) appendMatchingFiles(matchingFiles []file.FileInfo, d
 
 		// if directory, go down the tree
 		if imf.info.fileType == file.Directory {
-			matchingFiles, err = fs.appendMatchingFiles(matchingFiles, imf, name)
+			matchingFiles, err = fs.appendMatchingFiles(matchingFiles, imf, name, user)
 		}
 		return err
 	})

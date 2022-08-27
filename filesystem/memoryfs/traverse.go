@@ -76,7 +76,12 @@ func (fs *MemoryFileSystem) traverse(path *fspath.FileSystemPath, createDirs boo
 
 func (fs *MemoryFileSystem) traverseFromRootToLastDir(pathRoot *inMemoryFile, pathDirs []string, createDirs bool, linkDepth int, user user.User) (*inMemoryFile, error) {
 	curr := pathRoot
+
 	for _, nextFileName := range pathDirs {
+		if err := checkReadPermissions(curr, user); err != nil {
+			return nil, err
+		}
+
 		next, err := fs.moveToNext(curr, nextFileName, createDirs, user)
 		if err != nil {
 			return nil, err
@@ -94,6 +99,10 @@ func (fs *MemoryFileSystem) traverseFromRootToLastDir(pathRoot *inMemoryFile, pa
 		curr = next
 	}
 
+	if err := checkReadPermissions(curr, user); err != nil {
+		return nil, err
+	}
+
 	return curr, nil
 }
 
@@ -101,6 +110,10 @@ func (fs *MemoryFileSystem) moveToBase(dir *inMemoryFile, fileName string, skipL
 	targetFile, found := dir.fileMap[fileName]
 	if !found {
 		return nil, nil
+	}
+
+	if err := checkReadPermissions(targetFile, user); err != nil {
+		return nil, err
 	}
 
 	if skipLink {
@@ -133,6 +146,10 @@ func (fs *MemoryFileSystem) moveToNext(curr *inMemoryFile, nextFileName string, 
 func (fs *MemoryFileSystem) resolveSymlink(currentFile *inMemoryFile, linkDepth int, user user.User) (*inMemoryFile, error) {
 	if currentFile.info.fileType != file.SymbolicLink {
 		return currentFile, nil
+	}
+
+	if err := checkReadPermissions(currentFile, user); err != nil {
+		return nil, err
 	}
 
 	if linkDepth >= MAX_LINK_DEPTH {

@@ -89,7 +89,7 @@ func (fs *MemoryFileSystem) mergeDirectories(dirToMove *inMemoryFile, dest *inMe
 	}
 
 	// This is the more complex case: recursively move/copy every file to destination directory
-	err := fs.walk(dirToMove, func(fileName string, fileToMove *inMemoryFile) error {
+	err := fs.walk(dirToMove, user, func(fileName string, fileToMove *inMemoryFile) error {
 		if shouldMergeSubDirectories(fileToMove, finalDest) {
 			if _, err := fs.mergeDirectories(fileToMove, finalDest, isCopy, user); err != nil {
 				return err
@@ -108,7 +108,7 @@ func (fs *MemoryFileSystem) mergeDirectories(dirToMove *inMemoryFile, dest *inMe
 
 	if !isCopy {
 		// TODO: document that working dir will be reset when this happens
-		fs.removeDirectory(dirToMove, dirToMove.fileMap[".."], true)
+		fs.removeDirectory(dirToMove, dirToMove.fileMap[".."], true, user)
 	}
 	return finalDest, nil
 }
@@ -151,6 +151,10 @@ func (fs *MemoryFileSystem) moveOrCopyRegularFileToExistingDestination(fileToMov
 // If there's a name the conflict the source file is automatically renamed.
 func (fs *MemoryFileSystem) renameAndMoveOrCopyRegularFile(fileToMove *inMemoryFile, dest *inMemoryFile, newName string, isCopy bool, user user.User) (*inMemoryFile, error) {
 	// check for name conflicts
+	if err := checkWritePermission(dest, user); err != nil {
+		return nil, err
+	}
+
 	finalName := newName
 	if _, found := dest.fileMap[finalName]; found {
 		finalName = generateRandomNameFromBaseName(finalName)
@@ -189,7 +193,7 @@ func (fs *MemoryFileSystem) copyFile(fileToMove *inMemoryFile, newAbsPath string
 	newFile := newInMemoryFile(newAbsPath, fileToMove.info.fileType, user.Id(), user.PrimaryGroup())
 
 	if fileToMove.info.fileType == file.Directory {
-		err := fs.walk(fileToMove, func(fileName string, child *inMemoryFile) error {
+		err := fs.walk(fileToMove, user, func(fileName string, child *inMemoryFile) error {
 			fs.renameAndMoveOrCopyRegularFile(child, newFile, fileName, true, user)
 			return nil
 		})

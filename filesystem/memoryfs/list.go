@@ -21,7 +21,7 @@ func (fs *MemoryFileSystem) ListFiles(path *fspath.FileSystemPath, user user.Use
 	}
 
 	// List all files
-	err = fs.walk(dir.(*inMemoryFile), func(_ string, curr *inMemoryFile) error {
+	err = fs.walk(dir.(*inMemoryFile), user, func(_ string, curr *inMemoryFile) error {
 		files = append(files, curr.Info())
 		return nil
 	})
