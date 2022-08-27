@@ -23,7 +23,7 @@ func TestOpen(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -39,7 +39,7 @@ func TestOpen(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/dir1", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, fs.DefaultWorkingDirectory(), nil
@@ -56,11 +56,11 @@ func TestOpen(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p1, _ := fspath.NewFileSystemPath("/file1-link", nil)
-				if _, err := fs.CreateSymbolicLink(p, p1); err != nil {
+				if _, err := fs.CreateSymbolicLink(p, p1, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, fs.DefaultWorkingDirectory(), nil
@@ -76,7 +76,7 @@ func TestOpen(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, fs.DefaultWorkingDirectory(), nil
@@ -93,7 +93,7 @@ func TestOpen(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, fs.DefaultWorkingDirectory(), nil
@@ -103,7 +103,7 @@ func TestOpen(t *testing.T) {
 				assert.NotEmpty(t, fd)
 
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				fd1, err := fs.Open(p)
+				fd1, err := fs.Open(p, rootUser)
 				assert.Nil(t, err)
 				assert.NotEmpty(t, fd1)
 				assert.NotEqual(t, fd, fd1)
@@ -116,7 +116,7 @@ func TestOpen(t *testing.T) {
 			t.Fatal("error initializing file system")
 		}
 		path, _ := fspath.NewFileSystemPath(testCase.Path, workingDir)
-		fd, err := fs.Open(path)
+		fd, err := fs.Open(path, rootUser)
 		testCase.Assertions(t, fs, fd, err)
 	}
 }

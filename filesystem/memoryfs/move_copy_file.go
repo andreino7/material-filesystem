@@ -4,28 +4,29 @@ import (
 	"material/filesystem/filesystem/file"
 	"material/filesystem/filesystem/fserrors"
 	"material/filesystem/filesystem/fspath"
+	"material/filesystem/filesystem/user"
 	"path/filepath"
 )
 
-type onMoveOrCopyDestFound func(fileToMove *inMemoryFile, dest *inMemoryFile, isCopy bool) (*inMemoryFile, error)
-type onMoveOrCopyDestNotFound func(fileToMove *inMemoryFile, dest *inMemoryFile, newName string, isCopy bool) (*inMemoryFile, error)
+type onMoveOrCopyDestFound func(fileToMove *inMemoryFile, dest *inMemoryFile, isCopy bool, user user.User) (*inMemoryFile, error)
+type onMoveOrCopyDestNotFound func(fileToMove *inMemoryFile, dest *inMemoryFile, newName string, isCopy bool, user user.User) (*inMemoryFile, error)
 
 // TODO: handle name conflicts as option
 // TODO: handle recursive as opttion
-func (fs *MemoryFileSystem) Move(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath) (file.FileInfo, error) {
-	return fs.moveOrCopy(srcPath, destPath, false)
+func (fs *MemoryFileSystem) Move(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath, user user.User) (file.FileInfo, error) {
+	return fs.moveOrCopy(srcPath, destPath, false, user)
 }
 
-func (fs *MemoryFileSystem) Copy(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath) (file.FileInfo, error) {
-	return fs.moveOrCopy(srcPath, destPath, true)
+func (fs *MemoryFileSystem) Copy(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath, user user.User) (file.FileInfo, error) {
+	return fs.moveOrCopy(srcPath, destPath, true, user)
 }
 
-func (fs *MemoryFileSystem) moveOrCopy(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath, isCopy bool) (file.FileInfo, error) {
+func (fs *MemoryFileSystem) moveOrCopy(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath, isCopy bool, user user.User) (file.FileInfo, error) {
 	fs.Lock()
 	defer fs.Unlock()
 
 	// find the file/directory that needs to be moved/copied
-	fileToMove, err := fs.traverseToBaseWithSkipLastLink(srcPath, !isCopy)
+	fileToMove, err := fs.traverseToBaseWithSkipLastLink(srcPath, !isCopy, user)
 	if err != nil {
 		return nil, err
 	}
@@ -35,12 +36,12 @@ func (fs *MemoryFileSystem) moveOrCopy(srcPath *fspath.FileSystemPath, destPath 
 	}
 
 	// find last directory in the destination path
-	dest, err := fs.traverseToDirAndCreateParentDirs(destPath)
+	dest, err := fs.traverseToDirAndCreateParentDirs(destPath, user)
 	if err != nil {
 		return nil, err
 	}
 
-	newFile, err := fs.moveOrCopyLockFree(fileToMove, dest, destPath.Base(), isCopy)
+	newFile, err := fs.moveOrCopyLockFree(fileToMove, dest, destPath.Base(), isCopy, user)
 	if err != nil {
 		return nil, err
 	}
@@ -48,31 +49,31 @@ func (fs *MemoryFileSystem) moveOrCopy(srcPath *fspath.FileSystemPath, destPath 
 }
 
 // This method should be called only if the caller has already acquired a lock
-func (fs *MemoryFileSystem) moveOrCopyLockFree(fileToMove *inMemoryFile, dest *inMemoryFile, finalDestName string, isCopy bool) (*inMemoryFile, error) {
+func (fs *MemoryFileSystem) moveOrCopyLockFree(fileToMove *inMemoryFile, dest *inMemoryFile, finalDestName string, isCopy bool, user user.User) (*inMemoryFile, error) {
 	if fileToMove.info.fileType == file.Directory {
-		return fs.moveOrCopyDirectory(fileToMove, dest, finalDestName, isCopy)
+		return fs.moveOrCopyDirectory(fileToMove, dest, finalDestName, isCopy, user)
 	}
-	return fs.moveOrCopyRegularFile(fileToMove, dest, finalDestName, isCopy)
+	return fs.moveOrCopyRegularFile(fileToMove, dest, finalDestName, isCopy, user)
 }
 
-func (fs *MemoryFileSystem) moveOrCopyDirectory(fileToMove *inMemoryFile, dest *inMemoryFile, finalDestName string, isCopy bool) (*inMemoryFile, error) {
-	return fs.doMoveOrCopy(fileToMove, dest, finalDestName, fs.moveOrCopyDirectoryToExistingDestination, fs.renameAndMoveOrCopyDirectory, isCopy)
+func (fs *MemoryFileSystem) moveOrCopyDirectory(fileToMove *inMemoryFile, dest *inMemoryFile, finalDestName string, isCopy bool, user user.User) (*inMemoryFile, error) {
+	return fs.doMoveOrCopy(fileToMove, dest, finalDestName, fs.moveOrCopyDirectoryToExistingDestination, fs.renameAndMoveOrCopyDirectory, isCopy, user)
 }
 
-func (fs *MemoryFileSystem) renameAndMoveOrCopyDirectory(fileToMove *inMemoryFile, dest *inMemoryFile, newName string, isCopy bool) (*inMemoryFile, error) {
-	return fs.renameAndMoveOrCopyRegularFile(fileToMove, dest, newName, isCopy)
+func (fs *MemoryFileSystem) renameAndMoveOrCopyDirectory(fileToMove *inMemoryFile, dest *inMemoryFile, newName string, isCopy bool, user user.User) (*inMemoryFile, error) {
+	return fs.renameAndMoveOrCopyRegularFile(fileToMove, dest, newName, isCopy, user)
 }
 
 // This method moves/copies the source directory to an existing destination.
 // If destination is a directory, the source directory and destination directory are merged.
 // if destination is a regular file, the source directory is moved/copied to the destination's parent.
-func (fs *MemoryFileSystem) moveOrCopyDirectoryToExistingDestination(fileToMove *inMemoryFile, dest *inMemoryFile, isCopy bool) (*inMemoryFile, error) {
+func (fs *MemoryFileSystem) moveOrCopyDirectoryToExistingDestination(fileToMove *inMemoryFile, dest *inMemoryFile, isCopy bool, user user.User) (*inMemoryFile, error) {
 	if dest.info.fileType == file.Directory {
-		return fs.mergeDirectories(fileToMove, dest, isCopy)
+		return fs.mergeDirectories(fileToMove, dest, isCopy, user)
 	}
 
 	// move/copy to dest parent dir, and rename
-	return fs.renameAndMoveOrCopyRegularFile(fileToMove, dest.fileMap[".."], fileToMove.info.Name(), isCopy)
+	return fs.renameAndMoveOrCopyRegularFile(fileToMove, dest.fileMap[".."], fileToMove.info.Name(), isCopy, user)
 }
 
 // This method merges two directories and recursively all the subdirectories.
@@ -81,20 +82,20 @@ func (fs *MemoryFileSystem) moveOrCopyDirectoryToExistingDestination(fileToMove 
 // If in the destination directory there is a directory with the same name as the source directory,
 // all the files in the source directory are moved/copied to the destination directory and, in case of a move,
 // the source directory is removed.
-func (fs *MemoryFileSystem) mergeDirectories(dirToMove *inMemoryFile, dest *inMemoryFile, isCopy bool) (*inMemoryFile, error) {
+func (fs *MemoryFileSystem) mergeDirectories(dirToMove *inMemoryFile, dest *inMemoryFile, isCopy bool, user user.User) (*inMemoryFile, error) {
 	finalDest, found := dest.fileMap[dirToMove.info.Name()]
 	if !found {
-		return fs.renameAndMoveOrCopyDirectory(dirToMove, dest, dirToMove.info.Name(), isCopy)
+		return fs.renameAndMoveOrCopyDirectory(dirToMove, dest, dirToMove.info.Name(), isCopy, user)
 	}
 
 	// This is the more complex case: recursively move/copy every file to destination directory
 	err := fs.walk(dirToMove, func(fileName string, fileToMove *inMemoryFile) error {
 		if shouldMergeSubDirectories(fileToMove, finalDest) {
-			if _, err := fs.mergeDirectories(fileToMove, finalDest, isCopy); err != nil {
+			if _, err := fs.mergeDirectories(fileToMove, finalDest, isCopy, user); err != nil {
 				return err
 			}
 		} else {
-			if _, err := fs.moveOrCopyLockFree(fileToMove, finalDest, fileName, isCopy); err != nil {
+			if _, err := fs.moveOrCopyLockFree(fileToMove, finalDest, fileName, isCopy, user); err != nil {
 				return err
 			}
 		}
@@ -123,14 +124,14 @@ func shouldMergeSubDirectories(fileToMove *inMemoryFile, dest *inMemoryFile) boo
 	return found
 }
 
-func (fs *MemoryFileSystem) moveOrCopyRegularFile(fileToMove *inMemoryFile, dest *inMemoryFile, finalDestName string, isCopy bool) (*inMemoryFile, error) {
-	return fs.doMoveOrCopy(fileToMove, dest, finalDestName, fs.moveOrCopyRegularFileToExistingDestination, fs.renameAndMoveOrCopyRegularFile, isCopy)
+func (fs *MemoryFileSystem) moveOrCopyRegularFile(fileToMove *inMemoryFile, dest *inMemoryFile, finalDestName string, isCopy bool, user user.User) (*inMemoryFile, error) {
+	return fs.doMoveOrCopy(fileToMove, dest, finalDestName, fs.moveOrCopyRegularFileToExistingDestination, fs.renameAndMoveOrCopyRegularFile, isCopy, user)
 }
 
 // This method moves/copies a file to an existing destination.
 // If the destination is a directory, the file is moved/copied to the directory.
 // If the destination is a file, the source file is move/copied to the destination's parent and renamed
-func (fs *MemoryFileSystem) moveOrCopyRegularFileToExistingDestination(fileToMove *inMemoryFile, dest *inMemoryFile, isCopy bool) (*inMemoryFile, error) {
+func (fs *MemoryFileSystem) moveOrCopyRegularFileToExistingDestination(fileToMove *inMemoryFile, dest *inMemoryFile, isCopy bool, user user.User) (*inMemoryFile, error) {
 	finalDir := dest
 	newName := fileToMove.info.Name()
 
@@ -140,7 +141,7 @@ func (fs *MemoryFileSystem) moveOrCopyRegularFileToExistingDestination(fileToMov
 		newName = dest.Info().Name()
 	}
 
-	return fs.renameAndMoveOrCopyRegularFile(fileToMove, finalDir, newName, isCopy)
+	return fs.renameAndMoveOrCopyRegularFile(fileToMove, finalDir, newName, isCopy, user)
 }
 
 // In case of "Move", this method removes the source file from the original location
@@ -148,7 +149,7 @@ func (fs *MemoryFileSystem) moveOrCopyRegularFileToExistingDestination(fileToMov
 // In case of "Copy", this method copies the source file from the original location
 // and attaches it to the new location and renames it to the given name.
 // If there's a name the conflict the source file is automatically renamed.
-func (fs *MemoryFileSystem) renameAndMoveOrCopyRegularFile(fileToMove *inMemoryFile, dest *inMemoryFile, newName string, isCopy bool) (*inMemoryFile, error) {
+func (fs *MemoryFileSystem) renameAndMoveOrCopyRegularFile(fileToMove *inMemoryFile, dest *inMemoryFile, newName string, isCopy bool, user user.User) (*inMemoryFile, error) {
 	// check for name conflicts
 	finalName := newName
 	if _, found := dest.fileMap[finalName]; found {
@@ -160,7 +161,7 @@ func (fs *MemoryFileSystem) renameAndMoveOrCopyRegularFile(fileToMove *inMemoryF
 	var result *inMemoryFile
 	var err error
 	if isCopy {
-		result, err = fs.copyFile(fileToMove, newAbsPath)
+		result, err = fs.copyFile(fileToMove, newAbsPath, user)
 	} else {
 		result = fs.moveFile(fileToMove, newAbsPath)
 	}
@@ -184,12 +185,12 @@ func (fs *MemoryFileSystem) moveFile(fileToMove *inMemoryFile, newAbsPath string
 
 // This method creates a copy of the original file.
 // If the file is a directory recursively copies every file in it
-func (fs *MemoryFileSystem) copyFile(fileToMove *inMemoryFile, newAbsPath string) (*inMemoryFile, error) {
-	newFile := newInMemoryFile(newAbsPath, fileToMove.info.fileType)
+func (fs *MemoryFileSystem) copyFile(fileToMove *inMemoryFile, newAbsPath string, user user.User) (*inMemoryFile, error) {
+	newFile := newInMemoryFile(newAbsPath, fileToMove.info.fileType, user.Id(), user.PrimaryGroup())
 
 	if fileToMove.info.fileType == file.Directory {
 		err := fs.walk(fileToMove, func(fileName string, child *inMemoryFile) error {
-			fs.renameAndMoveOrCopyRegularFile(child, newFile, fileName, true)
+			fs.renameAndMoveOrCopyRegularFile(child, newFile, fileName, true, user)
 			return nil
 		})
 		if err != nil {
@@ -209,7 +210,7 @@ func (fs *MemoryFileSystem) copyFile(fileToMove *inMemoryFile, newAbsPath string
 	return newFile, nil
 }
 
-func (fs *MemoryFileSystem) doMoveOrCopy(fileToMove *inMemoryFile, dest *inMemoryFile, finalDestName string, onFound onMoveOrCopyDestFound, onNotFound onMoveOrCopyDestNotFound, isCopy bool) (*inMemoryFile, error) {
+func (fs *MemoryFileSystem) doMoveOrCopy(fileToMove *inMemoryFile, dest *inMemoryFile, finalDestName string, onFound onMoveOrCopyDestFound, onNotFound onMoveOrCopyDestNotFound, isCopy bool, user user.User) (*inMemoryFile, error) {
 	// check if dest file exists already
 	finalDest, found := dest.fileMap[finalDestName]
 	if found {
@@ -217,9 +218,9 @@ func (fs *MemoryFileSystem) doMoveOrCopy(fileToMove *inMemoryFile, dest *inMemor
 		if finalDest == fileToMove {
 			return nil, fserrors.ErrSameFile
 		}
-		return onFound(fileToMove, finalDest, isCopy)
+		return onFound(fileToMove, finalDest, isCopy, user)
 	} else {
 		// rename file
-		return onNotFound(fileToMove, dest, finalDestName, isCopy)
+		return onNotFound(fileToMove, dest, finalDestName, isCopy, user)
 	}
 }

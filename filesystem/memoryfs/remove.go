@@ -4,24 +4,25 @@ import (
 	"material/filesystem/filesystem/file"
 	"material/filesystem/filesystem/fserrors"
 	"material/filesystem/filesystem/fspath"
+	"material/filesystem/filesystem/user"
 )
 
 // TODO: handle deleting working dir
-func (fs *MemoryFileSystem) Remove(path *fspath.FileSystemPath) (file.FileInfo, error) {
-	return fs.removeFileWithLock(path, false)
+func (fs *MemoryFileSystem) Remove(path *fspath.FileSystemPath, user user.User) (file.FileInfo, error) {
+	return fs.removeFileWithLock(path, false, user)
 }
 
-func (fs *MemoryFileSystem) RemoveAll(path *fspath.FileSystemPath) (file.FileInfo, error) {
-	return fs.removeFileWithLock(path, true)
+func (fs *MemoryFileSystem) RemoveAll(path *fspath.FileSystemPath, user user.User) (file.FileInfo, error) {
+	return fs.removeFileWithLock(path, true, user)
 }
 
-func (fs *MemoryFileSystem) removeFileWithLock(path *fspath.FileSystemPath, isRecursive bool) (file.FileInfo, error) {
+func (fs *MemoryFileSystem) removeFileWithLock(path *fspath.FileSystemPath, isRecursive bool, user user.User) (file.FileInfo, error) {
 	// RW lock the fs
 	fs.Lock()
 	defer fs.Unlock()
 
 	// find where to remove directory
-	pathEnd, err := fs.traverseToDir(path)
+	pathEnd, err := fs.traverseToDir(path, user)
 	if err != nil {
 		return nil, err
 	}

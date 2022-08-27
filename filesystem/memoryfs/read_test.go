@@ -23,10 +23,10 @@ func TestReadAll(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
-				if err := fs.AppendAll(p, []byte("Hello world!")); err != nil {
+				if err := fs.AppendAll(p, []byte("Hello world!"), rootUser); err != nil {
 					return nil, nil, err
 				}
 
@@ -55,7 +55,7 @@ func TestReadAll(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/dir1", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -71,10 +71,10 @@ func TestReadAll(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
-				if err := fs.AppendAll(p, []byte("Hello world!")); err != nil {
+				if err := fs.AppendAll(p, []byte("Hello world!"), rootUser); err != nil {
 					return nil, nil, err
 				}
 
@@ -103,7 +103,7 @@ func TestReadAll(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/dir1", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, fs.DefaultWorkingDirectory(), nil
@@ -119,15 +119,15 @@ func TestReadAll(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p1, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.CreateRegularFile(p1); err != nil {
+				if _, err := fs.CreateRegularFile(p1, rootUser); err != nil {
 					return nil, nil, err
 				}
-				if err := fs.AppendAll(p1, []byte("Hello world!")); err != nil {
+				if err := fs.AppendAll(p1, []byte("Hello world!"), rootUser); err != nil {
 					return nil, nil, err
 				}
 				p2, _ := fspath.NewFileSystemPath("/file1-link", nil)
 
-				if _, err := fs.CreateSymbolicLink(p1, p2); err != nil {
+				if _, err := fs.CreateSymbolicLink(p1, p2, rootUser); err != nil {
 					return nil, nil, err
 				}
 
@@ -145,7 +145,7 @@ func TestReadAll(t *testing.T) {
 			t.Fatal("error initializing file system")
 		}
 		path, _ := fspath.NewFileSystemPath(testCase.Path, workingDir)
-		data, err := fs.ReadAll(path)
+		data, err := fs.ReadAll(path, rootUser)
 		testCase.Assertions(t, data, err)
 	}
 }
@@ -168,7 +168,7 @@ func TestReadAt(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if err := fs.AppendAll(p, []byte("Hello world!")); err != nil {
+				if err := fs.AppendAll(p, []byte("Hello world!"), rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -186,7 +186,7 @@ func TestReadAt(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -204,7 +204,7 @@ func TestReadAt(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if err := fs.AppendAll(p, []byte("Hello world!")); err != nil {
+				if err := fs.AppendAll(p, []byte("Hello world!"), rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -222,7 +222,7 @@ func TestReadAt(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if err := fs.AppendAll(p, []byte("Hello world!")); err != nil {
+				if err := fs.AppendAll(p, []byte("Hello world!"), rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -240,7 +240,7 @@ func TestReadAt(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if err := fs.AppendAll(p, []byte("Hello world!")); err != nil {
+				if err := fs.AppendAll(p, []byte("Hello world!"), rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -257,12 +257,12 @@ func TestReadAt(t *testing.T) {
 			t.Fatal("error initializing file system")
 		}
 		path, _ := fspath.NewFileSystemPath(testCase.Path, workingDir)
-		fd, err := fs.Open(path)
+		fd, err := fs.Open(path, rootUser)
 		if err != nil {
 			t.Fatal("error opening file")
 		}
 
-		content, err := fs.ReadAt(fd, testCase.Start, testCase.End)
+		content, err := fs.ReadAt(fd, testCase.Start, testCase.End, rootUser)
 		testCase.Assertions(t, content, err)
 	}
 }
@@ -280,7 +280,7 @@ func TestReadAtClosedFile(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if err := fs.AppendAll(p, []byte("Hello world!")); err != nil {
+				if err := fs.AppendAll(p, []byte("Hello world!"), rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -297,13 +297,13 @@ func TestReadAtClosedFile(t *testing.T) {
 			t.Fatal("error initializing file system")
 		}
 		path, _ := fspath.NewFileSystemPath(testCase.Path, workingDir)
-		fd, err := fs.Open(path)
+		fd, err := fs.Open(path, rootUser)
 		if err != nil {
 			t.Fatal("error opening file")
 		}
-		fs.Close(fd)
+		fs.Close(fd, rootUser)
 
-		content, err := fs.ReadAt(fd, 0, 5)
+		content, err := fs.ReadAt(fd, 0, 5, rootUser)
 		testCase.Assertions(t, content, err)
 	}
 }
@@ -322,13 +322,13 @@ func TestReadMovedOrRemovedFile(t *testing.T) {
 			FsOperation: func(fs *memoryfs.MemoryFileSystem) error {
 				p1, _ := fspath.NewFileSystemPath("/file1", nil)
 				p2, _ := fspath.NewFileSystemPath("/file1-new-name", nil)
-				_, err := fs.Move(p1, p2)
+				_, err := fs.Move(p1, p2, rootUser)
 				return err
 			},
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if err := fs.AppendAll(p, []byte("Hello world!")); err != nil {
+				if err := fs.AppendAll(p, []byte("Hello world!"), rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -344,21 +344,21 @@ func TestReadMovedOrRemovedFile(t *testing.T) {
 			FsOperation: func(fs *memoryfs.MemoryFileSystem) error {
 				p1, _ := fspath.NewFileSystemPath("/dir1/file1", nil)
 				p2, _ := fspath.NewFileSystemPath("/dir2/file1", nil)
-				_, err := fs.Move(p1, p2)
+				_, err := fs.Move(p1, p2, rootUser)
 				return err
 			},
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/dir1", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir2", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
-				if err := fs.AppendAll(p, []byte("Hello world!")); err != nil {
+				if err := fs.AppendAll(p, []byte("Hello world!"), rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -373,13 +373,13 @@ func TestReadMovedOrRemovedFile(t *testing.T) {
 			Path:     "/file1",
 			FsOperation: func(fs *memoryfs.MemoryFileSystem) error {
 				p1, _ := fspath.NewFileSystemPath("/file1", nil)
-				_, err := fs.Remove(p1)
+				_, err := fs.Remove(p1, rootUser)
 				return err
 			},
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if err := fs.AppendAll(p, []byte("Hello world!")); err != nil {
+				if err := fs.AppendAll(p, []byte("Hello world!"), rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -396,7 +396,7 @@ func TestReadMovedOrRemovedFile(t *testing.T) {
 			t.Fatal("error initializing file system")
 		}
 		path, _ := fspath.NewFileSystemPath(testCase.Path, workingDir)
-		fd, err := fs.Open(path)
+		fd, err := fs.Open(path, rootUser)
 		if err != nil {
 			t.Fatal("error opening file")
 		}
@@ -404,7 +404,7 @@ func TestReadMovedOrRemovedFile(t *testing.T) {
 			t.Fatal("error running fs operation")
 		}
 
-		content, err := fs.ReadAt(fd, 0, 30)
+		content, err := fs.ReadAt(fd, 0, 30, rootUser)
 		testCase.Assertions(t, content, err)
 	}
 }

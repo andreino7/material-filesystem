@@ -4,14 +4,15 @@ import (
 	"material/filesystem/filesystem/file"
 	"material/filesystem/filesystem/fserrors"
 	"material/filesystem/filesystem/fspath"
+	"material/filesystem/filesystem/user"
 )
 
 // TODO: handle read from location instead of all content
-func (fs *MemoryFileSystem) ReadAll(path *fspath.FileSystemPath) ([]byte, error) {
+func (fs *MemoryFileSystem) ReadAll(path *fspath.FileSystemPath, user user.User) ([]byte, error) {
 	fs.Lock()
 	defer fs.Unlock()
 
-	fileToRead, err := fs.traverseToBase(path)
+	fileToRead, err := fs.traverseToBase(path, user)
 	if err != nil {
 		return nil, err
 	}
@@ -19,7 +20,7 @@ func (fs *MemoryFileSystem) ReadAll(path *fspath.FileSystemPath) ([]byte, error)
 	return fs.getFileData(fileToRead)
 }
 
-func (fs *MemoryFileSystem) ReadAt(fileDescriptor string, startPos int, endPos int) ([]byte, error) {
+func (fs *MemoryFileSystem) ReadAt(fileDescriptor string, startPos int, endPos int, user user.User) ([]byte, error) {
 	if err := validatePos(startPos, endPos); err != nil {
 		return nil, err
 	}

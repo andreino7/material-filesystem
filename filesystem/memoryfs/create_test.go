@@ -11,6 +11,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+type TestUser struct {
+}
+
 func TestMkdir(t *testing.T) {
 	cases := []struct {
 		CaseName   string
@@ -38,11 +41,11 @@ func TestMkdir(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/dir1", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir2", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -61,15 +64,15 @@ func TestMkdir(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/dir1", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir1/dir2", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir1/dir2/dir3", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -88,15 +91,15 @@ func TestMkdir(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/dir1", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir2", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir4", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -115,7 +118,7 @@ func TestMkdir(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -133,13 +136,13 @@ func TestMkdir(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/dir1", nil)
-				workDir, err := fs.Mkdir(p)
+				workDir, err := fs.Mkdir(p, rootUser)
 				if err != nil {
 					return nil, nil, err
 				}
 				p1, _ := fspath.NewFileSystemPath("/dir1", nil)
 				p2, _ := fspath.NewFileSystemPath("/dir2", nil)
-				if _, err := fs.CreateSymbolicLink(p1, p2); err != nil {
+				if _, err := fs.CreateSymbolicLink(p1, p2, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -171,12 +174,12 @@ func TestMkdir(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/dir1", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 
 				p, _ = fspath.NewFileSystemPath("/dir2", nil)
-				workDir, err := fs.Mkdir(p)
+				workDir, err := fs.Mkdir(p, rootUser)
 				if err != nil {
 					return nil, nil, err
 				}
@@ -196,16 +199,16 @@ func TestMkdir(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/dir1", nil)
-				workDir, err := fs.Mkdir(p)
+				workDir, err := fs.Mkdir(p, rootUser)
 				if err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir1/dir2", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir1/dir2/dir3", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -224,16 +227,16 @@ func TestMkdir(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/dir1", nil)
-				workDir, err := fs.Mkdir(p)
+				workDir, err := fs.Mkdir(p, rootUser)
 				if err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir2", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir4", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -252,7 +255,7 @@ func TestMkdir(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1/", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, fs.DefaultWorkingDirectory(), nil
@@ -271,20 +274,20 @@ func TestMkdir(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/dir1", nil)
-				workDir, err := fs.Mkdir(p)
+				workDir, err := fs.Mkdir(p, rootUser)
 				if err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir2", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir4", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath(workDir.Info().AbsolutePath(), nil)
-				if _, err := fs.RemoveAll(p); err != nil {
+				if _, err := fs.RemoveAll(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -303,12 +306,12 @@ func TestMkdir(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p1, _ := fspath.NewFileSystemPath("/dir1", nil)
-				workDir, err := fs.Mkdir(p1)
+				workDir, err := fs.Mkdir(p1, rootUser)
 				if err != nil {
 					return nil, nil, err
 				}
 				p2, _ := fspath.NewFileSystemPath("/dir2", nil)
-				if _, err := fs.CreateSymbolicLink(p1, p2); err != nil {
+				if _, err := fs.CreateSymbolicLink(p1, p2, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -326,7 +329,7 @@ func TestMkdir(t *testing.T) {
 			t.Fatal("error initializing file system")
 		}
 		p, _ := fspath.NewFileSystemPath(testCase.Path, workingDir)
-		dir, err := fs.Mkdir(p)
+		dir, err := fs.Mkdir(p, rootUser)
 		testCase.Assertions(t, dir, err)
 	}
 }
@@ -358,11 +361,11 @@ func TestCreateRegularFile(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/dir1", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir2", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -381,7 +384,7 @@ func TestCreateRegularFile(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -400,7 +403,7 @@ func TestCreateRegularFile(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -419,11 +422,11 @@ func TestCreateRegularFile(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/dir1/dir2", nil)
-				if _, err := fs.MkdirAll(p); err != nil {
+				if _, err := fs.MkdirAll(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir1/dir2/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -442,7 +445,7 @@ func TestCreateRegularFile(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/dir1", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -461,12 +464,12 @@ func TestCreateRegularFile(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p1, _ := fspath.NewFileSystemPath("/dir1", nil)
-				workDir, err := fs.Mkdir(p1)
+				workDir, err := fs.Mkdir(p1, rootUser)
 				if err != nil {
 					return nil, nil, err
 				}
 				p2, _ := fspath.NewFileSystemPath("/dir2", nil)
-				if _, err := fs.CreateSymbolicLink(p1, p2); err != nil {
+				if _, err := fs.CreateSymbolicLink(p1, p2, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -498,12 +501,12 @@ func TestCreateRegularFile(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/dir1", nil)
-				workDir, err := fs.Mkdir(p)
+				workDir, err := fs.Mkdir(p, rootUser)
 				if err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir2", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -522,16 +525,16 @@ func TestCreateRegularFile(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/dir1", nil)
-				workDir, err := fs.Mkdir(p)
+				workDir, err := fs.Mkdir(p, rootUser)
 				if err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir1/dir2", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir1/dir2/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -548,7 +551,7 @@ func TestCreateRegularFile(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/dir1", nil)
-				workDir, err := fs.Mkdir(p)
+				workDir, err := fs.Mkdir(p, rootUser)
 				if err != nil {
 					return nil, nil, err
 				}
@@ -568,20 +571,20 @@ func TestCreateRegularFile(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/dir1", nil)
-				workDir, err := fs.Mkdir(p)
+				workDir, err := fs.Mkdir(p, rootUser)
 				if err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir2", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir4", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath(workDir.Info().AbsolutePath(), nil)
-				if _, err := fs.RemoveAll(p); err != nil {
+				if _, err := fs.RemoveAll(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -600,13 +603,13 @@ func TestCreateRegularFile(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p1, _ := fspath.NewFileSystemPath("/dir1", nil)
-				workDir, err := fs.Mkdir(p1)
+				workDir, err := fs.Mkdir(p1, rootUser)
 				if err != nil {
 					return nil, nil, err
 				}
 				p2, _ := fspath.NewFileSystemPath("/dir2", nil)
 
-				if _, err := fs.CreateSymbolicLink(p1, p2); err != nil {
+				if _, err := fs.CreateSymbolicLink(p1, p2, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -624,7 +627,7 @@ func TestCreateRegularFile(t *testing.T) {
 			t.Fatal("error initializing file system")
 		}
 		p, _ := fspath.NewFileSystemPath(testCase.Path, workingDir)
-		dir, err := fs.CreateRegularFile(p)
+		dir, err := fs.CreateRegularFile(p, rootUser)
 		testCase.Assertions(t, dir, err)
 	}
 }
@@ -656,7 +659,7 @@ func TestMkdirAll(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -675,7 +678,7 @@ func TestMkdirAll(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/dir1", nil)
-				workDir, err := fs.Mkdir(p)
+				workDir, err := fs.Mkdir(p, rootUser)
 				if err != nil {
 					return nil, nil, err
 				}
@@ -695,7 +698,7 @@ func TestMkdirAll(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1/", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, fs.DefaultWorkingDirectory(), nil
@@ -714,20 +717,20 @@ func TestMkdirAll(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/dir1", nil)
-				workDir, err := fs.Mkdir(p)
+				workDir, err := fs.Mkdir(p, rootUser)
 				if err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir2", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir4", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath(workDir.Info().AbsolutePath(), nil)
-				if _, err := fs.RemoveAll(p); err != nil {
+				if _, err := fs.RemoveAll(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -746,7 +749,7 @@ func TestMkdirAll(t *testing.T) {
 			t.Fatal("error initializing file system")
 		}
 		p, _ := fspath.NewFileSystemPath(testCase.Path, workingDir)
-		dir, err := fs.MkdirAll(p)
+		dir, err := fs.MkdirAll(p, rootUser)
 		testCase.Assertions(t, dir, err)
 	}
 }
@@ -766,7 +769,7 @@ func TestCreateHardLink(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -777,9 +780,9 @@ func TestCreateHardLink(t *testing.T) {
 				assert.Equal(t, res.AbsolutePath(), "/file2")
 
 				// Modifying src file should modify hardlinked file
-				fs.AppendAll(src, []byte("Hello world!"))
+				fs.AppendAll(src, []byte("Hello world!"), rootUser)
 				p, _ := fspath.NewFileSystemPath(res.AbsolutePath(), nil)
-				data, _ := fs.ReadAll(p)
+				data, _ := fs.ReadAll(p, rootUser)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -790,7 +793,7 @@ func TestCreateHardLink(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -801,10 +804,10 @@ func TestCreateHardLink(t *testing.T) {
 				assert.Equal(t, res.AbsolutePath(), "/file2")
 
 				// Modifying src file should modify hardlinked file
-				fs.AppendAll(src, []byte("Hello world!"))
-				fs.Remove(src)
+				fs.AppendAll(src, []byte("Hello world!"), rootUser)
+				fs.Remove(src, rootUser)
 				p, _ := fspath.NewFileSystemPath(res.AbsolutePath(), nil)
-				data, _ := fs.ReadAll(p)
+				data, _ := fs.ReadAll(p, rootUser)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -815,7 +818,7 @@ func TestCreateHardLink(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -826,10 +829,10 @@ func TestCreateHardLink(t *testing.T) {
 				assert.Equal(t, res.AbsolutePath(), "/file2")
 
 				// Modifying src file should modify hardlinked file
-				fs.AppendAll(src, []byte("Hello world!"))
+				fs.AppendAll(src, []byte("Hello world!"), rootUser)
 				p, _ := fspath.NewFileSystemPath(res.AbsolutePath(), nil)
-				fs.Remove(p)
-				data, _ := fs.ReadAll(src)
+				fs.Remove(p, rootUser)
+				data, _ := fs.ReadAll(src, rootUser)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -840,7 +843,7 @@ func TestCreateHardLink(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/dir1", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -858,7 +861,7 @@ func TestCreateHardLink(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -869,9 +872,9 @@ func TestCreateHardLink(t *testing.T) {
 				assert.Equal(t, res.AbsolutePath(), "/dir2/dir3/dir4/file1")
 
 				// Modifying src file should modify hardlinked file
-				fs.AppendAll(src, []byte("Hello world!"))
+				fs.AppendAll(src, []byte("Hello world!"), rootUser)
 				p, _ := fspath.NewFileSystemPath(res.AbsolutePath(), nil)
-				data, _ := fs.ReadAll(p)
+				data, _ := fs.ReadAll(p, rootUser)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -882,11 +885,11 @@ func TestCreateHardLink(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/file2", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -904,11 +907,11 @@ func TestCreateHardLink(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p1, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.CreateRegularFile(p1); err != nil {
+				if _, err := fs.CreateRegularFile(p1, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p2, _ := fspath.NewFileSystemPath("/file2", nil)
-				if _, err := fs.CreateSymbolicLink(p1, p2); err != nil {
+				if _, err := fs.CreateSymbolicLink(p1, p2, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -920,10 +923,10 @@ func TestCreateHardLink(t *testing.T) {
 
 				// Modifying src file should modify hardlinked file
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				fs.AppendAll(p, []byte("Hello world!"))
+				fs.AppendAll(p, []byte("Hello world!"), rootUser)
 				p, _ = fspath.NewFileSystemPath(res.AbsolutePath(), nil)
-				fs.Remove(p)
-				data, _ := fs.ReadAll(src)
+				fs.Remove(p, rootUser)
+				data, _ := fs.ReadAll(src, rootUser)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -934,11 +937,11 @@ func TestCreateHardLink(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p1, _ := fspath.NewFileSystemPath("/dir1", nil)
-				if _, err := fs.Mkdir(p1); err != nil {
+				if _, err := fs.Mkdir(p1, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p2, _ := fspath.NewFileSystemPath("/dir2", nil)
-				if _, err := fs.CreateSymbolicLink(p1, p2); err != nil {
+				if _, err := fs.CreateSymbolicLink(p1, p2, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -956,7 +959,7 @@ func TestCreateHardLink(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, fs.DefaultWorkingDirectory(), nil
@@ -967,9 +970,9 @@ func TestCreateHardLink(t *testing.T) {
 				assert.Equal(t, res.AbsolutePath(), "/file2")
 
 				// Modifying src file should modify hardlinked file
-				fs.AppendAll(src, []byte("Hello world!"))
+				fs.AppendAll(src, []byte("Hello world!"), rootUser)
 				p, _ := fspath.NewFileSystemPath(res.AbsolutePath(), nil)
-				data, _ := fs.ReadAll(p)
+				data, _ := fs.ReadAll(p, rootUser)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -980,7 +983,7 @@ func TestCreateHardLink(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, fs.DefaultWorkingDirectory(), nil
@@ -991,10 +994,10 @@ func TestCreateHardLink(t *testing.T) {
 				assert.Equal(t, res.AbsolutePath(), "/file2")
 
 				// Modifying src file should modify hardlinked file
-				fs.AppendAll(src, []byte("Hello world!"))
-				fs.Remove(src)
+				fs.AppendAll(src, []byte("Hello world!"), rootUser)
+				fs.Remove(src, rootUser)
 				p, _ := fspath.NewFileSystemPath(res.AbsolutePath(), nil)
-				data, _ := fs.ReadAll(p)
+				data, _ := fs.ReadAll(p, rootUser)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -1005,7 +1008,7 @@ func TestCreateHardLink(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/dir1", nil)
-				if _, err := fs.Mkdir(p); err != nil {
+				if _, err := fs.Mkdir(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, fs.DefaultWorkingDirectory(), nil
@@ -1023,7 +1026,7 @@ func TestCreateHardLink(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, fs.DefaultWorkingDirectory(), nil
@@ -1034,9 +1037,9 @@ func TestCreateHardLink(t *testing.T) {
 				assert.Equal(t, res.AbsolutePath(), "/dir2/dir3/dir4/file1")
 
 				// Modifying src file should modify hardlinked file
-				fs.AppendAll(src, []byte("Hello world!"))
+				fs.AppendAll(src, []byte("Hello world!"), rootUser)
 				p, _ := fspath.NewFileSystemPath(res.AbsolutePath(), nil)
-				data, _ := fs.ReadAll(p)
+				data, _ := fs.ReadAll(p, rootUser)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -1047,11 +1050,11 @@ func TestCreateHardLink(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/file2", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, fs.DefaultWorkingDirectory(), nil
@@ -1069,11 +1072,11 @@ func TestCreateHardLink(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p1, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.CreateRegularFile(p1); err != nil {
+				if _, err := fs.CreateRegularFile(p1, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p2, _ := fspath.NewFileSystemPath("/file2", nil)
-				if _, err := fs.CreateSymbolicLink(p1, p2); err != nil {
+				if _, err := fs.CreateSymbolicLink(p1, p2, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, fs.DefaultWorkingDirectory(), nil
@@ -1085,10 +1088,10 @@ func TestCreateHardLink(t *testing.T) {
 
 				// Modifying src file should modify hardlinked file
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				fs.AppendAll(p, []byte("Hello world!"))
+				fs.AppendAll(p, []byte("Hello world!"), rootUser)
 				p, _ = fspath.NewFileSystemPath(res.AbsolutePath(), nil)
-				fs.Remove(p)
-				data, _ := fs.ReadAll(src)
+				fs.Remove(p, rootUser)
+				data, _ := fs.ReadAll(src, rootUser)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -1099,11 +1102,11 @@ func TestCreateHardLink(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p1, _ := fspath.NewFileSystemPath("/dir1", nil)
-				if _, err := fs.Mkdir(p1); err != nil {
+				if _, err := fs.Mkdir(p1, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p2, _ := fspath.NewFileSystemPath("/dir2", nil)
-				if _, err := fs.CreateSymbolicLink(p1, p2); err != nil {
+				if _, err := fs.CreateSymbolicLink(p1, p2, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, fs.DefaultWorkingDirectory(), nil
@@ -1123,7 +1126,7 @@ func TestCreateHardLink(t *testing.T) {
 		srcPath, _ := fspath.NewFileSystemPath(testCase.SrcPath, workingDir)
 		destPath, _ := fspath.NewFileSystemPath(testCase.DestPath, workingDir)
 
-		res, err := fs.CreateHardLink(srcPath, destPath)
+		res, err := fs.CreateHardLink(srcPath, destPath, rootUser)
 		testCase.Assertions(t, fs, srcPath, res, err)
 	}
 }
@@ -1144,7 +1147,7 @@ func TestCreateSymbolicLink(t *testing.T) {
 				fs := memoryfs.NewMemoryFileSystem()
 
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -1154,9 +1157,9 @@ func TestCreateSymbolicLink(t *testing.T) {
 				assert.NotNil(t, res)
 				assert.Equal(t, res.AbsolutePath(), "/file2")
 
-				fs.AppendAll(src, []byte("Hello world!"))
+				fs.AppendAll(src, []byte("Hello world!"), rootUser)
 				p, _ := fspath.NewFileSystemPath(res.AbsolutePath(), nil)
-				data, _ := fs.ReadAll(p)
+				data, _ := fs.ReadAll(p, rootUser)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -1167,19 +1170,19 @@ func TestCreateSymbolicLink(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/dir1/dir2", nil)
-				if _, err := fs.MkdirAll(p); err != nil {
+				if _, err := fs.MkdirAll(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir1/file3", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -1190,8 +1193,8 @@ func TestCreateSymbolicLink(t *testing.T) {
 				assert.Equal(t, res.AbsolutePath(), "/dir-link")
 
 				p, _ := fspath.NewFileSystemPath(res.AbsolutePath(), nil)
-				filesLink, _ := fs.ListFiles(p)
-				filesOriginal, _ := fs.ListFiles(src)
+				filesLink, _ := fs.ListFiles(p, rootUser)
+				filesOriginal, _ := fs.ListFiles(src, rootUser)
 
 				assert.Equal(t, filesLink, filesOriginal)
 			},
@@ -1203,15 +1206,15 @@ func TestCreateSymbolicLink(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/dir1/dir2", nil)
-				if _, err := fs.MkdirAll(p); err != nil {
+				if _, err := fs.MkdirAll(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -1222,8 +1225,8 @@ func TestCreateSymbolicLink(t *testing.T) {
 				assert.Equal(t, res.AbsolutePath(), "/file3-link")
 
 				p, _ := fspath.NewFileSystemPath(res.AbsolutePath(), nil)
-				fs.AppendAll(p, []byte("Hello world!"))
-				data, _ := fs.ReadAll(src)
+				fs.AppendAll(p, []byte("Hello world!"), rootUser)
+				data, _ := fs.ReadAll(src, rootUser)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -1234,19 +1237,19 @@ func TestCreateSymbolicLink(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p1, _ := fspath.NewFileSystemPath("/dir1/dir2", nil)
-				if _, err := fs.MkdirAll(p1); err != nil {
+				if _, err := fs.MkdirAll(p1, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p2, _ := fspath.NewFileSystemPath("/dir1/file1", nil)
-				if _, err := fs.CreateRegularFile(p2); err != nil {
+				if _, err := fs.CreateRegularFile(p2, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p3, _ := fspath.NewFileSystemPath("/dir1/file2", nil)
-				if _, err := fs.CreateRegularFile(p3); err != nil {
+				if _, err := fs.CreateRegularFile(p3, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p4, _ := fspath.NewFileSystemPath("/dir1/file1-link", nil)
-				if _, err := fs.CreateSymbolicLink(p2, p4); err != nil {
+				if _, err := fs.CreateSymbolicLink(p2, p4, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -1256,9 +1259,9 @@ func TestCreateSymbolicLink(t *testing.T) {
 				assert.NotNil(t, res)
 				assert.Equal(t, res.AbsolutePath(), "/file3-link")
 
-				fs.AppendAll(src, []byte("Hello world!"))
+				fs.AppendAll(src, []byte("Hello world!"), rootUser)
 				p, _ := fspath.NewFileSystemPath(res.AbsolutePath(), nil)
-				data, _ := fs.ReadAll(p)
+				data, _ := fs.ReadAll(p, rootUser)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -1276,7 +1279,7 @@ func TestCreateSymbolicLink(t *testing.T) {
 				assert.Equal(t, res.AbsolutePath(), "/file2")
 
 				p, _ := fspath.NewFileSystemPath(res.AbsolutePath(), nil)
-				_, err = fs.ListFiles(p)
+				_, err = fs.ListFiles(p, rootUser)
 				assert.NotNil(t, err)
 				assert.Equal(t, err, fserrors.ErrNotExist)
 			},
@@ -1288,7 +1291,7 @@ func TestCreateSymbolicLink(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -1297,9 +1300,9 @@ func TestCreateSymbolicLink(t *testing.T) {
 				assert.Nil(t, err)
 				assert.NotNil(t, res)
 				assert.Equal(t, res.AbsolutePath(), "/file2")
-				fs.Remove(src)
+				fs.Remove(src, rootUser)
 				p, _ := fspath.NewFileSystemPath(res.AbsolutePath(), nil)
-				_, err = fs.GetDirectory(p)
+				_, err = fs.GetDirectory(p, rootUser)
 				assert.NotNil(t, err)
 				assert.Equal(t, err, fserrors.ErrNotExist)
 			},
@@ -1311,7 +1314,7 @@ func TestCreateSymbolicLink(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -1322,9 +1325,9 @@ func TestCreateSymbolicLink(t *testing.T) {
 				assert.Equal(t, res.AbsolutePath(), "/file2")
 
 				p, _ := fspath.NewFileSystemPath("/file3", nil)
-				fs.Move(src, p)
+				fs.Move(src, p, rootUser)
 				p, _ = fspath.NewFileSystemPath(res.AbsolutePath(), nil)
-				_, err = fs.GetDirectory(p)
+				_, err = fs.GetDirectory(p, rootUser)
 				assert.NotNil(t, err)
 				assert.Equal(t, err, fserrors.ErrNotExist)
 			},
@@ -1336,7 +1339,7 @@ func TestCreateSymbolicLink(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, fs.DefaultWorkingDirectory(), nil
@@ -1346,9 +1349,9 @@ func TestCreateSymbolicLink(t *testing.T) {
 				assert.NotNil(t, res)
 				assert.Equal(t, res.AbsolutePath(), "/file2")
 
-				fs.AppendAll(src, []byte("Hello world!"))
+				fs.AppendAll(src, []byte("Hello world!"), rootUser)
 				p, _ := fspath.NewFileSystemPath(res.AbsolutePath(), nil)
-				data, _ := fs.ReadAll(p)
+				data, _ := fs.ReadAll(p, rootUser)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -1359,21 +1362,21 @@ func TestCreateSymbolicLink(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/dir1/dir2", nil)
-				workDir, err := fs.MkdirAll(p)
+				workDir, err := fs.MkdirAll(p, rootUser)
 				if err != nil {
 					return nil, nil, err
 				}
 
 				p1, _ := fspath.NewFileSystemPath("/dir1/file1", nil)
-				if _, err := fs.CreateRegularFile(p1); err != nil {
+				if _, err := fs.CreateRegularFile(p1, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p2, _ := fspath.NewFileSystemPath("/dir1/file2", nil)
-				if _, err := fs.CreateRegularFile(p2); err != nil {
+				if _, err := fs.CreateRegularFile(p2, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p3, _ := fspath.NewFileSystemPath("/dir1/file3", nil)
-				if _, err := fs.CreateRegularFile(p3); err != nil {
+				if _, err := fs.CreateRegularFile(p3, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -1384,8 +1387,8 @@ func TestCreateSymbolicLink(t *testing.T) {
 				assert.Equal(t, res.AbsolutePath(), "/dir-link")
 
 				p, _ := fspath.NewFileSystemPath(res.AbsolutePath(), nil)
-				filesLink, _ := fs.ListFiles(p)
-				filesOriginal, _ := fs.ListFiles(src)
+				filesLink, _ := fs.ListFiles(p, rootUser)
+				filesOriginal, _ := fs.ListFiles(src, rootUser)
 
 				assert.Equal(t, filesLink, filesOriginal)
 			},
@@ -1397,15 +1400,15 @@ func TestCreateSymbolicLink(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p1, _ := fspath.NewFileSystemPath("/dir1/dir2", nil)
-				if _, err := fs.MkdirAll(p1); err != nil {
+				if _, err := fs.MkdirAll(p1, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p2, _ := fspath.NewFileSystemPath("/dir1/file1", nil)
-				if _, err := fs.CreateRegularFile(p2); err != nil {
+				if _, err := fs.CreateRegularFile(p2, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p3, _ := fspath.NewFileSystemPath("/dir1/file2", nil)
-				if _, err := fs.CreateRegularFile(p3); err != nil {
+				if _, err := fs.CreateRegularFile(p3, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, fs.DefaultWorkingDirectory(), nil
@@ -1416,8 +1419,8 @@ func TestCreateSymbolicLink(t *testing.T) {
 				assert.Equal(t, res.AbsolutePath(), "/file3-link")
 
 				p, _ := fspath.NewFileSystemPath(res.AbsolutePath(), nil)
-				fs.AppendAll(p, []byte("Hello world!"))
-				data, _ := fs.ReadAll(src)
+				fs.AppendAll(p, []byte("Hello world!"), rootUser)
+				data, _ := fs.ReadAll(src, rootUser)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -1428,19 +1431,19 @@ func TestCreateSymbolicLink(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p1, _ := fspath.NewFileSystemPath("/dir1/dir2", nil)
-				if _, err := fs.MkdirAll(p1); err != nil {
+				if _, err := fs.MkdirAll(p1, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p2, _ := fspath.NewFileSystemPath("/dir1/file1", nil)
-				if _, err := fs.CreateRegularFile(p2); err != nil {
+				if _, err := fs.CreateRegularFile(p2, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p3, _ := fspath.NewFileSystemPath("/dir1/file2", nil)
-				if _, err := fs.CreateRegularFile(p3); err != nil {
+				if _, err := fs.CreateRegularFile(p3, rootUser); err != nil {
 					return nil, nil, err
 				}
 				p4, _ := fspath.NewFileSystemPath("/dir1/file1-link", nil)
-				if _, err := fs.CreateSymbolicLink(p2, p4); err != nil {
+				if _, err := fs.CreateSymbolicLink(p2, p4, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, fs.DefaultWorkingDirectory(), nil
@@ -1450,9 +1453,9 @@ func TestCreateSymbolicLink(t *testing.T) {
 				assert.NotNil(t, res)
 				assert.Equal(t, res.AbsolutePath(), "/file3-link")
 
-				fs.AppendAll(src, []byte("Hello world!"))
+				fs.AppendAll(src, []byte("Hello world!"), rootUser)
 				p, _ := fspath.NewFileSystemPath(res.AbsolutePath(), nil)
-				data, _ := fs.ReadAll(p)
+				data, _ := fs.ReadAll(p, rootUser)
 				assert.Equal(t, data, []byte("Hello world!"))
 			},
 		},
@@ -1470,7 +1473,7 @@ func TestCreateSymbolicLink(t *testing.T) {
 				assert.Equal(t, res.AbsolutePath(), "/file2")
 
 				p, _ := fspath.NewFileSystemPath(res.AbsolutePath(), nil)
-				_, err = fs.ListFiles(p)
+				_, err = fs.ListFiles(p, rootUser)
 				assert.NotNil(t, err)
 				assert.Equal(t, err, fserrors.ErrNotExist)
 			},
@@ -1482,7 +1485,7 @@ func TestCreateSymbolicLink(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, fs.DefaultWorkingDirectory(), nil
@@ -1491,9 +1494,9 @@ func TestCreateSymbolicLink(t *testing.T) {
 				assert.Nil(t, err)
 				assert.NotNil(t, res)
 				assert.Equal(t, res.AbsolutePath(), "/file2")
-				fs.Remove(src)
+				fs.Remove(src, rootUser)
 				p, _ := fspath.NewFileSystemPath(res.AbsolutePath(), nil)
-				_, err = fs.GetDirectory(p)
+				_, err = fs.GetDirectory(p, rootUser)
 				assert.NotNil(t, err)
 				assert.Equal(t, err, fserrors.ErrNotExist)
 			},
@@ -1505,7 +1508,7 @@ func TestCreateSymbolicLink(t *testing.T) {
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if _, err := fs.CreateRegularFile(p, rootUser); err != nil {
 					return nil, nil, err
 				}
 				return fs, fs.DefaultWorkingDirectory(), nil
@@ -1515,9 +1518,9 @@ func TestCreateSymbolicLink(t *testing.T) {
 				assert.NotNil(t, res)
 				assert.Equal(t, res.AbsolutePath(), "/file2")
 				p, _ := fspath.NewFileSystemPath("/file3", nil)
-				fs.Move(src, p)
+				fs.Move(src, p, rootUser)
 				p, _ = fspath.NewFileSystemPath(res.AbsolutePath(), nil)
-				_, err = fs.GetDirectory(p)
+				_, err = fs.GetDirectory(p, rootUser)
 				assert.NotNil(t, err)
 				assert.Equal(t, err, fserrors.ErrNotExist)
 			},
@@ -1531,7 +1534,7 @@ func TestCreateSymbolicLink(t *testing.T) {
 		srcPath, _ := fspath.NewFileSystemPath(testCase.SrcPath, workingDir)
 		destPath, _ := fspath.NewFileSystemPath(testCase.DestPath, workingDir)
 
-		res, err := fs.CreateSymbolicLink(srcPath, destPath)
+		res, err := fs.CreateSymbolicLink(srcPath, destPath, rootUser)
 		testCase.Assertions(t, fs, srcPath, res, workingDir, err)
 	}
 }

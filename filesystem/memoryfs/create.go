@@ -4,24 +4,26 @@ import (
 	"material/filesystem/filesystem/file"
 	"material/filesystem/filesystem/fserrors"
 	"material/filesystem/filesystem/fspath"
+	"material/filesystem/filesystem/user"
+
 	"path/filepath"
 )
 
-func (fs *MemoryFileSystem) Mkdir(path *fspath.FileSystemPath) (file.File, error) {
+func (fs *MemoryFileSystem) Mkdir(path *fspath.FileSystemPath, user user.User) (file.File, error) {
 	// RW lock the fs
 	fs.Lock()
 	defer fs.Unlock()
-	return fs.createAt(path, file.Directory, false)
+	return fs.createAt(path, file.Directory, user, false)
 }
 
-func (fs *MemoryFileSystem) MkdirAll(path *fspath.FileSystemPath) (file.File, error) {
+func (fs *MemoryFileSystem) MkdirAll(path *fspath.FileSystemPath, user user.User) (file.File, error) {
 	// RW lock the fs
 	fs.Lock()
 	defer fs.Unlock()
-	return fs.createAt(path, file.Directory, true)
+	return fs.createAt(path, file.Directory, user, true)
 }
 
-func (fs *MemoryFileSystem) CreateRegularFile(path *fspath.FileSystemPath) (file.File, error) {
+func (fs *MemoryFileSystem) CreateRegularFile(path *fspath.FileSystemPath, user user.User) (file.File, error) {
 	// RW lock the fs
 	fs.Lock()
 	defer fs.Unlock()
@@ -29,17 +31,17 @@ func (fs *MemoryFileSystem) CreateRegularFile(path *fspath.FileSystemPath) (file
 	if err := checkFilePath(path); err != nil {
 		return nil, err
 	}
-	return fs.createAt(path, file.RegularFile, false)
+	return fs.createAt(path, file.RegularFile, user, false)
 }
 
 // TODO: validate file name
 // TODO: make create intermediate directories configurable
-func (fs *MemoryFileSystem) CreateHardLink(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath) (file.FileInfo, error) {
+func (fs *MemoryFileSystem) CreateHardLink(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath, user user.User) (file.FileInfo, error) {
 	fs.Lock()
 	defer fs.Unlock()
 
 	// Locate file to link
-	fileToLink, err := fs.traverseToBase(srcPath)
+	fileToLink, err := fs.traverseToBase(srcPath, user)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +52,7 @@ func (fs *MemoryFileSystem) CreateHardLink(srcPath *fspath.FileSystemPath, destP
 	}
 
 	// Create an empty file
-	hardLink, err := fs.createAt(destPath, file.RegularFile, true)
+	hardLink, err := fs.createAt(destPath, file.RegularFile, user, true)
 	if err != nil {
 		return nil, err
 	}
@@ -62,12 +64,12 @@ func (fs *MemoryFileSystem) CreateHardLink(srcPath *fspath.FileSystemPath, destP
 
 // TODO: make create intermediate directories configurable
 // TODO: document symbolic links to not existing file should work
-func (fs *MemoryFileSystem) CreateSymbolicLink(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath) (file.FileInfo, error) {
+func (fs *MemoryFileSystem) CreateSymbolicLink(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath, user user.User) (file.FileInfo, error) {
 	fs.Lock()
 	defer fs.Unlock()
 
 	// Create an empty file
-	symLink, err := fs.createAt(destPath, file.SymbolicLink, false)
+	symLink, err := fs.createAt(destPath, file.SymbolicLink, user, true)
 	if err != nil {
 		return nil, err
 	}
@@ -82,30 +84,30 @@ func (fs *MemoryFileSystem) CreateSymbolicLink(srcPath *fspath.FileSystemPath, d
 	return symLink.info, nil
 }
 
-func (fs *MemoryFileSystem) createAt(path *fspath.FileSystemPath, fileType file.FileType, isRecursive bool) (*inMemoryFile, error) {
+func (fs *MemoryFileSystem) createAt(path *fspath.FileSystemPath, fileType file.FileType, user user.User, createParentDirs bool) (*inMemoryFile, error) {
 	// TODO: validate file name (alphanumeric for simplicity)
 	if err := checkFilePath(path); err != nil {
 		return nil, err
 	}
 
 	// find where file needs to be added
-	parent, err := fs.traverseToDirWithCreateIntermediateDirs(path, isRecursive)
+	parent, err := fs.traverseToDirWithCreateIntermediateDirs(path, createParentDirs, user)
 	if err != nil {
 		return nil, err
 	}
 
 	// create the file
-	return fs.create(path.Base(), fileType, parent)
+	return fs.create(path.Base(), fileType, parent, user)
 }
 
 // TODO: this is the only place that creates files
-func (fs *MemoryFileSystem) create(fileName string, fileType file.FileType, parent *inMemoryFile) (*inMemoryFile, error) {
+func (fs *MemoryFileSystem) create(fileName string, fileType file.FileType, parent *inMemoryFile, user user.User) (*inMemoryFile, error) {
 	if _, found := parent.fileMap[fileName]; found {
 		return nil, fserrors.ErrExist
 	}
 
 	absolutePath := filepath.Join(parent.info.AbsolutePath(), fileName)
-	newFile := newInMemoryFile(absolutePath, fileType)
+	newFile := newInMemoryFile(absolutePath, fileType, user.Id(), user.PrimaryGroup())
 	fs.attachToParent(newFile, parent)
 	return newFile, nil
 }

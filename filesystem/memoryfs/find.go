@@ -3,10 +3,11 @@ package memoryfs
 import (
 	"material/filesystem/filesystem/file"
 	"material/filesystem/filesystem/fspath"
+	"material/filesystem/filesystem/user"
 	"sort"
 )
 
-func (fs *MemoryFileSystem) FindFiles(name string, path *fspath.FileSystemPath) ([]file.FileInfo, error) {
+func (fs *MemoryFileSystem) FindFiles(name string, path *fspath.FileSystemPath, user user.User) ([]file.FileInfo, error) {
 	// Initialize result
 	matchingFiles := []file.FileInfo{}
 
@@ -18,7 +19,7 @@ func (fs *MemoryFileSystem) FindFiles(name string, path *fspath.FileSystemPath) 
 	defer fs.RUnlock()
 
 	// Get directory to start the search
-	dir, err := fs.GetDirectory(path)
+	dir, err := fs.GetDirectory(path, user)
 	if err != nil {
 		return matchingFiles, err
 	}

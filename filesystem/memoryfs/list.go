@@ -3,10 +3,11 @@ package memoryfs
 import (
 	"material/filesystem/filesystem/file"
 	"material/filesystem/filesystem/fspath"
+	"material/filesystem/filesystem/user"
 	"sort"
 )
 
-func (fs *MemoryFileSystem) ListFiles(path *fspath.FileSystemPath) ([]file.FileInfo, error) {
+func (fs *MemoryFileSystem) ListFiles(path *fspath.FileSystemPath, user user.User) ([]file.FileInfo, error) {
 	fs.RLock()
 	defer fs.RUnlock()
 
@@ -14,7 +15,7 @@ func (fs *MemoryFileSystem) ListFiles(path *fspath.FileSystemPath) ([]file.FileI
 	files := []file.FileInfo{}
 
 	// Get directory to list files
-	dir, err := fs.GetDirectory(path)
+	dir, err := fs.GetDirectory(path, user)
 	if err != nil {
 		return files, err
 	}

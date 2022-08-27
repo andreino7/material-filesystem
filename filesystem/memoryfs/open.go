@@ -4,6 +4,7 @@ import (
 	"material/filesystem/filesystem/file"
 	"material/filesystem/filesystem/fserrors"
 	"material/filesystem/filesystem/fspath"
+	"material/filesystem/filesystem/user"
 	"sync"
 
 	"github.com/google/uuid"
@@ -27,11 +28,11 @@ func newFileTable() *fileTable {
 
 // Open opens the file at the given location and returns the file descriptor.
 // Returns an error if the file was not found or it's not a "regular" file.
-func (fs *MemoryFileSystem) Open(path *fspath.FileSystemPath) (string, error) {
+func (fs *MemoryFileSystem) Open(path *fspath.FileSystemPath, user user.User) (string, error) {
 	fs.Lock()
 	defer fs.Unlock()
 
-	fileToOpen, err := fs.traverseToBase(path)
+	fileToOpen, err := fs.traverseToBase(path, user)
 	if err != nil {
 		return "", err
 	}
@@ -50,7 +51,7 @@ func (fs *MemoryFileSystem) Open(path *fspath.FileSystemPath) (string, error) {
 	return fd, nil
 }
 
-func (fs *MemoryFileSystem) Close(descriptor string) {
+func (fs *MemoryFileSystem) Close(descriptor string, user user.User) {
 	fs.openFiles.Lock()
 	defer fs.openFiles.Unlock()
 	delete(fs.openFiles.table, descriptor)

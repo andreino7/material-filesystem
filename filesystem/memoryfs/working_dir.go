@@ -4,19 +4,20 @@ import (
 	"material/filesystem/filesystem/file"
 	"material/filesystem/filesystem/fserrors"
 	"material/filesystem/filesystem/fspath"
+	"material/filesystem/filesystem/user"
 )
 
 func (fs *MemoryFileSystem) DefaultWorkingDirectory() file.File {
 	return fs.root
 }
 
-func (fs *MemoryFileSystem) GetDirectory(path *fspath.FileSystemPath) (file.File, error) {
+func (fs *MemoryFileSystem) GetDirectory(path *fspath.FileSystemPath, user user.User) (file.File, error) {
 	// RLock the fs
 	fs.RLock()
 	defer fs.RUnlock()
 
 	// Find path starting point
-	dir, err := fs.traverseToBase(path)
+	dir, err := fs.traverseToBase(path, user)
 	if err != nil {
 		return nil, err
 	}
