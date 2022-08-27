@@ -14,6 +14,9 @@ build-fs:
 build-daemon: generate-protobuf-models
 	go build -o ./build/fs-daemon ./daemon/cmd/main.go
 
+build-cli: generate-protobuf-models
+	go build -o ./build/fs-cli ./cli/main.go
+
 generate-protobuf-models:
 	@rm -rf pb/
 	@mkdir pb
