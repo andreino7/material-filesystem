@@ -2,6 +2,7 @@ package memoryfs
 
 import (
 	"material/filesystem/filesystem/file"
+	"material/filesystem/filesystem/fspath"
 	"path/filepath"
 )
 
@@ -10,16 +11,12 @@ type inMemoryFileInfo struct {
 	fileType     file.FileType
 }
 
-type inMemoryFileData struct {
-	data []byte
-}
-
 type inMemoryFile struct {
 	info      *inMemoryFileInfo
 	data      *inMemoryFileData
 	isDeleted bool
 	fileMap   map[string]*inMemoryFile
-	link      string
+	link      *fspath.FileSystemPath
 }
 
 // Implement sort interface
@@ -54,10 +51,6 @@ func (info *inMemoryFileInfo) Name() string {
 
 func (info *inMemoryFileInfo) AbsolutePath() string {
 	return info.absolutePath
-}
-
-func (data *inMemoryFileData) Data() []byte {
-	return data.data
 }
 
 func newInMemoryFile(absolutePath string, fileType file.FileType) *inMemoryFile {

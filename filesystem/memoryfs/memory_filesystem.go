@@ -6,8 +6,9 @@ import (
 )
 
 type MemoryFileSystem struct {
-	mutex sync.RWMutex
-	root  *inMemoryFile
+	sync.RWMutex
+	root      *inMemoryFile
+	openFiles *fileTable
 }
 
 func NewMemoryFileSystem() *MemoryFileSystem {
@@ -18,6 +19,7 @@ func NewMemoryFileSystem() *MemoryFileSystem {
 	root.fileMap["/"] = root
 
 	return &MemoryFileSystem{
-		root: root,
+		root:      root,
+		openFiles: newFileTable(),
 	}
 }

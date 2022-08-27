@@ -23,13 +23,16 @@ func TestGetDirectory(t *testing.T) {
 			Path:     "/dir5/dir6",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1/dir2", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir3"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir3", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir5/dir6/dir7"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir5/dir6/dir7", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
 
@@ -47,13 +50,16 @@ func TestGetDirectory(t *testing.T) {
 			Path:     "/dir5/dir6/dir8",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1/dir2", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir3"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir3", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir5/dir6/dir7"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir5/dir6/dir7", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -71,16 +77,20 @@ func TestGetDirectory(t *testing.T) {
 			Path:     "/dir1/dir2/file1",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1/dir2", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir3"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir3", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir5/dir6/dir7"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir5/dir6/dir7", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/dir2/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/dir2/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -98,17 +108,19 @@ func TestGetDirectory(t *testing.T) {
 			Path:     "../../",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1/dir2", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir3"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir3", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir5/dir6/dir7"), nil)
+				p, _ = fspath.NewFileSystemPath("/dir5/dir6/dir7", nil)
+				workDir, err := fs.MkdirAll(p)
 				if err != nil {
 					return nil, nil, err
 				}
-
 				return fs, workDir, nil
 			},
 			Assertions: func(t *testing.T, res file.File, err error) {
@@ -123,17 +135,19 @@ func TestGetDirectory(t *testing.T) {
 			Path:     "../../././.././dir3/../dir1/dir2/",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1/dir2", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir3"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir3", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir5/dir6/dir7"), nil)
+				p, _ = fspath.NewFileSystemPath("/dir5/dir6/dir7", nil)
+				workDir, err := fs.MkdirAll(p)
 				if err != nil {
 					return nil, nil, err
 				}
-
 				return fs, workDir, nil
 			},
 			Assertions: func(t *testing.T, res file.File, err error) {
@@ -148,17 +162,19 @@ func TestGetDirectory(t *testing.T) {
 			Path:     "../../../../../../../../..",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1/dir2", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir3"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir3", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir5/dir6/dir7"), nil)
+				p, _ = fspath.NewFileSystemPath("/dir5/dir6/dir7", nil)
+				workDir, err := fs.MkdirAll(p)
 				if err != nil {
 					return nil, nil, err
 				}
-
 				return fs, workDir, nil
 			},
 			Assertions: func(t *testing.T, res file.File, err error) {
@@ -173,17 +189,19 @@ func TestGetDirectory(t *testing.T) {
 			Path:     "../../dir3",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1/dir2", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir3"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir3", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir5/dir6/dir7"), nil)
+				p, _ = fspath.NewFileSystemPath("/dir5/dir6/dir7", nil)
+				workDir, err := fs.MkdirAll(p)
 				if err != nil {
 					return nil, nil, err
 				}
-
 				return fs, workDir, nil
 			},
 			Assertions: func(t *testing.T, res file.File, err error) {
@@ -199,18 +217,21 @@ func TestGetDirectory(t *testing.T) {
 			Path:     "file1",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				workingDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2"), nil)
+				p, _ := fspath.NewFileSystemPath("/dir1/dir2", nil)
+				workingDir, err := fs.MkdirAll(p)
 				if err != nil {
 					return nil, nil, err
 				}
-
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir3"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir3", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir5/dir6/dir7"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir5/dir6/dir7", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/dir2/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/dir2/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, workingDir, nil
@@ -228,21 +249,25 @@ func TestGetDirectory(t *testing.T) {
 			Path:     "file1",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				workingDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2"), nil)
+				p, _ := fspath.NewFileSystemPath("/dir1/dir2", nil)
+				workingDir, err := fs.MkdirAll(p)
 				if err != nil {
 					return nil, nil, err
 				}
-
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir3"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir3", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir5/dir6/dir7"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir5/dir6/dir7", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/dir2/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/dir2/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.RemoveAll(fspath.NewFileSystemPath(workingDir.Info().AbsolutePath()), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath(workingDir.Info().AbsolutePath(), nil)
+				if _, err := fs.RemoveAll(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, workingDir, nil
@@ -260,16 +285,20 @@ func TestGetDirectory(t *testing.T) {
 			Path:     "../../",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2"), nil); err != nil {
+				p1, _ := fspath.NewFileSystemPath("/dir1/dir2", nil)
+				if _, err := fs.MkdirAll(p1); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir3"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir3", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateSymbolicLink(fspath.NewFileSystemPath("/dir1/dir2"), fspath.NewFileSystemPath("/dir5"), nil); err != nil {
+				p2, _ := fspath.NewFileSystemPath("/dir5", nil)
+				if _, err := fs.CreateSymbolicLink(p1, p2); err != nil {
 					return nil, nil, err
 				}
-				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir5/dir6/dir7"), nil)
+				p, _ = fspath.NewFileSystemPath("/dir5/dir6/dir7", nil)
+				workDir, err := fs.MkdirAll(p)
 				if err != nil {
 					return nil, nil, err
 				}
@@ -289,7 +318,8 @@ func TestGetDirectory(t *testing.T) {
 		if err != nil {
 			t.Fatal("error initializing file system")
 		}
-		dir, err := fs.GetDirectory(fspath.NewFileSystemPath(testCase.Path), workingDir)
+		p, _ := fspath.NewFileSystemPath(testCase.Path, workingDir)
+		dir, err := fs.GetDirectory(p)
 		testCase.Assertions(t, dir, err)
 	}
 }

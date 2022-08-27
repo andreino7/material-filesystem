@@ -26,13 +26,17 @@ func TestFindFiles(t *testing.T) {
 			FileName: "target",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1/dir2/target", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/target", nil)
+
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir/target"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/target/target/dir/target", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -55,13 +59,17 @@ func TestFindFiles(t *testing.T) {
 			FileName: "target",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1/dir2/target", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/target", nil)
+
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir/target"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/target/target/dir/target", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -81,13 +89,17 @@ func TestFindFiles(t *testing.T) {
 			FileName: "invalid",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1/dir2/target", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/target", nil)
+
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir/target"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/target/target/dir/target", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -104,13 +116,17 @@ func TestFindFiles(t *testing.T) {
 			FileName: "target",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1/dir2/target", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/target", nil)
+
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir/target"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/target/target/dir/target", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -130,14 +146,18 @@ func TestFindFiles(t *testing.T) {
 			FileName: "target",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil)
+				p, _ := fspath.NewFileSystemPath("/dir1/dir2/target", nil)
+				workDir, err := fs.MkdirAll(p)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/target", nil)
+
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir/target"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/target/target/dir/target", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -160,17 +180,21 @@ func TestFindFiles(t *testing.T) {
 			FileName: "target",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1/dir2/target", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/target", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir"), nil)
+				p, _ = fspath.NewFileSystemPath("/target/target/dir", nil)
+				workDir, err := fs.MkdirAll(p)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target/target/dir/target"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/target/target/dir/target", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -189,17 +213,21 @@ func TestFindFiles(t *testing.T) {
 			FileName: "dir2",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1/dir2/target", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/target", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir"), nil)
+				p, _ = fspath.NewFileSystemPath("/target/target/dir", nil)
+				workDir, err := fs.MkdirAll(p)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target/target/dir/target"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/target/target/dir/target", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -216,17 +244,21 @@ func TestFindFiles(t *testing.T) {
 			FileName: "target",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1/dir2/target", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/target", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir"), nil)
+				p, _ = fspath.NewFileSystemPath("/target/target/dir", nil)
+				workDir, err := fs.MkdirAll(p)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target/target/dir/target"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/target/target/dir/target", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -246,20 +278,26 @@ func TestFindFiles(t *testing.T) {
 			FileName: "target",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1/dir2/target", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/target", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				workDir, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir"), nil)
+				p, _ = fspath.NewFileSystemPath("/target/target/dir", nil)
+				workDir, err := fs.MkdirAll(p)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/target/target/dir/target"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/target/target/dir/target", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.RemoveAll(fspath.NewFileSystemPath(workDir.Info().AbsolutePath()), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath(workDir.Info().AbsolutePath(), nil)
+
+				if _, err := fs.RemoveAll(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -279,16 +317,22 @@ func TestFindFiles(t *testing.T) {
 			FileName: "target",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir2/target"), nil); err != nil {
+				p1, _ := fspath.NewFileSystemPath("/dir1/dir2/target", nil)
+				if _, err := fs.MkdirAll(p1); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/target"), nil); err != nil {
+				p2, _ := fspath.NewFileSystemPath("/dir1/target", nil)
+				if _, err := fs.CreateRegularFile(p2); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/target/target/dir/target"), nil); err != nil {
+				p3, _ := fspath.NewFileSystemPath("/target/target/dir/target", nil)
+				if _, err := fs.MkdirAll(p3); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateSymbolicLink(fspath.NewFileSystemPath("/target"), fspath.NewFileSystemPath("/target-link"), nil); err != nil {
+				p4, _ := fspath.NewFileSystemPath("/target-link", nil)
+				p5, _ := fspath.NewFileSystemPath("/target", nil)
+
+				if _, err := fs.CreateSymbolicLink(p5, p4); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -308,7 +352,8 @@ func TestFindFiles(t *testing.T) {
 		if err != nil {
 			t.Fatal("error initializing file system")
 		}
-		dir, err := fs.FindFiles(testCase.FileName, fspath.NewFileSystemPath(testCase.Path), workingDir)
+		p, _ := fspath.NewFileSystemPath(testCase.Path, workingDir)
+		dir, err := fs.FindFiles(testCase.FileName, p)
 		testCase.Assertions(t, dir, err)
 	}
 }

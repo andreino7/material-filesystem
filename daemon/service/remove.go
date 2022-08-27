@@ -2,40 +2,42 @@ package daemon
 
 import (
 	"context"
+	"fmt"
 	"material/filesystem/filesystem/file"
 	pb "material/filesystem/pb/proto/fsservice"
-
-	"google.golang.org/protobuf/proto"
 )
 
-func (daemon *FileSystemDaemon) Remove(ctx context.Context, request *pb.RemoveRequest) (*pb.RemoveResponse, error) {
-	path, workingDir, err := daemon.getPathAndWorkDir(request)
+func (daemon *FileSystemDaemon) Remove(ctx context.Context, request *pb.Request) (*pb.Response, error) {
+	rmReq := request.GetRemove()
+	if rmReq == nil {
+		return nil, fmt.Errorf("invalid request")
+	}
+
+	path, err := daemon.getPath(request, func() string { return rmReq.GetPath() })
 	if err != nil {
 		return nil, err
 	}
 
 	var file file.FileInfo
-	if request.GetRecursive() {
-		file, err = daemon.fs.RemoveAll(path, workingDir)
+	if rmReq.GetRecursive() {
+		file, err = daemon.fs.RemoveAll(path)
 	} else {
-		file, err = daemon.fs.Remove(path, workingDir)
+		file, err = daemon.fs.Remove(path)
 	}
 
 	if err != nil {
-		msg, err := daemon.extractError(request.GetSessionId(), err)
-		if err != nil {
-			return nil, err
-		}
-		return &pb.RemoveResponse{Error: proto.String(msg)}, nil
+		return daemon.extractError(request.GetSessionId(), err)
 	}
 
-	if workingDir.Info().AbsolutePath() == file.AbsolutePath() {
-		err = daemon.sessionStore.ChangeWorkingDirectory(request.GetSessionId(), daemon.fs.DefaultWorkingDirectory())
-		if err != nil {
-			return nil, err
-		}
+	_, err = daemon.updateWorkingDirectory(request.GetSessionId(), file)
+	if err != nil {
+		return nil, err
 	}
 
 	// TODO: add working dir to resp
-	return &pb.RemoveResponse{}, nil
+	return &pb.Response{
+		Response: &pb.Response_Remove{
+			Remove: &pb.RemoveResponse{},
+		},
+	}, nil
 }

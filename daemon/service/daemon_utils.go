@@ -5,26 +5,20 @@ import (
 	"material/filesystem/filesystem/file"
 	"material/filesystem/filesystem/fserrors"
 	"material/filesystem/filesystem/fspath"
+	pb "material/filesystem/pb/proto/fsservice"
+
+	"google.golang.org/protobuf/proto"
 )
 
-type singlePathRequest interface {
-	GetPath() string
-	GetSessionId() string
-}
+type pathExtractorFn func() string
 
-type srcAndDestPathRequest interface {
-	GetSrcPath() string
-	GetDestPath() string
-	GetSessionId() string
-}
-
-func (daemon *FileSystemDaemon) extractError(sessionId string, err error) (string, error) {
+func (daemon *FileSystemDaemon) extractError(sessionId string, err error) (*pb.Response, error) {
 	target := &fserrors.FileSystemError{}
 	if errors.As(err, &target) {
 		daemon.maybeChangeWorkDirectory(sessionId, target)
-		return err.Error(), nil
+		return &pb.Response{Error: proto.String(err.Error())}, nil
 	}
-	return "", err
+	return nil, err
 }
 
 func (daemon *FileSystemDaemon) maybeChangeWorkDirectory(sessionId string, err *fserrors.FileSystemError) {
@@ -33,23 +27,25 @@ func (daemon *FileSystemDaemon) maybeChangeWorkDirectory(sessionId string, err *
 	}
 }
 
-func (daemon *FileSystemDaemon) getPathAndWorkDir(req singlePathRequest) (*fspath.FileSystemPath, file.File, error) {
-	workingDir, err := daemon.sessionStore.GetWorkingDirectoryForSession(req)
+func (daemon *FileSystemDaemon) updateWorkingDirectory(sessionId string, deletedFile file.FileInfo) (file.File, error) {
+	workingDir, err := daemon.sessionStore.GetWorkingDirectoryForSession(sessionId)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	path := fspath.NewFileSystemPath(req.GetPath())
-	return path, workingDir, nil
+	if workingDir.Info().AbsolutePath() == deletedFile.AbsolutePath() {
+		daemon.sessionStore.ChangeWorkingDirectory(sessionId, daemon.fs.DefaultWorkingDirectory())
+		return daemon.fs.DefaultWorkingDirectory(), nil
+	}
+
+	return workingDir, nil
 }
 
-func (daemon *FileSystemDaemon) getSrcPathDestPathAndWorkDir(req srcAndDestPathRequest) (*fspath.FileSystemPath, *fspath.FileSystemPath, file.File, error) {
-	workingDir, err := daemon.sessionStore.GetWorkingDirectoryForSession(req)
+func (daemon *FileSystemDaemon) getPath(req *pb.Request, pathpathExtractorFn pathExtractorFn) (*fspath.FileSystemPath, error) {
+	workingDir, err := daemon.sessionStore.GetWorkingDirectoryForSession(req.SessionId)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, err
 	}
 
-	srcPath := fspath.NewFileSystemPath(req.GetSrcPath())
-	destPath := fspath.NewFileSystemPath(req.GetDestPath())
-	return srcPath, destPath, workingDir, nil
+	return fspath.NewFileSystemPath(pathpathExtractorFn(), workingDir)
 }

@@ -2,28 +2,30 @@ package daemon
 
 import (
 	"context"
+	"fmt"
 
 	pb "material/filesystem/pb/proto/fsservice"
-
-	"google.golang.org/protobuf/proto"
 )
 
-func (daemon *FileSystemDaemon) CreateRegularFile(ctx context.Context, request *pb.CreateRegularFileRequest) (*pb.CreateRegularFileResponse, error) {
-	path, workingDir, err := daemon.getPathAndWorkDir(request)
+func (daemon *FileSystemDaemon) CreateRegularFile(ctx context.Context, request *pb.Request) (*pb.Response, error) {
+	createReq := request.GetCreateRegularFile()
+	if createReq == nil {
+		return nil, fmt.Errorf("invalid request")
+	}
+
+	path, err := daemon.getPath(request, func() string { return createReq.GetPath() })
 	if err != nil {
 		return nil, err
 	}
 
-	file, err := daemon.fs.CreateRegularFile(path, workingDir)
+	file, err := daemon.fs.CreateRegularFile(path)
 	if err != nil {
-		msg, err := daemon.extractError(request.GetSessionId(), err)
-		if err != nil {
-			return nil, err
-		}
-		return &pb.CreateRegularFileResponse{Error: proto.String(msg)}, nil
+		return daemon.extractError(request.GetSessionId(), err)
 	}
 
-	return &pb.CreateRegularFileResponse{
-		Name: proto.String(file.Info().Name()),
+	return &pb.Response{
+		Response: &pb.Response_CreateRegularFile{
+			CreateRegularFile: &pb.CreateRegularFileResponse{Name: file.Info().Name()},
+		},
 	}, nil
 }

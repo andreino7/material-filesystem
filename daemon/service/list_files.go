@@ -2,24 +2,24 @@ package daemon
 
 import (
 	"context"
+	"fmt"
 	pb "material/filesystem/pb/proto/fsservice"
-
-	"google.golang.org/protobuf/proto"
 )
 
-func (daemon *FileSystemDaemon) ListFiles(ctx context.Context, request *pb.ListFilesRequest) (*pb.ListFilesResponse, error) {
-	path, workingDir, err := daemon.getPathAndWorkDir(request)
+func (daemon *FileSystemDaemon) ListFiles(ctx context.Context, request *pb.Request) (*pb.Response, error) {
+	lsReq := request.GetList()
+	if lsReq == nil {
+		return nil, fmt.Errorf("invalid request")
+	}
+
+	path, err := daemon.getPath(request, func() string { return lsReq.GetPath() })
 	if err != nil {
 		return nil, err
 	}
 
-	files, err := daemon.fs.ListFiles(path, workingDir)
+	files, err := daemon.fs.ListFiles(path)
 	if err != nil {
-		msg, err := daemon.extractError(request.GetSessionId(), err)
-		if err != nil {
-			return nil, err
-		}
-		return &pb.ListFilesResponse{Error: proto.String(msg)}, nil
+		return daemon.extractError(request.GetSessionId(), err)
 	}
 
 	names := []string{}
@@ -27,7 +27,9 @@ func (daemon *FileSystemDaemon) ListFiles(ctx context.Context, request *pb.ListF
 		names = append(names, info.Name())
 	}
 
-	return &pb.ListFilesResponse{
-		Names: names,
+	return &pb.Response{
+		Response: &pb.Response_List{
+			List: &pb.ListFilesResponse{Names: names},
+		},
 	}, nil
 }

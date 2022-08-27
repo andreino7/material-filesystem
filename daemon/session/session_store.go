@@ -14,10 +14,6 @@ type session struct {
 	workingDirectory file.File
 }
 
-type requestWithSessionId interface {
-	GetSessionId() string
-}
-
 // TODO: implement cleanup for inactive sessions
 type SessionStore struct {
 	sessions map[string]*session
@@ -62,15 +58,15 @@ func (store *SessionStore) DeleteSession(request *pb.DeleteSessionRequest) (*pb.
 	}, nil
 }
 
-func (store *SessionStore) GetWorkingDirectoryForSession(req requestWithSessionId) (file.File, error) {
+func (store *SessionStore) GetWorkingDirectoryForSession(sessionId string) (file.File, error) {
 	store.mutex.RLock()
 	defer store.mutex.RUnlock()
 
-	if req.GetSessionId() == "" {
+	if sessionId == "" {
 		return nil, fmt.Errorf("invalid session id")
 	}
 
-	session, found := store.sessions[req.GetSessionId()]
+	session, found := store.sessions[sessionId]
 	if !found {
 		return nil, fmt.Errorf("session not found")
 	}

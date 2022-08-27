@@ -2,24 +2,24 @@ package daemon
 
 import (
 	"context"
+	"fmt"
 	pb "material/filesystem/pb/proto/fsservice"
-
-	"google.golang.org/protobuf/proto"
 )
 
-func (daemon *FileSystemDaemon) ChangeWorkingDirectory(ctx context.Context, request *pb.ChangeWorkingDirectoryRequest) (*pb.ChangeWorkingDirectoryResponse, error) {
-	path, workingDir, err := daemon.getPathAndWorkDir(request)
+func (daemon *FileSystemDaemon) ChangeWorkingDirectory(ctx context.Context, request *pb.Request) (*pb.Response, error) {
+	cdReq := request.GetChangeWorkingDirectory()
+	if cdReq == nil {
+		return nil, fmt.Errorf("invalid request")
+	}
+
+	path, err := daemon.getPath(request, func() string { return cdReq.GetPath() })
 	if err != nil {
 		return nil, err
 	}
 
-	file, err := daemon.fs.GetDirectory(path, workingDir)
+	file, err := daemon.fs.GetDirectory(path)
 	if err != nil {
-		msg, err := daemon.extractError(request.GetSessionId(), err)
-		if err != nil {
-			return nil, err
-		}
-		return &pb.ChangeWorkingDirectoryResponse{Error: proto.String(msg)}, nil
+		return daemon.extractError(request.GetSessionId(), err)
 	}
 
 	err = daemon.sessionStore.ChangeWorkingDirectory(request.GetSessionId(), file)
@@ -27,7 +27,9 @@ func (daemon *FileSystemDaemon) ChangeWorkingDirectory(ctx context.Context, requ
 		return nil, err
 	}
 
-	return &pb.ChangeWorkingDirectoryResponse{
-		Name: proto.String(file.Info().Name()),
+	return &pb.Response{
+		Response: &pb.Response_ChangeWorkingDirectory{
+			ChangeWorkingDirectory: &pb.ChangeWorkingDirectoryResponse{Name: file.Info().Name()},
+		},
 	}, nil
 }

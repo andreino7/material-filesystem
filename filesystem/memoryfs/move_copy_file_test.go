@@ -27,13 +27,16 @@ func TestMove(t *testing.T) {
 			DestPath: "/dir1/file3",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1/", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -52,13 +55,16 @@ func TestMove(t *testing.T) {
 			DestPath: "/dir1/file3",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1/", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -77,13 +83,16 @@ func TestMove(t *testing.T) {
 			DestPath: "/dir1",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1/", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -102,13 +111,16 @@ func TestMove(t *testing.T) {
 			DestPath: "/dir1/file3",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1/", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -119,7 +131,8 @@ func TestMove(t *testing.T) {
 
 				assert.Equal(t, info.AbsolutePath(), "/dir1/file3")
 				assert.Equal(t, info.Name(), "file3")
-				files, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/"), nil)
+				p, _ := fspath.NewFileSystemPath("/", nil)
+				files, _ := fs.FindFiles("file1", p)
 				assert.Len(t, files, 0)
 			},
 		},
@@ -129,13 +142,16 @@ func TestMove(t *testing.T) {
 			DestPath: "/dir1/file2",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1/", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -146,11 +162,12 @@ func TestMove(t *testing.T) {
 
 				assert.True(t, strings.HasPrefix(info.AbsolutePath(), "/dir1/file2"))
 				assert.NotEqual(t, info.AbsolutePath(), "/dir1/file2")
-				files, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/"), nil)
+				p, _ := fspath.NewFileSystemPath("/", nil)
+				files, _ := fs.FindFiles("file1", p)
 				assert.Len(t, files, 0)
-				files, _ = fs.FindFiles(info.Name(), fspath.NewFileSystemPath("/"), nil)
+				files, _ = fs.FindFiles(info.Name(), p)
 				assert.Len(t, files, 1)
-				files, _ = fs.FindFiles("file2", fspath.NewFileSystemPath("/"), nil)
+				files, _ = fs.FindFiles("file2", p)
 				assert.Len(t, files, 1)
 			},
 		},
@@ -160,16 +177,20 @@ func TestMove(t *testing.T) {
 			DestPath: "/dir2",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -180,7 +201,8 @@ func TestMove(t *testing.T) {
 
 				assert.Equal(t, info.AbsolutePath(), "/dir2/file1")
 				assert.Equal(t, info.Name(), "file1")
-				files, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/"), nil)
+				p, _ := fspath.NewFileSystemPath("/", nil)
+				files, _ := fs.FindFiles("file1", p)
 				assert.Len(t, files, 1)
 			},
 		},
@@ -190,16 +212,20 @@ func TestMove(t *testing.T) {
 			DestPath: "/dir2/dir4/dir5/file1",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -210,7 +236,8 @@ func TestMove(t *testing.T) {
 
 				assert.Equal(t, info.AbsolutePath(), "/dir2/dir4/dir5/file1")
 				assert.Equal(t, info.Name(), "file1")
-				files, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/"), nil)
+				p, _ := fspath.NewFileSystemPath("/", nil)
+				files, _ := fs.FindFiles("file1", p)
 				assert.Len(t, files, 1)
 			},
 		},
@@ -220,16 +247,20 @@ func TestMove(t *testing.T) {
 			DestPath: "/dir2/file1",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir2/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -240,11 +271,13 @@ func TestMove(t *testing.T) {
 
 				assert.True(t, strings.HasPrefix(info.AbsolutePath(), "/dir2/file1"))
 				assert.NotEqual(t, info.AbsolutePath(), "/dir2/file1")
-				files, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/dir1"), nil)
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				files, _ := fs.FindFiles("file1", p)
 				assert.Len(t, files, 0)
-				files, _ = fs.FindFiles(info.Name(), fspath.NewFileSystemPath("/dir2"), nil)
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				files, _ = fs.FindFiles(info.Name(), p)
 				assert.Len(t, files, 1)
-				files, _ = fs.FindFiles("file1", fspath.NewFileSystemPath("/dir2"), nil)
+				files, _ = fs.FindFiles("file1", p)
 				assert.Len(t, files, 1)
 			},
 		},
@@ -254,16 +287,20 @@ func TestMove(t *testing.T) {
 			DestPath: "/file3",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -274,9 +311,10 @@ func TestMove(t *testing.T) {
 
 				assert.Equal(t, info.AbsolutePath(), "/file3")
 				assert.Equal(t, info.Name(), "file3")
-				files, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/"), nil)
+				p, _ := fspath.NewFileSystemPath("/", nil)
+				files, _ := fs.FindFiles("file1", p)
 				assert.Len(t, files, 0)
-				files, _ = fs.FindFiles("file3", fspath.NewFileSystemPath("/"), nil)
+				files, _ = fs.FindFiles("file3", p)
 				assert.Len(t, files, 1)
 			},
 		},
@@ -286,16 +324,20 @@ func TestMove(t *testing.T) {
 			DestPath: "/dir2/file2",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir2/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -306,11 +348,13 @@ func TestMove(t *testing.T) {
 
 				assert.True(t, strings.HasPrefix(info.AbsolutePath(), "/dir2/file2"))
 				assert.NotEqual(t, info.AbsolutePath(), "/dir2/file2")
-				files, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/"), nil)
+				p, _ := fspath.NewFileSystemPath("/", nil)
+				files, _ := fs.FindFiles("file1", p)
 				assert.Len(t, files, 0)
-				files, _ = fs.FindFiles(info.Name(), fspath.NewFileSystemPath("/dir2"), nil)
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				files, _ = fs.FindFiles(info.Name(), p)
 				assert.Len(t, files, 1)
-				files, _ = fs.FindFiles("file2", fspath.NewFileSystemPath("/dir2"), nil)
+				files, _ = fs.FindFiles("file2", p)
 				assert.Len(t, files, 1)
 			},
 		},
@@ -320,16 +364,20 @@ func TestMove(t *testing.T) {
 			DestPath: "/dir2/",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir2/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -339,10 +387,12 @@ func TestMove(t *testing.T) {
 				assert.NotNil(t, info)
 
 				assert.Equal(t, info.AbsolutePath(), "/dir2/dir1")
-				files, _ := fs.FindFiles("dir1", fspath.NewFileSystemPath("/"), nil)
+				p, _ := fspath.NewFileSystemPath("/", nil)
+				files, _ := fs.FindFiles("dir1", p)
 				assert.Len(t, files, 1)
 
-				files, _ = fs.FindFiles("dir1", fspath.NewFileSystemPath("/dir2"), nil)
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				files, _ = fs.FindFiles("dir1", p)
 				assert.Len(t, files, 1)
 			},
 		},
@@ -392,38 +442,48 @@ func TestMove(t *testing.T) {
 			DestPath: "/dir2/",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir3/dir4"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1/dir3/dir4", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir5/dir6"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/dir5/dir6", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file3"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file3", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/dir3/file4"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/dir3/file4", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/dir5/file5"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/dir5/file5", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/dir5/dir6/file6"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/dir5/dir6/file6", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir2/dir1/dir5/dir6"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2/dir1/dir5/dir6", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir2/dir1/file3"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2/dir1/file3", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir2/dir1/file8"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2/dir1/file8", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir2/dir1/dir5/file5"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2/dir1/dir5/file5", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir2/dir1/dir5/dir6/file9"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2/dir1/dir5/dir6/file9", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -434,10 +494,12 @@ func TestMove(t *testing.T) {
 				assert.NotNil(t, info)
 
 				assert.Equal(t, info.AbsolutePath(), "/dir2/dir1")
-				files, _ := fs.FindFiles("dir1", fspath.NewFileSystemPath("/"), nil)
+				p, _ := fspath.NewFileSystemPath("/", nil)
+				files, _ := fs.FindFiles("dir1", p)
 				assert.Len(t, files, 1)
 
-				files, _ = fs.FindFiles("dir1", fspath.NewFileSystemPath("/dir2"), nil)
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				files, _ = fs.FindFiles("dir1", p)
 				assert.Len(t, files, 1)
 			},
 		},
@@ -447,11 +509,13 @@ func TestMove(t *testing.T) {
 			DestPath: "/dir3/dir4/",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				workDir, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil)
+				p1, _ := fspath.NewFileSystemPath("/dir1", nil)
+				workDir, err := fs.Mkdir(p1)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateSymbolicLink(fspath.NewFileSystemPath("/dir1"), fspath.NewFileSystemPath("/dir2"), nil); err != nil {
+				p2, _ := fspath.NewFileSystemPath("/dir2", nil)
+				if _, err := fs.CreateSymbolicLink(p1, p2); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -461,7 +525,9 @@ func TestMove(t *testing.T) {
 				assert.NotNil(t, info)
 
 				assert.Equal(t, info.AbsolutePath(), "/dir3/dir4")
-				dir, _ := fs.GetDirectory(fspath.NewFileSystemPath("/dir3/dir4"), nil)
+				p, _ := fspath.NewFileSystemPath("/dir3/dir4", nil)
+
+				dir, _ := fs.GetDirectory(p)
 				assert.Equal(t, dir.Info().AbsolutePath(), "/dir1")
 			},
 		},
@@ -471,14 +537,17 @@ func TestMove(t *testing.T) {
 			DestPath: "/dir1/file3",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				workDir, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil)
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				workDir, err := fs.Mkdir(p)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -497,14 +566,17 @@ func TestMove(t *testing.T) {
 			DestPath: "/dir1/file3",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				workDir, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil)
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				workDir, err := fs.Mkdir(p)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -523,14 +595,17 @@ func TestMove(t *testing.T) {
 			DestPath: "./file3",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				workDir, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil)
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				workDir, err := fs.Mkdir(p)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -541,7 +616,8 @@ func TestMove(t *testing.T) {
 
 				assert.Equal(t, info.AbsolutePath(), "/dir1/file3")
 				assert.Equal(t, info.Name(), "file3")
-				files, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/"), nil)
+				p, _ := fspath.NewFileSystemPath("/", nil)
+				files, _ := fs.FindFiles("file1", p)
 				assert.Len(t, files, 0)
 			},
 		},
@@ -551,14 +627,17 @@ func TestMove(t *testing.T) {
 			DestPath: "file2",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				workDir, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil)
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				workDir, err := fs.Mkdir(p)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -569,11 +648,12 @@ func TestMove(t *testing.T) {
 
 				assert.True(t, strings.HasPrefix(info.AbsolutePath(), "/dir1/file2"))
 				assert.NotEqual(t, info.AbsolutePath(), "/dir1/file2")
-				files, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/"), nil)
+				p, _ := fspath.NewFileSystemPath("/", nil)
+				files, _ := fs.FindFiles("file1", p)
 				assert.Len(t, files, 0)
-				files, _ = fs.FindFiles(info.Name(), fspath.NewFileSystemPath("/"), nil)
+				files, _ = fs.FindFiles(info.Name(), p)
 				assert.Len(t, files, 1)
-				files, _ = fs.FindFiles("file2", fspath.NewFileSystemPath("/"), nil)
+				files, _ = fs.FindFiles("file2", p)
 				assert.Len(t, files, 1)
 			},
 		},
@@ -583,17 +663,21 @@ func TestMove(t *testing.T) {
 			DestPath: "../dir2",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				workDir, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil)
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				workDir, err := fs.Mkdir(p)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -604,7 +688,8 @@ func TestMove(t *testing.T) {
 
 				assert.Equal(t, info.AbsolutePath(), "/dir2/file1")
 				assert.Equal(t, info.Name(), "file1")
-				files, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/"), nil)
+				p, _ := fspath.NewFileSystemPath("/", nil)
+				files, _ := fs.FindFiles("file1", p)
 				assert.Len(t, files, 1)
 			},
 		},
@@ -614,17 +699,21 @@ func TestMove(t *testing.T) {
 			DestPath: "/dir2/dir4/dir5/file1",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				workDir, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil)
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				workDir, err := fs.Mkdir(p)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -635,7 +724,8 @@ func TestMove(t *testing.T) {
 
 				assert.Equal(t, info.AbsolutePath(), "/dir2/dir4/dir5/file1")
 				assert.Equal(t, info.Name(), "file1")
-				files, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/"), nil)
+				p, _ := fspath.NewFileSystemPath("/", nil)
+				files, _ := fs.FindFiles("file1", p)
 				assert.Len(t, files, 1)
 			},
 		},
@@ -645,17 +735,21 @@ func TestMove(t *testing.T) {
 			DestPath: "../dir2/file1",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				workDir, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil)
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				workDir, err := fs.Mkdir(p)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir2/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -666,11 +760,13 @@ func TestMove(t *testing.T) {
 
 				assert.True(t, strings.HasPrefix(info.AbsolutePath(), "/dir2/file1"))
 				assert.NotEqual(t, info.AbsolutePath(), "/dir2/file1")
-				files, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/dir1"), nil)
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				files, _ := fs.FindFiles("file1", p)
 				assert.Len(t, files, 0)
-				files, _ = fs.FindFiles(info.Name(), fspath.NewFileSystemPath("/dir2"), nil)
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				files, _ = fs.FindFiles(info.Name(), p)
 				assert.Len(t, files, 1)
-				files, _ = fs.FindFiles("file1", fspath.NewFileSystemPath("/dir2"), nil)
+				files, _ = fs.FindFiles("file1", p)
 				assert.Len(t, files, 1)
 			},
 		},
@@ -680,17 +776,21 @@ func TestMove(t *testing.T) {
 			DestPath: "../file3",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				workDir, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil)
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				workDir, err := fs.Mkdir(p)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -701,9 +801,11 @@ func TestMove(t *testing.T) {
 
 				assert.Equal(t, info.AbsolutePath(), "/file3")
 				assert.Equal(t, info.Name(), "file3")
-				files, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/"), nil)
+				p, _ := fspath.NewFileSystemPath("/", nil)
+
+				files, _ := fs.FindFiles("file1", p)
 				assert.Len(t, files, 0)
-				files, _ = fs.FindFiles("file3", fspath.NewFileSystemPath("/"), nil)
+				files, _ = fs.FindFiles("file3", p)
 				assert.Len(t, files, 1)
 			},
 		},
@@ -713,17 +815,21 @@ func TestMove(t *testing.T) {
 			DestPath: "./../dir2/file2",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				workDir, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil)
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				workDir, err := fs.Mkdir(p)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir2/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -734,11 +840,13 @@ func TestMove(t *testing.T) {
 
 				assert.True(t, strings.HasPrefix(info.AbsolutePath(), "/dir2/file2"))
 				assert.NotEqual(t, info.AbsolutePath(), "/dir2/file2")
-				files, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/"), nil)
+				p, _ := fspath.NewFileSystemPath("/", nil)
+				files, _ := fs.FindFiles("file1", p)
 				assert.Len(t, files, 0)
-				files, _ = fs.FindFiles(info.Name(), fspath.NewFileSystemPath("/dir2"), nil)
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				files, _ = fs.FindFiles(info.Name(), p)
 				assert.Len(t, files, 1)
-				files, _ = fs.FindFiles("file2", fspath.NewFileSystemPath("/dir2"), nil)
+				files, _ = fs.FindFiles("file2", p)
 				assert.Len(t, files, 1)
 			},
 		},
@@ -748,17 +856,21 @@ func TestMove(t *testing.T) {
 			DestPath: "../dir2/",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				workDir, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil)
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				workDir, err := fs.Mkdir(p)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir2/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -768,10 +880,12 @@ func TestMove(t *testing.T) {
 				assert.NotNil(t, info)
 
 				assert.Equal(t, info.AbsolutePath(), "/dir2/dir1")
-				files, _ := fs.FindFiles("dir1", fspath.NewFileSystemPath("/"), nil)
+				p, _ := fspath.NewFileSystemPath("/", nil)
+				files, _ := fs.FindFiles("dir1", p)
 				assert.Len(t, files, 1)
 
-				files, _ = fs.FindFiles("dir1", fspath.NewFileSystemPath("/dir2"), nil)
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				files, _ = fs.FindFiles("dir1", p)
 				assert.Len(t, files, 1)
 			},
 		},
@@ -821,42 +935,53 @@ func TestMove(t *testing.T) {
 			DestPath: "../dir2/",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				workDir, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil)
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				workDir, err := fs.Mkdir(p)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir3/dir4"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/dir3/dir4", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir5/dir6"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/dir5/dir6", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file3"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file3", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/dir3/file4"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/dir3/file4", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/dir5/file5"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/dir5/file5", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/dir5/dir6/file6"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/dir5/dir6/file6", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir2/dir1/dir5/dir6"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2/dir1/dir5/dir6", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir2/dir1/file3"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2/dir1/file3", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir2/dir1/file8"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2/dir1/file8", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir2/dir1/dir5/file5"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2/dir1/dir5/file5", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir2/dir1/dir5/dir6/file9"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2/dir1/dir5/dir6/file9", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -867,10 +992,12 @@ func TestMove(t *testing.T) {
 				assert.NotNil(t, info)
 
 				assert.Equal(t, info.AbsolutePath(), "/dir2/dir1")
-				files, _ := fs.FindFiles("dir1", fspath.NewFileSystemPath("/"), nil)
+				p, _ := fspath.NewFileSystemPath("/", nil)
+				files, _ := fs.FindFiles("dir1", p)
 				assert.Len(t, files, 1)
 
-				files, _ = fs.FindFiles("dir1", fspath.NewFileSystemPath("/dir2"), nil)
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				files, _ = fs.FindFiles("dir1", p)
 				assert.Len(t, files, 1)
 			},
 		},
@@ -880,10 +1007,10 @@ func TestMove(t *testing.T) {
 		if err != nil {
 			t.Fatal("error initializing file system")
 		}
-		srcPath := fspath.NewFileSystemPath(testCase.SrcPath)
-		destPath := fspath.NewFileSystemPath(testCase.DestPath)
+		srcPath, _ := fspath.NewFileSystemPath(testCase.SrcPath, workingDir)
+		destPath, _ := fspath.NewFileSystemPath(testCase.DestPath, workingDir)
 
-		file, err := fs.Move(srcPath, destPath, workingDir)
+		file, err := fs.Move(srcPath, destPath)
 		testCase.Assertions(t, fs, file, err)
 	}
 }
@@ -903,13 +1030,16 @@ func TestCopy(t *testing.T) {
 			DestPath: "/dir1/",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1/", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -928,13 +1058,16 @@ func TestCopy(t *testing.T) {
 			DestPath: "/dir1/file3",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1/", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -953,13 +1086,16 @@ func TestCopy(t *testing.T) {
 			DestPath: "/dir1",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1/", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -978,13 +1114,16 @@ func TestCopy(t *testing.T) {
 			DestPath: "/dir1/file3",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1/", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -995,9 +1134,10 @@ func TestCopy(t *testing.T) {
 
 				assert.Equal(t, info.AbsolutePath(), "/dir1/file3")
 				assert.Equal(t, info.Name(), "file3")
-				files, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/"), nil)
+				p, _ := fspath.NewFileSystemPath("/", nil)
+				files, _ := fs.FindFiles("file1", p)
 				assert.Len(t, files, 1)
-				files, _ = fs.FindFiles("file1", fspath.NewFileSystemPath("/"), nil)
+				files, _ = fs.FindFiles("file1", p)
 				assert.Len(t, files, 1)
 			},
 		},
@@ -1007,13 +1147,16 @@ func TestCopy(t *testing.T) {
 			DestPath: "/dir1/file2",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1/", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -1024,11 +1167,12 @@ func TestCopy(t *testing.T) {
 
 				assert.True(t, strings.HasPrefix(info.AbsolutePath(), "/dir1/file2"))
 				assert.NotEqual(t, info.AbsolutePath(), "/dir1/file2")
-				files, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/"), nil)
+				p, _ := fspath.NewFileSystemPath("/", nil)
+				files, _ := fs.FindFiles("file1", p)
 				assert.Len(t, files, 1)
-				files, _ = fs.FindFiles(info.Name(), fspath.NewFileSystemPath("/"), nil)
+				files, _ = fs.FindFiles(info.Name(), p)
 				assert.Len(t, files, 1)
-				files, _ = fs.FindFiles("file2", fspath.NewFileSystemPath("/"), nil)
+				files, _ = fs.FindFiles("file2", p)
 				assert.Len(t, files, 1)
 			},
 		},
@@ -1038,16 +1182,20 @@ func TestCopy(t *testing.T) {
 			DestPath: "/dir2",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -1058,11 +1206,14 @@ func TestCopy(t *testing.T) {
 
 				assert.Equal(t, info.AbsolutePath(), "/dir2/file1")
 				assert.Equal(t, info.Name(), "file1")
-				files, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/"), nil)
+				p, _ := fspath.NewFileSystemPath("/", nil)
+				files, _ := fs.FindFiles("file1", p)
 				assert.Len(t, files, 2)
-				filesOldDir, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/dir1"), nil)
+				p, _ = fspath.NewFileSystemPath("/dir1", nil)
+				filesOldDir, _ := fs.FindFiles("file1", p)
 				assert.Len(t, filesOldDir, 1)
-				filesNewDir, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/dir2"), nil)
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				filesNewDir, _ := fs.FindFiles("file1", p)
 				assert.Len(t, filesNewDir, 1)
 
 				// make sure they are not the same file
@@ -1075,16 +1226,20 @@ func TestCopy(t *testing.T) {
 			DestPath: "/dir2/dir4/dir5/file1",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -1095,12 +1250,15 @@ func TestCopy(t *testing.T) {
 
 				assert.Equal(t, info.AbsolutePath(), "/dir2/dir4/dir5/file1")
 				assert.Equal(t, info.Name(), "file1")
-				files, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/"), nil)
+				p, _ := fspath.NewFileSystemPath("/", nil)
+				files, _ := fs.FindFiles("file1", p)
 				assert.Len(t, files, 2)
 
-				filesOldDir, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/dir1"), nil)
+				p, _ = fspath.NewFileSystemPath("/dir1", nil)
+				filesOldDir, _ := fs.FindFiles("file1", p)
 				assert.Len(t, filesOldDir, 1)
-				filesNewDir, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/dir2/dir4/dir5/"), nil)
+				p, _ = fspath.NewFileSystemPath("/dir2/dir4/dir5", nil)
+				filesNewDir, _ := fs.FindFiles("file1", p)
 				assert.Len(t, filesNewDir, 1)
 
 				// make sure they are not the same file
@@ -1113,16 +1271,20 @@ func TestCopy(t *testing.T) {
 			DestPath: "/dir2/",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir2/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -1132,11 +1294,12 @@ func TestCopy(t *testing.T) {
 				assert.NotNil(t, info)
 
 				assert.Equal(t, info.AbsolutePath(), "/dir2/dir1")
-
-				files, _ := fs.FindFiles("dir1", fspath.NewFileSystemPath("/dir2"), nil)
+				p, _ := fspath.NewFileSystemPath("/dir2", nil)
+				files, _ := fs.FindFiles("dir1", p)
 				assert.Len(t, files, 1)
 
-				files, _ = fs.FindFiles("dir1", fspath.NewFileSystemPath("/"), nil)
+				p, _ = fspath.NewFileSystemPath("/", nil)
+				files, _ = fs.FindFiles("dir1", p)
 				assert.Len(t, files, 2)
 
 				file1 := files[0]
@@ -1200,38 +1363,48 @@ func TestCopy(t *testing.T) {
 			DestPath: "/dir2/",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir3/dir4"), nil); err != nil {
+				p, _ := fspath.NewFileSystemPath("/dir1/dir3/dir4", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir5/dir6"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/dir5/dir6", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file3"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file3", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/dir3/file4"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/dir3/file4", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/dir5/file5"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/dir5/file5", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/dir5/dir6/file6"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/dir5/dir6/file6", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir2/dir1/dir5/dir6"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2/dir1/dir5/dir6", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir2/dir1/file3"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2/dir1/file3", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir2/dir1/file8"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2/dir1/file8", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir2/dir1/dir5/file5"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2/dir1/dir5/file5", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir2/dir1/dir5/dir6/file9"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2/dir1/dir5/dir6/file9", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, nil, nil
@@ -1242,10 +1415,12 @@ func TestCopy(t *testing.T) {
 				assert.NotNil(t, info)
 
 				assert.Equal(t, info.AbsolutePath(), "/dir2/dir1")
-				files, _ := fs.FindFiles("dir1", fspath.NewFileSystemPath("/"), nil)
+				p, _ := fspath.NewFileSystemPath("/", nil)
+				files, _ := fs.FindFiles("dir1", p)
 				assert.Len(t, files, 2)
 
-				files, _ = fs.FindFiles("dir1", fspath.NewFileSystemPath("/dir2"), nil)
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				files, _ = fs.FindFiles("dir1", p)
 				assert.Len(t, files, 1)
 			},
 		},
@@ -1255,14 +1430,17 @@ func TestCopy(t *testing.T) {
 			DestPath: "/dir1/file3",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				workDir, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil)
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				workDir, err := fs.Mkdir(p)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -1281,14 +1459,17 @@ func TestCopy(t *testing.T) {
 			DestPath: "/dir1/file3",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				workDir, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil)
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				workDir, err := fs.Mkdir(p)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -1307,14 +1488,17 @@ func TestCopy(t *testing.T) {
 			DestPath: "./file3",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				workDir, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil)
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				workDir, err := fs.Mkdir(p)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -1325,9 +1509,10 @@ func TestCopy(t *testing.T) {
 
 				assert.Equal(t, info.AbsolutePath(), "/dir1/file3")
 				assert.Equal(t, info.Name(), "file3")
-				files, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/"), nil)
+				p, _ := fspath.NewFileSystemPath("/", nil)
+				files, _ := fs.FindFiles("file1", p)
 				assert.Len(t, files, 1)
-				files, _ = fs.FindFiles("file1", fspath.NewFileSystemPath("/"), nil)
+				files, _ = fs.FindFiles("file1", p)
 				assert.Len(t, files, 1)
 			},
 		},
@@ -1337,14 +1522,17 @@ func TestCopy(t *testing.T) {
 			DestPath: "file2",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				workDir, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil)
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				workDir, err := fs.Mkdir(p)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -1355,11 +1543,12 @@ func TestCopy(t *testing.T) {
 
 				assert.True(t, strings.HasPrefix(info.AbsolutePath(), "/dir1/file2"))
 				assert.NotEqual(t, info.AbsolutePath(), "/dir1/file2")
-				files, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/"), nil)
+				p, _ := fspath.NewFileSystemPath("/", nil)
+				files, _ := fs.FindFiles("file1", p)
 				assert.Len(t, files, 1)
-				files, _ = fs.FindFiles(info.Name(), fspath.NewFileSystemPath("/"), nil)
+				files, _ = fs.FindFiles(info.Name(), p)
 				assert.Len(t, files, 1)
-				files, _ = fs.FindFiles("file2", fspath.NewFileSystemPath("/"), nil)
+				files, _ = fs.FindFiles("file2", p)
 				assert.Len(t, files, 1)
 			},
 		},
@@ -1369,17 +1558,21 @@ func TestCopy(t *testing.T) {
 			DestPath: "../dir2",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				workDir, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil)
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				workDir, err := fs.Mkdir(p)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -1390,11 +1583,14 @@ func TestCopy(t *testing.T) {
 
 				assert.Equal(t, info.AbsolutePath(), "/dir2/file1")
 				assert.Equal(t, info.Name(), "file1")
-				files, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/"), nil)
+				p, _ := fspath.NewFileSystemPath("/", nil)
+				files, _ := fs.FindFiles("file1", p)
 				assert.Len(t, files, 2)
-				filesOldDir, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/dir1"), nil)
+				p, _ = fspath.NewFileSystemPath("/dir1", nil)
+				filesOldDir, _ := fs.FindFiles("file1", p)
 				assert.Len(t, filesOldDir, 1)
-				filesNewDir, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/dir2"), nil)
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				filesNewDir, _ := fs.FindFiles("file1", p)
 				assert.Len(t, filesNewDir, 1)
 
 				// make sure they are not the same file
@@ -1407,17 +1603,21 @@ func TestCopy(t *testing.T) {
 			DestPath: "../dir2/dir4/dir5/file1",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				workDir, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil)
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				workDir, err := fs.Mkdir(p)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -1428,12 +1628,16 @@ func TestCopy(t *testing.T) {
 
 				assert.Equal(t, info.AbsolutePath(), "/dir2/dir4/dir5/file1")
 				assert.Equal(t, info.Name(), "file1")
-				files, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/"), nil)
+				p, _ := fspath.NewFileSystemPath("/", nil)
+				files, _ := fs.FindFiles("file1", p)
 				assert.Len(t, files, 2)
 
-				filesOldDir, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/dir1"), nil)
+				p, _ = fspath.NewFileSystemPath("/dir1", nil)
+				filesOldDir, _ := fs.FindFiles("file1", p)
 				assert.Len(t, filesOldDir, 1)
-				filesNewDir, _ := fs.FindFiles("file1", fspath.NewFileSystemPath("/dir2/dir4/dir5/"), nil)
+
+				p, _ = fspath.NewFileSystemPath("/dir2/dir4/dir5/", nil)
+				filesNewDir, _ := fs.FindFiles("file1", p)
 				assert.Len(t, filesNewDir, 1)
 
 				// make sure they are not the same file
@@ -1446,17 +1650,21 @@ func TestCopy(t *testing.T) {
 			DestPath: "../dir2",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				workDir, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil)
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				workDir, err := fs.Mkdir(p)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.Mkdir(fspath.NewFileSystemPath("/dir2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				if _, err := fs.Mkdir(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir2/file2"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -1467,10 +1675,12 @@ func TestCopy(t *testing.T) {
 
 				assert.Equal(t, info.AbsolutePath(), "/dir2/dir1")
 
-				files, _ := fs.FindFiles("dir1", fspath.NewFileSystemPath("/dir2"), nil)
+				p, _ := fspath.NewFileSystemPath("/dir2", nil)
+				files, _ := fs.FindFiles("dir1", p)
 				assert.Len(t, files, 1)
 
-				files, _ = fs.FindFiles("dir1", fspath.NewFileSystemPath("/"), nil)
+				p, _ = fspath.NewFileSystemPath("/", nil)
+				files, _ = fs.FindFiles("dir1", p)
 				assert.Len(t, files, 2)
 
 				file1 := files[0]
@@ -1534,42 +1744,53 @@ func TestCopy(t *testing.T) {
 			DestPath: "/dir2/",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				workDir, err := fs.Mkdir(fspath.NewFileSystemPath("/dir1"), nil)
+				p, _ := fspath.NewFileSystemPath("/dir1", nil)
+				workDir, err := fs.Mkdir(p)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir3/dir4"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/dir3/dir4", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir5/dir6"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/dir5/dir6", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file3"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/file3", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/dir3/file4"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/dir3/file4", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/dir5/file5"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/dir5/file5", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/dir5/dir6/file6"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir1/dir5/dir6/file6", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir2/dir1/dir5/dir6"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2/dir1/dir5/dir6", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir2/dir1/file3"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2/dir1/file3", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir2/dir1/file8"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2/dir1/file8", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir2/dir1/dir5/file5"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2/dir1/dir5/file5", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir2/dir1/dir5/dir6/file9"), nil); err != nil {
+				p, _ = fspath.NewFileSystemPath("/dir2/dir1/dir5/dir6/file9", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -1580,10 +1801,12 @@ func TestCopy(t *testing.T) {
 				assert.NotNil(t, info)
 
 				assert.Equal(t, info.AbsolutePath(), "/dir2/dir1")
-				files, _ := fs.FindFiles("dir1", fspath.NewFileSystemPath("/"), nil)
+				p, _ := fspath.NewFileSystemPath("/", nil)
+				files, _ := fs.FindFiles("dir1", p)
 				assert.Len(t, files, 2)
 
-				files, _ = fs.FindFiles("dir1", fspath.NewFileSystemPath("/dir2"), nil)
+				p, _ = fspath.NewFileSystemPath("/dir2", nil)
+				files, _ = fs.FindFiles("dir1", p)
 				assert.Len(t, files, 1)
 			},
 		},
@@ -1593,14 +1816,19 @@ func TestCopy(t *testing.T) {
 			DestPath: "/dir3/dir4/",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
-				if _, err := fs.MkdirAll(fspath.NewFileSystemPath("/dir1/dir3/"), nil); err != nil {
+				p1, _ := fspath.NewFileSystemPath("/dir1/dir3/", nil)
+				if _, err := fs.MkdirAll(p1); err != nil {
 					return nil, nil, err
 				}
-				workDir, err := fs.CreateRegularFile(fspath.NewFileSystemPath("/dir1/file1"), nil)
+				p2, _ := fspath.NewFileSystemPath("/dir1/file1/", nil)
+				workDir, err := fs.CreateRegularFile(p2)
 				if err != nil {
 					return nil, nil, err
 				}
-				if _, err := fs.CreateSymbolicLink(fspath.NewFileSystemPath("/dir1"), fspath.NewFileSystemPath("/dir2"), nil); err != nil {
+				p3, _ := fspath.NewFileSystemPath("/dir1/", nil)
+				p4, _ := fspath.NewFileSystemPath("/dir2/", nil)
+
+				if _, err := fs.CreateSymbolicLink(p3, p4); err != nil {
 					return nil, nil, err
 				}
 				return fs, workDir, nil
@@ -1610,7 +1838,8 @@ func TestCopy(t *testing.T) {
 				assert.NotNil(t, info)
 
 				assert.Equal(t, info.AbsolutePath(), "/dir3/dir4")
-				dir, _ := fs.ListFiles(fspath.NewFileSystemPath("/dir3/dir4"), nil)
+				p, _ := fspath.NewFileSystemPath("/dir3/dir4", nil)
+				dir, _ := fs.ListFiles(p)
 				assert.Len(t, dir, 2)
 			},
 		},
@@ -1620,17 +1849,19 @@ func TestCopy(t *testing.T) {
 		if err != nil {
 			t.Fatal("error initializing file system")
 		}
-		srcPath := fspath.NewFileSystemPath(testCase.SrcPath)
-		destPath := fspath.NewFileSystemPath(testCase.DestPath)
+		srcPath, _ := fspath.NewFileSystemPath(testCase.SrcPath, workingDir)
+		destPath, _ := fspath.NewFileSystemPath(testCase.DestPath, workingDir)
 
-		file, err := fs.Copy(srcPath, destPath, workingDir)
+		file, err := fs.Copy(srcPath, destPath)
 		testCase.Assertions(t, fs, file, err)
 	}
 }
 
 func checkCopy(t *testing.T, fs *memoryfs.MemoryFileSystem, srcPath string, destPath string) {
-	originalFiles, _ := fs.ListFiles(fspath.NewFileSystemPath(srcPath), nil)
-	newFiles, _ := fs.ListFiles(fspath.NewFileSystemPath(destPath), nil)
+	p1, _ := fspath.NewFileSystemPath(srcPath, nil)
+	originalFiles, _ := fs.ListFiles(p1)
+	p2, _ := fspath.NewFileSystemPath(destPath, nil)
+	newFiles, _ := fs.ListFiles(p2)
 	assert.Equal(t, len(originalFiles), len(newFiles))
 
 	for i := range originalFiles {

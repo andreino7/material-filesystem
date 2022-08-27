@@ -2,25 +2,24 @@ package daemon
 
 import (
 	"context"
+	"fmt"
 	pb "material/filesystem/pb/proto/fsservice"
-
-	"google.golang.org/protobuf/proto"
 )
 
-func (daemon *FileSystemDaemon) FindFiles(ctx context.Context, request *pb.FindFilesRequest) (*pb.FindFilesResponse, error) {
-	path, workingDir, err := daemon.getPathAndWorkDir(request)
+func (daemon *FileSystemDaemon) FindFiles(ctx context.Context, request *pb.Request) (*pb.Response, error) {
+	findReq := request.GetFind()
+	if findReq == nil {
+		return nil, fmt.Errorf("invalid request")
+	}
+
+	path, err := daemon.getPath(request, func() string { return findReq.GetPath() })
 	if err != nil {
 		return nil, err
 	}
 
-	// TODO: validate name
-	files, err := daemon.fs.FindFiles(request.GetName(), path, workingDir)
+	files, err := daemon.fs.FindFiles(findReq.GetName(), path)
 	if err != nil {
-		msg, err := daemon.extractError(request.GetSessionId(), err)
-		if err != nil {
-			return nil, err
-		}
-		return &pb.FindFilesResponse{Error: proto.String(msg)}, nil
+		return daemon.extractError(request.GetSessionId(), err)
 	}
 
 	paths := []string{}
@@ -28,7 +27,9 @@ func (daemon *FileSystemDaemon) FindFiles(ctx context.Context, request *pb.FindF
 		paths = append(paths, info.AbsolutePath())
 	}
 
-	return &pb.FindFilesResponse{
-		Paths: paths,
+	return &pb.Response{
+		Response: &pb.Response_Find{
+			Find: &pb.FindFilesResponse{Paths: paths},
+		},
 	}, nil
 }
