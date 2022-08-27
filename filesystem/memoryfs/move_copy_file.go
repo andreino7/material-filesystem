@@ -21,8 +21,8 @@ func (fs *MemoryFileSystem) Copy(srcPath *fspath.FileSystemPath, destPath *fspat
 }
 
 func (fs *MemoryFileSystem) moveOrCopy(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath, isCopy bool) (file.FileInfo, error) {
-	fs.mutex.Lock()
-	defer fs.mutex.Unlock()
+	fs.Lock()
+	defer fs.Unlock()
 
 	// find the file/directory that needs to be moved/copied
 	fileToMove, err := fs.traverseToBaseWithSkipLastLink(srcPath, !isCopy)
@@ -35,7 +35,7 @@ func (fs *MemoryFileSystem) moveOrCopy(srcPath *fspath.FileSystemPath, destPath 
 	}
 
 	// find last directory in the destination path
-	dest, err := fs.traverseToDirAndCreateIntermediateDirs(destPath)
+	dest, err := fs.traverseToDirAndCreateParentDirs(destPath)
 	if err != nil {
 		return nil, err
 	}

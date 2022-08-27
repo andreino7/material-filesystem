@@ -12,24 +12,20 @@ func (fs *MemoryFileSystem) traverseToDir(path *fspath.FileSystemPath) (*inMemor
 	return fs.traverseToDirWithCreateIntermediateDirs(path, false)
 }
 
-func (fs *MemoryFileSystem) traverseToDirAndCreateIntermediateDirs(path *fspath.FileSystemPath) (*inMemoryFile, error) {
+func (fs *MemoryFileSystem) traverseToDirAndCreateParentDirs(path *fspath.FileSystemPath) (*inMemoryFile, error) {
 	return fs.traverseToDirWithCreateIntermediateDirs(path, true)
 }
 
 func (fs *MemoryFileSystem) traverseToBase(path *fspath.FileSystemPath) (*inMemoryFile, error) {
-	return fs.traverseToBaseWithCreateIntermediateDirsAndSkipLastLink(path, false, false)
-}
-
-func (fs *MemoryFileSystem) traverseToBaseAndCreateIntermediateDirs(path *fspath.FileSystemPath) (*inMemoryFile, error) {
-	return fs.traverseToBaseWithCreateIntermediateDirsAndSkipLastLink(path, true, false)
+	return fs.traverseToBaseWithCreateParentDirsAndSkipLastLink(path, false, false)
 }
 
 func (fs *MemoryFileSystem) traverseToBaseWithSkipLastLink(path *fspath.FileSystemPath, skipLastLink bool) (*inMemoryFile, error) {
-	return fs.traverseToBaseWithCreateIntermediateDirsAndSkipLastLink(path, false, skipLastLink)
+	return fs.traverseToBaseWithCreateParentDirsAndSkipLastLink(path, false, skipLastLink)
 }
 
-func (fs *MemoryFileSystem) traverseToBaseWithCreateIntermediateDirsAndSkipLastLink(path *fspath.FileSystemPath, createIntermediateDirs bool, skipLink bool) (*inMemoryFile, error) {
-	_, file, err := fs.traverse(path, true, skipLink, 0)
+func (fs *MemoryFileSystem) traverseToBaseWithCreateParentDirsAndSkipLastLink(path *fspath.FileSystemPath, createParentDirs bool, skipLink bool) (*inMemoryFile, error) {
+	_, file, err := fs.traverse(path, createParentDirs, skipLink, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -41,8 +37,8 @@ func (fs *MemoryFileSystem) traverseToBaseWithCreateIntermediateDirsAndSkipLastL
 	return file, nil
 }
 
-func (fs *MemoryFileSystem) traverseToDirWithCreateIntermediateDirs(path *fspath.FileSystemPath, createIntermediateDirs bool) (*inMemoryFile, error) {
-	dir, _, err := fs.traverse(path, createIntermediateDirs, true, 0)
+func (fs *MemoryFileSystem) traverseToDirWithCreateIntermediateDirs(path *fspath.FileSystemPath, createParentDirs bool) (*inMemoryFile, error) {
+	dir, _, err := fs.traverse(path, createParentDirs, true, 0)
 	if err != nil {
 		return nil, err
 	}

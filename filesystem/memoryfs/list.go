@@ -7,8 +7,8 @@ import (
 )
 
 func (fs *MemoryFileSystem) ListFiles(path *fspath.FileSystemPath) ([]file.FileInfo, error) {
-	fs.mutex.RLock()
-	defer fs.mutex.RUnlock()
+	fs.RLock()
+	defer fs.RUnlock()
 
 	// Initialize result
 	files := []file.FileInfo{}

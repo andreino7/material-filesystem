@@ -6,9 +6,9 @@ import (
 )
 
 type MemoryFileSystem struct {
-	mutex     sync.RWMutex
+	sync.RWMutex
 	root      *inMemoryFile
-	openFiles FileTable
+	openFiles *fileTable
 }
 
 func NewMemoryFileSystem() *MemoryFileSystem {
@@ -20,6 +20,6 @@ func NewMemoryFileSystem() *MemoryFileSystem {
 
 	return &MemoryFileSystem{
 		root:      root,
-		openFiles: FileTable{},
+		openFiles: newFileTable(),
 	}
 }

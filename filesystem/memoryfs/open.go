@@ -14,14 +14,22 @@ type fileDataWrapper struct {
 	pos  int
 }
 
-type FileTable struct {
+type fileTable struct {
 	table map[string]*fileDataWrapper
-	mutex sync.RWMutex
+	sync.RWMutex
 }
 
+func newFileTable() *fileTable {
+	return &fileTable{
+		table: map[string]*fileDataWrapper{},
+	}
+}
+
+// Open opens the file at the given location and returns the file descriptor.
+// Returns an error if the file was not found or it's not a "regular" file.
 func (fs *MemoryFileSystem) Open(path *fspath.FileSystemPath) (string, error) {
-	fs.mutex.Lock()
-	defer fs.mutex.Unlock()
+	fs.Lock()
+	defer fs.Unlock()
 
 	fileToOpen, err := fs.traverseToBase(path)
 	if err != nil {
@@ -32,9 +40,10 @@ func (fs *MemoryFileSystem) Open(path *fspath.FileSystemPath) (string, error) {
 		return "", fserrors.ErrInvalidFileType
 	}
 
-	fs.openFiles.mutex.Lock()
-	defer fs.openFiles.mutex.Unlock()
+	fs.openFiles.Lock()
+	defer fs.openFiles.Unlock()
 
+	// TODO: fd could just be an int
 	fd := uuid.NewString()
 	// TODO set pos to size
 	fs.openFiles.table[fd] = &fileDataWrapper{data: fileToOpen.data, pos: 0}
@@ -42,7 +51,7 @@ func (fs *MemoryFileSystem) Open(path *fspath.FileSystemPath) (string, error) {
 }
 
 func (fs *MemoryFileSystem) Close(descriptor string) {
-	fs.openFiles.mutex.Lock()
-	defer fs.openFiles.mutex.Unlock()
+	fs.openFiles.Lock()
+	defer fs.openFiles.Unlock()
 	delete(fs.openFiles.table, descriptor)
 }

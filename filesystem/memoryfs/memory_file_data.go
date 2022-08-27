@@ -6,8 +6,8 @@ type inMemoryFileData struct {
 	// TODO: Optimization. make this a slice of slice so that
 	// expanding size/inserting is more efficient becuase you just need to copy
 	// the pointers to the slices
-	data  []byte
-	mutex sync.RWMutex
+	data []byte
+	sync.RWMutex
 }
 
 func (data *inMemoryFileData) Data() []byte {
@@ -24,10 +24,10 @@ func (d *inMemoryFileData) writeAt(content []byte, offset int) int {
 		return d.append(content)
 	}
 
-	if offset > len(content) {
+	if offset > len(d.data) {
 		// fill with 0s
-		size := offset - len(content)
-		empty := make([]byte, size)
+		size := offset - len(d.data)
+		empty := make([]byte, size-1)
 		d.append(empty)
 		return d.append(content)
 	}
@@ -35,15 +35,25 @@ func (d *inMemoryFileData) writeAt(content []byte, offset int) int {
 	return d.insert(content, offset)
 }
 
-// TODO: check what happens when they are out of bound
 func (d *inMemoryFileData) readAt(start int, end int) []byte {
-	return d.data[start:end]
+	if start >= len(d.data) {
+		return []byte{}
+	}
+
+	total := end + 1
+	if total > len(d.data) {
+		total = len(d.data)
+	}
+	return d.data[start:total]
 }
 
+// TODO: improve, see optimization above
 func (d *inMemoryFileData) insert(content []byte, pos int) int {
-	newData := d.data[:pos]
+	newData := make([]byte, 0, len(d.data)+len(content))
+	newData = append(newData, d.data[:pos]...)
 	newData = append(newData, content...)
 	newData = append(newData, d.data[pos:]...)
+
 	d.data = newData
 	return len(content)
 }

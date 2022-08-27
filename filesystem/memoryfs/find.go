@@ -14,8 +14,8 @@ func (fs *MemoryFileSystem) FindFiles(name string, path *fspath.FileSystemPath) 
 		return nil, err
 	}
 
-	fs.mutex.RLock()
-	defer fs.mutex.RUnlock()
+	fs.RLock()
+	defer fs.RUnlock()
 
 	// Get directory to start the search
 	dir, err := fs.GetDirectory(path)

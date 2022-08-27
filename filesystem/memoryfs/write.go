@@ -9,21 +9,28 @@ import (
 // TODO: create missing directories is an option
 // TODO: handle keeping the file open for one single writer and multipe readers
 func (fs *MemoryFileSystem) AppendAll(path *fspath.FileSystemPath, content []byte) error {
-	fs.mutex.Lock()
+	fs.Lock()
 
-	fileToWrite, err := fs.traverseToBaseAndCreateIntermediateDirs(path)
-	if err != nil && err == fserrors.ErrNotExist {
-		fs.mutex.Unlock()
+	parent, err := fs.traverseToDirAndCreateParentDirs(path)
+	if err != nil {
+		fs.Unlock()
 		return err
 	}
+
+	fileToWrite, err := fs.createFileToWriteIfMissing(parent, path.Base())
+	if err != nil {
+		fs.Unlock()
+		return err
+	}
+
 	if fileToWrite.info.fileType != file.RegularFile {
-		fs.mutex.Unlock()
+		fs.Unlock()
 		return fserrors.ErrInvalidFileType
 	}
 
-	fileToWrite.data.mutex.Lock()
-	defer fileToWrite.data.mutex.Unlock()
-	fs.mutex.Unlock()
+	fileToWrite.data.Lock()
+	defer fileToWrite.data.Unlock()
+	fs.Unlock()
 
 	fileToWrite.data.append(content)
 	return nil
@@ -31,20 +38,32 @@ func (fs *MemoryFileSystem) AppendAll(path *fspath.FileSystemPath, content []byt
 
 func (fs *MemoryFileSystem) WriteAt(fileDescriptor string, content []byte, pos int) (int, error) {
 	// Read lock the open file table
-	fs.openFiles.mutex.RLock()
+	fs.openFiles.RLock()
 
 	data, found := fs.openFiles.table[fileDescriptor]
 	if !found {
-		fs.openFiles.mutex.RUnlock()
+		fs.openFiles.RUnlock()
 		return 0, fserrors.ErrNotOpen
 	}
 
 	// Write lock file
-	data.data.mutex.Lock()
-	defer data.data.mutex.Unlock()
+	data.data.Lock()
+	defer data.data.Unlock()
 
 	// Unlock file table
-	fs.openFiles.mutex.RUnlock()
+	fs.openFiles.RUnlock()
 
 	return data.data.writeAt(content, pos), nil
+}
+
+func (fs *MemoryFileSystem) createFileToWriteIfMissing(parent *inMemoryFile, name string) (*inMemoryFile, error) {
+	fileToWrite, err := fs.moveToBase(parent, name, false, 0)
+	if err != nil {
+		return nil, err
+	}
+
+	if fileToWrite == nil {
+		return fs.create(name, file.RegularFile, parent)
+	}
+	return fileToWrite, nil
 }

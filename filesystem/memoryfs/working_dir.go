@@ -12,8 +12,8 @@ func (fs *MemoryFileSystem) DefaultWorkingDirectory() file.File {
 
 func (fs *MemoryFileSystem) GetDirectory(path *fspath.FileSystemPath) (file.File, error) {
 	// RLock the fs
-	fs.mutex.RLock()
-	defer fs.mutex.RUnlock()
+	fs.RLock()
+	defer fs.RUnlock()
 
 	// Find path starting point
 	dir, err := fs.traverseToBase(path)

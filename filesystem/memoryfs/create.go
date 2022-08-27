@@ -9,22 +9,22 @@ import (
 
 func (fs *MemoryFileSystem) Mkdir(path *fspath.FileSystemPath) (file.File, error) {
 	// RW lock the fs
-	fs.mutex.Lock()
-	defer fs.mutex.Unlock()
+	fs.Lock()
+	defer fs.Unlock()
 	return fs.createAt(path, file.Directory, false)
 }
 
 func (fs *MemoryFileSystem) MkdirAll(path *fspath.FileSystemPath) (file.File, error) {
 	// RW lock the fs
-	fs.mutex.Lock()
-	defer fs.mutex.Unlock()
+	fs.Lock()
+	defer fs.Unlock()
 	return fs.createAt(path, file.Directory, true)
 }
 
 func (fs *MemoryFileSystem) CreateRegularFile(path *fspath.FileSystemPath) (file.File, error) {
 	// RW lock the fs
-	fs.mutex.Lock()
-	defer fs.mutex.Unlock()
+	fs.Lock()
+	defer fs.Unlock()
 
 	if err := checkFilePath(path); err != nil {
 		return nil, err
@@ -35,8 +35,8 @@ func (fs *MemoryFileSystem) CreateRegularFile(path *fspath.FileSystemPath) (file
 // TODO: validate file name
 // TODO: make create intermediate directories configurable
 func (fs *MemoryFileSystem) CreateHardLink(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath) (file.FileInfo, error) {
-	fs.mutex.Lock()
-	defer fs.mutex.Unlock()
+	fs.Lock()
+	defer fs.Unlock()
 
 	// Locate file to link
 	fileToLink, err := fs.traverseToBase(srcPath)
@@ -63,8 +63,8 @@ func (fs *MemoryFileSystem) CreateHardLink(srcPath *fspath.FileSystemPath, destP
 // TODO: make create intermediate directories configurable
 // TODO: document symbolic links to not existing file should work
 func (fs *MemoryFileSystem) CreateSymbolicLink(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath) (file.FileInfo, error) {
-	fs.mutex.Lock()
-	defer fs.mutex.Unlock()
+	fs.Lock()
+	defer fs.Unlock()
 
 	// Create an empty file
 	symLink, err := fs.createAt(destPath, file.SymbolicLink, false)

@@ -17,8 +17,8 @@ func (fs *MemoryFileSystem) RemoveAll(path *fspath.FileSystemPath) (file.FileInf
 
 func (fs *MemoryFileSystem) removeFileWithLock(path *fspath.FileSystemPath, isRecursive bool) (file.FileInfo, error) {
 	// RW lock the fs
-	fs.mutex.Lock()
-	defer fs.mutex.Unlock()
+	fs.Lock()
+	defer fs.Unlock()
 
 	// find where to remove directory
 	pathEnd, err := fs.traverseToDir(path)
