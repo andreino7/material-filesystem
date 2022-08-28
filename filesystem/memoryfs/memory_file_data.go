@@ -4,8 +4,8 @@ import "sync"
 
 // inMemoryFile implements the FileData interface
 type inMemoryFileData struct {
-	// TODO: Optimization. make this a slice of slice so that
-	// expanding size/inserting is more efficient becuase you just need to copy
+	// TODO: Optimization. make this a slice of slice of fixed size so that
+	// expanding size/inserting is more efficient because you just need to copy
 	// the pointers to the slices
 	data []byte
 	sync.RWMutex

@@ -84,7 +84,7 @@ func (fs *MemoryFileSystem) removeDirectory(fileToRemove *inMemoryFile, parent *
 	fileToRemove.isDeleted = true
 
 	// remove all children
-	err := fs.walk(fileToRemove, func(_ string, file *inMemoryFile) error {
+	err := fs.visitDir(fileToRemove, func(_ string, file *inMemoryFile) error {
 		_, err := fs.removeDirectory(file, fileToRemove, true)
 		return err
 	})

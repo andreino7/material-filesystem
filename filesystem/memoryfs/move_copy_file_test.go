@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TODO: add tests for working dir deleted
 func TestMove(t *testing.T) {
 	cases := []struct {
 		CaseName   string

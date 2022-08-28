@@ -72,6 +72,7 @@ type FileSystem interface {
 	// and returns the number of bytes written.
 	// If there is an error, it will be of type *FileSystemError.
 	WriteAt(fileDescriptor string, content []byte, pos int) (int, error)
+	Walk(path *fspath.FileSystemPath, walkFn file.WalkFn, filterFn file.FilterFn, followLinks bool) error
 }
 
 // NewFileSystem creates a new filesystem for the given fsType.

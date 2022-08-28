@@ -12,7 +12,7 @@ import (
 // Returns an error when:
 // - the file is not a regular file
 //
-// TODO: create missing directories is an option
+// TODO: create parent directories is an option
 func (fs *MemoryFileSystem) AppendAll(path *fspath.FileSystemPath, content []byte) error {
 	fs.Lock()
 

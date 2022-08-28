@@ -19,7 +19,6 @@ func (p *FileSystemPath) Dir() string {
 	return filepath.Dir(p.path)
 }
 
-// TODO: add test
 func (p *FileSystemPath) IsAbs() bool {
 	return filepath.IsAbs(p.path)
 }

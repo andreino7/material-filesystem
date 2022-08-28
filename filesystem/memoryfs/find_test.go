@@ -11,7 +11,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TODO: add tests for working dir deleted
 func TestFindFiles(t *testing.T) {
 	cases := []struct {
 		CaseName   string

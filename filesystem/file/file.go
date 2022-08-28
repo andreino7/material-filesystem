@@ -1,6 +1,8 @@
 package file
 
 type FileType int
+type WalkFn func(File) error
+type FilterFn func(File) bool
 
 const (
 	RegularFile FileType = iota

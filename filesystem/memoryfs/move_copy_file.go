@@ -25,7 +25,7 @@ type onMoveOrCopyDestNotFound func(fileToMove *inMemoryFile, dest *inMemoryFile,
 // - the new file name is invalid
 //
 // TODO: handle name conflicts as option
-// TODO: handle create parents dir as opttion
+// TODO: handle create parent dirs as opttion
 func (fs *MemoryFileSystem) Move(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath) (file.FileInfo, error) {
 	return fs.moveOrCopy(srcPath, destPath, false)
 }
@@ -45,7 +45,7 @@ func (fs *MemoryFileSystem) Move(srcPath *fspath.FileSystemPath, destPath *fspat
 // - the new file name is invalid
 //
 // TODO: handle name conflicts as option
-// TODO: handle create parents dir as opttion
+// TODO: handle create parent dirs as opttion
 func (fs *MemoryFileSystem) Copy(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath) (file.FileInfo, error) {
 	return fs.moveOrCopy(srcPath, destPath, true)
 }
@@ -118,7 +118,7 @@ func (fs *MemoryFileSystem) mergeDirectories(dirToMove *inMemoryFile, dest *inMe
 	}
 
 	// This is the more complex case: recursively move/copy every file to destination directory
-	err := fs.walk(dirToMove, func(fileName string, fileToMove *inMemoryFile) error {
+	err := fs.visitDir(dirToMove, func(fileName string, fileToMove *inMemoryFile) error {
 		if shouldMergeSubDirectories(fileToMove, finalDest) {
 			if _, err := fs.mergeDirectories(fileToMove, finalDest, isCopy); err != nil {
 				return err
@@ -223,7 +223,7 @@ func (fs *MemoryFileSystem) copyFile(fileToMove *inMemoryFile, newAbsPath string
 	newFile := newInMemoryFile(newAbsPath, fileToMove.info.fileType)
 
 	if fileToMove.info.fileType == file.Directory {
-		err := fs.walk(fileToMove, func(fileName string, child *inMemoryFile) error {
+		err := fs.visitDir(fileToMove, func(fileName string, child *inMemoryFile) error {
 			fs.renameAndMoveOrCopyRegularFile(child, newFile, fileName, true)
 			return nil
 		})

@@ -50,7 +50,6 @@ func (fs *MemoryFileSystem) Open(path *fspath.FileSystemPath) (string, error) {
 
 	// TODO: fd could just be an int
 	fd := uuid.NewString()
-	// TODO set pos to size
 	fs.openFiles.table[fd] = &fileDataWrapper{data: fileToOpen.data, pos: 0}
 	return fd, nil
 }
