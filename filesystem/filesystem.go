@@ -28,6 +28,7 @@ type FileSystem interface {
 	Move(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath) (file.FileInfo, error)
 	Copy(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath) (file.FileInfo, error)
 	CreateHardLink(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath) (file.FileInfo, error)
+	CreateSymbolicLink(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath) (file.FileInfo, error)
 	AppendAll(path *fspath.FileSystemPath, content []byte) error
 	ReadAll(path *fspath.FileSystemPath) ([]byte, error)
 	Open(path *fspath.FileSystemPath) (string, error)

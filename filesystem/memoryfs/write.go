@@ -37,6 +37,10 @@ func (fs *MemoryFileSystem) AppendAll(path *fspath.FileSystemPath, content []byt
 }
 
 func (fs *MemoryFileSystem) WriteAt(fileDescriptor string, content []byte, pos int) (int, error) {
+	if pos < 0 {
+		return 0, fserrors.ErrInvalid
+	}
+
 	// Read lock the open file table
 	fs.openFiles.RLock()
 
