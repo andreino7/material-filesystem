@@ -3,7 +3,6 @@
 material-filesystem is an in-memory file system
 
 ## Structure
----------------
 ### filesystem
 A file system library. 
 
@@ -19,7 +18,6 @@ Basically, it just keeps track of every CLI connection and translates requests c
 A grpc client implementic a very basic command line interface to interact with the filesystem daemon.
 
 ## Getting started
----------------
 
 The latest release is [1.0](). You can find precompiled binaries ready to use. 
 
@@ -51,7 +49,6 @@ material-filesystem / $
 
 
 ## Build
----------------
 ### Prerequisites
 * [Go](https://go.dev/doc/install)
 * [Protoc and go plugins](https://grpc.io/docs/languages/go/quickstart/#prerequisites)
@@ -69,7 +66,6 @@ foo@bar:~$ make build-cli
 This will create a binary in `build/fs-cli`
 
 ## What's supported?
----------------
 * Absolute and relative paths
 * Changing and getting the current working directory
 * Creating and new directories and any parent directory
@@ -95,7 +91,6 @@ material-filesystem / $ help
 ```
 
 ## Future improvements
----------------
 * Optimizing file writes at random locations
 * Merge [user permissions](https://github.com/andreino7/material-filesystem/tree/users-v2) once stable
 * Better logging framework
