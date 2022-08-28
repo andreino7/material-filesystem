@@ -25,8 +25,13 @@ func newFileTable() *fileTable {
 	}
 }
 
-// Open opens the file at the given location and returns the file descriptor.
+// Open opens the named file for reading or writing.
 // Returns an error if the file was not found or it's not a "regular" file.
+// This implementation is thread safe
+//
+// Returns an error when:
+// - path does not exist
+// - the file is not a RegularFile
 func (fs *MemoryFileSystem) Open(path *fspath.FileSystemPath) (string, error) {
 	fs.Lock()
 	defer fs.Unlock()
@@ -50,6 +55,9 @@ func (fs *MemoryFileSystem) Open(path *fspath.FileSystemPath) (string, error) {
 	return fd, nil
 }
 
+// Close closes the file associated to the given descriptor
+// If the file is not open, this is a noop.
+// This implementation is thread safe.
 func (fs *MemoryFileSystem) Close(descriptor string) {
 	fs.openFiles.Lock()
 	defer fs.openFiles.Unlock()

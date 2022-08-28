@@ -6,12 +6,17 @@ import (
 	"material/filesystem/filesystem/fspath"
 )
 
+// AppendAll writes data to the named file, creating it if necessary along
+// with any missing parent directories.
+//
+// Returns an error when:
+// - the file is not a regular file
+//
 // TODO: create missing directories is an option
-// TODO: handle keeping the file open for one single writer and multipe readers
 func (fs *MemoryFileSystem) AppendAll(path *fspath.FileSystemPath, content []byte) error {
 	fs.Lock()
 
-	parent, err := fs.traverseToDirAndCreateParentDirs(path)
+	parent, err := fs.traverseDirsAndCreateParentDirs(path)
 	if err != nil {
 		fs.Unlock()
 		return err
@@ -36,6 +41,11 @@ func (fs *MemoryFileSystem) AppendAll(path *fspath.FileSystemPath, content []byt
 	return nil
 }
 
+// WriteAt writes content to the file starting at pos
+// and returns the number of bytes written.
+//
+// Returns an error when:
+// - the file is not open
 func (fs *MemoryFileSystem) WriteAt(fileDescriptor string, content []byte, pos int) (int, error) {
 	if pos < 0 {
 		return 0, fserrors.ErrInvalid

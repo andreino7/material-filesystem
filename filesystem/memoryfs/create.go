@@ -7,6 +7,13 @@ import (
 	"path/filepath"
 )
 
+// Mkdir creates a new directory at the specified path.
+// This implementation is thead safe.
+//
+// Returns an error when:
+// - the file name is invalid
+// - the file already exists
+// - any of the directory in the path does not exist
 func (fs *MemoryFileSystem) Mkdir(path *fspath.FileSystemPath) (file.File, error) {
 	// RW lock the fs
 	fs.Lock()
@@ -14,6 +21,13 @@ func (fs *MemoryFileSystem) Mkdir(path *fspath.FileSystemPath) (file.File, error
 	return fs.createAt(path, file.Directory, false)
 }
 
+// MkdirAll creates a directory at the specified path,
+// along with any necessary parents.
+// This implementation is thead safe.
+//
+// Returns an error when:
+// - the file name is invalid
+// - the file already exists
 func (fs *MemoryFileSystem) MkdirAll(path *fspath.FileSystemPath) (file.File, error) {
 	// RW lock the fs
 	fs.Lock()
@@ -21,6 +35,13 @@ func (fs *MemoryFileSystem) MkdirAll(path *fspath.FileSystemPath) (file.File, er
 	return fs.createAt(path, file.Directory, true)
 }
 
+// CreateRegularFile creates a new file at the specified path
+// This implementation is thead safe.
+//
+// Returns an error when:
+// - the file name is invalid
+// - the file already exists
+// - any of the directory in the path does not exist
 func (fs *MemoryFileSystem) CreateRegularFile(path *fspath.FileSystemPath) (file.File, error) {
 	// RW lock the fs
 	fs.Lock()
@@ -32,8 +53,17 @@ func (fs *MemoryFileSystem) CreateRegularFile(path *fspath.FileSystemPath) (file
 	return fs.createAt(path, file.RegularFile, false)
 }
 
-// TODO: validate file name
-// TODO: make create intermediate directories configurable
+// Link creates srcPath along with any parent directories
+// as a hard link to the destPath file.
+// Only regular files are supported.
+// This implementation is thead safe.
+//
+// Returns an error when:
+// - srcPath file name is invalid
+// - srcPath already exists
+// - destPath does not exist
+// - destPath is not a regular file
+// TODO: make create parent directories configurable
 func (fs *MemoryFileSystem) CreateHardLink(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath) (file.FileInfo, error) {
 	fs.Lock()
 	defer fs.Unlock()
@@ -60,8 +90,16 @@ func (fs *MemoryFileSystem) CreateHardLink(srcPath *fspath.FileSystemPath, destP
 	return hardLink.info, nil
 }
 
+// Symlink creates srcPath along with any parent directories
+// as a symbolic link to destPath.
+// Symlink can be created to a non-existent destPath.
+// If destPath is later created the symlink will start working.
+// This implementation is thead safe.
+//
+// Returns an error when:
+// - srcPath file name is invalid
+// - srcPath already exists
 // TODO: make create intermediate directories configurable
-// TODO: document symbolic links to not existing file should work
 func (fs *MemoryFileSystem) CreateSymbolicLink(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath) (file.FileInfo, error) {
 	fs.Lock()
 	defer fs.Unlock()
@@ -83,13 +121,12 @@ func (fs *MemoryFileSystem) CreateSymbolicLink(srcPath *fspath.FileSystemPath, d
 }
 
 func (fs *MemoryFileSystem) createAt(path *fspath.FileSystemPath, fileType file.FileType, isRecursive bool) (*inMemoryFile, error) {
-	// TODO: validate file name (alphanumeric for simplicity)
 	if err := checkFilePath(path); err != nil {
 		return nil, err
 	}
 
 	// find where file needs to be added
-	parent, err := fs.traverseToDirWithCreateIntermediateDirs(path, isRecursive)
+	parent, err := fs.traverseToDirWithCreateParentDirs(path, isRecursive)
 	if err != nil {
 		return nil, err
 	}
@@ -98,12 +135,13 @@ func (fs *MemoryFileSystem) createAt(path *fspath.FileSystemPath, fileType file.
 	return fs.create(path.Base(), fileType, parent)
 }
 
-// TODO: this is the only place that creates files
 func (fs *MemoryFileSystem) create(fileName string, fileType file.FileType, parent *inMemoryFile) (*inMemoryFile, error) {
+	// check if file exists
 	if _, found := parent.fileMap[fileName]; found {
 		return nil, fserrors.ErrExist
 	}
 
+	// create new file and add to fs tree
 	absolutePath := filepath.Join(parent.info.AbsolutePath(), fileName)
 	newFile := newInMemoryFile(absolutePath, fileType)
 	fs.attachToParent(newFile, parent)

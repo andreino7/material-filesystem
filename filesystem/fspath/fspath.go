@@ -36,6 +36,8 @@ func (p *FileSystemPath) Base() string {
 	return filepath.Base(p.path)
 }
 
+// NewFileSystemPath creates a new filesystem path from
+// the given path and workingDir
 func NewFileSystemPath(path string, workingDir file.File) (*FileSystemPath, error) {
 	cleanPath := filepath.Clean(path)
 	if workingDir == nil && !filepath.IsAbs(path) {

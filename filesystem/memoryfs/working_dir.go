@@ -6,10 +6,16 @@ import (
 	"material/filesystem/filesystem/fspath"
 )
 
+// DefaultWorkingDirectory returns the root of the filesystem.
 func (fs *MemoryFileSystem) DefaultWorkingDirectory() file.File {
 	return fs.root
 }
 
+// GetDirectory returns the directory located at the specified path.
+//
+// Returns an error when:
+// - the directory does not exist
+// - the file is not a directory
 func (fs *MemoryFileSystem) GetDirectory(path *fspath.FileSystemPath) (file.File, error) {
 	// RLock the fs
 	fs.RLock()
@@ -28,6 +34,8 @@ func (fs *MemoryFileSystem) GetDirectory(path *fspath.FileSystemPath) (file.File
 	return dir, nil
 }
 
+// resolveWorkDir returns an error if the working directory has been deleted.
+// This can happen is clients have a stale reference.
 func (fs *MemoryFileSystem) resolveWorkDir(path *fspath.FileSystemPath) (*inMemoryFile, error) {
 	currentDir, ok := path.WorkingDir().(*inMemoryFile)
 	if !ok || currentDir.isDeleted {
