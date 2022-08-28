@@ -11,11 +11,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var createParentDirs *bool
-
-// mkdirCmd represents the mkdir command
-var mkdirCmd = &cobra.Command{
-	Use:   "mkdir",
+// closeCmd represents the close command
+var closeCmd = &cobra.Command{
+	Use:   "close",
 	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
@@ -28,25 +26,27 @@ to quickly create a Cobra application.`,
 			return fmt.Errorf("invalid argument")
 		}
 		req := &fsservice.Request{
-			Request: &fsservice.Request_Mkdir{
-				Mkdir: &fsservice.MkdirRequest{
-					Path:      args[0],
-					Recursive: createParentDirs,
+			Request: &fsservice.Request_Close{
+				Close: &fsservice.CloseRequest{
+					FileDescriptor: args[0],
 				},
 			},
 		}
-		fsclient.Session.DoRequest(req, fsclient.Session.Mkdir, noop)
+		fsclient.Session.DoRequest(req, fsclient.Session.Close, noop)
 		return nil
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(mkdirCmd)
-	mkdirCmd.PostRun = postRun
-	postRun(nil, nil)
-}
+	rootCmd.AddCommand(closeCmd)
 
-func postRun(cmd *cobra.Command, args []string) {
-	mkdirCmd.ResetFlags()
-	createParentDirs = mkdirCmd.Flags().BoolP("parents", "p", false, "make parent directories as needed")
+	// Here you will define your flags and configuration settings.
+
+	// Cobra supports Persistent Flags which will work for this command
+	// and all subcommands, e.g.:
+	// closeCmd.PersistentFlags().String("foo", "", "A help for foo")
+
+	// Cobra supports local flags which will only run when this command
+	// is called directly, e.g.:
+	// closeCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

@@ -11,9 +11,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// lsCmd represents the ls command
-var lsCmd = &cobra.Command{
-	Use:   "ls",
+// readCmd represents the read command
+var catCmd = &cobra.Command{
+	Use:   "read",
 	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
@@ -22,33 +22,26 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if len(args) > 1 {
+		if len(args) != 1 {
 			return fmt.Errorf("invalid argument")
 		}
 
-		path := ""
-		if len(args) == 1 {
-			path = args[0]
-		}
-
 		req := &fsservice.Request{
-			Request: &fsservice.Request_List{
-				List: &fsservice.ListFilesRequest{
-					Path: path,
+			Request: &fsservice.Request_ReadAll{
+				ReadAll: &fsservice.ReadAllRequest{
+					Path: args[0],
 				},
 			},
 		}
-		fsclient.Session.DoRequest(req, fsclient.Session.ListFiles, printFileNames)
+		fsclient.Session.DoRequest(req, fsclient.Session.ReadAll, printReadAll)
 		return nil
 	},
 }
 
-func printFileNames(resp *fsservice.Response) {
-	for _, name := range resp.GetList().GetNames() {
-		fmt.Println(name)
-	}
+func printReadAll(resp *fsservice.Response) {
+	fmt.Println(string(resp.GetReadAll().GetContent()))
 }
 
 func init() {
-	rootCmd.AddCommand(lsCmd)
+	rootCmd.AddCommand(catCmd)
 }
