@@ -15,14 +15,15 @@ var createParentDirs *bool
 
 // mkdirCmd represents the mkdir command
 var mkdirCmd = &cobra.Command{
-	Use:   "mkdir",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Use:   "mkdir [DIRECTORY]",
+	Short: "Make directories",
+	Long: `Create the DIRECTORY(ies), if they do not already exist.
+Supports absolute and relative paths.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+Examples:
+mkdir dir
+mkdir /dir
+mkdir -p /dir1/dir2/dir3`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 1 {
 			return fmt.Errorf("invalid argument")

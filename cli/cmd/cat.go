@@ -15,12 +15,14 @@ import (
 var catCmd = &cobra.Command{
 	Use:   "cat [FILE]",
 	Short: "Print files",
-	Long: `The command:
+	Long: `Print the contents of a file to the standard output.
+Supports absolute and relative paths.
 
-	cat file1
-
-will print the contents of file1 to the standard output.
-Supports absolute and relative paths`,
+Examples:
+cat file1
+cat /dir1/file1
+cat dir1/file1
+`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 1 {
 			return fmt.Errorf("invalid argument")

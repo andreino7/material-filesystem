@@ -14,14 +14,13 @@ import (
 
 // readAtCmd represents the readAt command
 var readAtCmd = &cobra.Command{
-	Use:   "readAt",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Use:   "readAt [FILE_DESCRIPTOR] [START] [END]",
+	Short: "Print files",
+	Long: `Print the contents of a file to the standard output.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+Examples:
+readAt fd 10 100
+`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 3 {
 			return fmt.Errorf("invalid argument")
