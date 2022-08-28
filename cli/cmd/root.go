@@ -31,6 +31,4 @@ func Execute(args []string) {
 	rootCmd.Execute()
 }
 
-func noop(resp *fsservice.Response) {
-
-}
+func noop(resp *fsservice.Response) {}

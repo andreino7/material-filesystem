@@ -18,12 +18,14 @@ func (daemon *FileSystemDaemon) AppendAll(ctx context.Context, request *pb.Reque
 		return nil, err
 	}
 
+	workDir := path.WorkingDir()
 	err = daemon.fs.AppendAll(path, appendReq.GetContent())
 	if err != nil {
-		return daemon.extractError(request.GetSessionId(), err)
+		return daemon.extractError(request.GetSessionId(), workDir, err)
 	}
 
 	return &pb.Response{
+		WorkingDirPath: workDir.Info().AbsolutePath(),
 		Response: &pb.Response_AppendAll{
 			AppendAll: &pb.AppendAllResponse{},
 		},

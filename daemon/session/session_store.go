@@ -41,7 +41,7 @@ func (store *SessionStore) AddSession(request *pb.NewSessionRequest, workingDire
 	store.sessions[session.sessionId] = session
 	return &pb.NewSessionResponse{
 		SessionId:            session.sessionId,
-		WorkingDirectoryName: session.workingDirectory.Info().Name(),
+		WorkingDirectoryPath: session.workingDirectory.Info().AbsolutePath(),
 	}, nil
 }
 

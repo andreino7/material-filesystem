@@ -25,17 +25,18 @@ func (daemon *FileSystemDaemon) Remove(ctx context.Context, request *pb.Request)
 		file, err = daemon.fs.Remove(path)
 	}
 
+	workDir := path.WorkingDir()
 	if err != nil {
-		return daemon.extractError(request.GetSessionId(), err)
+		return daemon.extractError(request.GetSessionId(), workDir, err)
 	}
 
-	_, err = daemon.updateWorkingDirectory(request.GetSessionId(), file)
+	workDir, err = daemon.updateWorkingDirectory(request.GetSessionId(), file)
 	if err != nil {
 		return nil, err
 	}
 
-	// TODO: add working dir to resp
 	return &pb.Response{
+		WorkingDirPath: workDir.Info().AbsolutePath(),
 		Response: &pb.Response_Remove{
 			Remove: &pb.RemoveResponse{},
 		},

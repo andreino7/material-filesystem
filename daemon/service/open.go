@@ -18,12 +18,14 @@ func (daemon *FileSystemDaemon) Open(ctx context.Context, request *pb.Request) (
 		return nil, err
 	}
 
+	workDir := path.WorkingDir()
 	fd, err := daemon.fs.Open(path)
 	if err != nil {
-		return daemon.extractError(request.GetSessionId(), err)
+		return daemon.extractError(request.GetSessionId(), workDir, err)
 	}
 
 	return &pb.Response{
+		WorkingDirPath: workDir.Info().AbsolutePath(),
 		Response: &pb.Response_Open{
 			Open: &pb.OpenResponse{FileDescriptor: fd},
 		},

@@ -20,6 +20,9 @@ func main() {
 	}
 	defer conn.Close()
 
+	fmt.Println("Welcome to material filesystem client!")
+	fmt.Println("Type help for help :)")
+
 	for {
 		fmt.Printf("material-filesystem %s $ ", fsclient.Session.WorkingDirName())
 		scanner := bufio.NewScanner(os.Stdin)

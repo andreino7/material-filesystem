@@ -48,6 +48,6 @@ func init() {
 
 func rmPostRun(cmd *cobra.Command, args []string) {
 	rmCmd.ResetFlags()
-	removeChildren = mkdirCmd.Flags().BoolP("recursive", "r", false, "make parent directories as needed")
+	removeChildren = rmCmd.Flags().BoolP("recursive", "r", false, "make parent directories as needed")
 
 }

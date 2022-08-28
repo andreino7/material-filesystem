@@ -3,6 +3,7 @@ package fsclient
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 	"time"
 
 	"material/filesystem/pb/proto/fsservice"
@@ -16,7 +17,7 @@ var Session FileSystemSession
 
 type FileSystemSession struct {
 	sessionId      string
-	workingDirName string
+	workingDirPath string
 	fsservice.FileSystemServiceClient
 	session.SessionServiceClient
 }
@@ -24,28 +25,40 @@ type FileSystemSession struct {
 type grpcFileSystemCall func(ctx context.Context, req *fsservice.Request, opts ...grpc.CallOption) (*fsservice.Response, error)
 type onSuccessFn func(*fsservice.Response)
 
-func (fs *FileSystemSession) DoRequest(req *fsservice.Request, call grpcFileSystemCall, onSuonSuccessFn onSuccessFn) {
+func (f *FileSystemSession) DoRequest(req *fsservice.Request, call grpcFileSystemCall, onSuonSuccessFn onSuccessFn) {
 	// TODO: make timeout configurable
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	req.SessionId = fs.sessionId
+	req.SessionId = f.sessionId
 	resp, err := call(ctx, req)
 	if err != nil {
 		fmt.Println(fmt.Errorf("unexpected error: %v", err))
-	} else if resp.GetError() != "" {
+		return
+	}
+
+	defer f.updateWokingDirectory(resp)
+	if resp.GetError() != "" {
 		fmt.Println(resp.GetError())
 	} else {
 		onSuonSuccessFn(resp)
 	}
 }
 
-func (f *FileSystemSession) WorkingDirName() string {
-	return f.workingDirName
+func (f *FileSystemSession) updateWokingDirectory(resp *fsservice.Response) {
+	f.workingDirPath = resp.GetWorkingDirPath()
 }
 
-func (f *FileSystemSession) SetWorkingDirName(workingDirName string) {
-	f.workingDirName = workingDirName
+func (f *FileSystemSession) WorkingDirPath() string {
+	return f.workingDirPath
+}
+
+func (f *FileSystemSession) WorkingDirName() string {
+	return filepath.Base(f.workingDirPath)
+}
+
+func (f *FileSystemSession) SetWorkingDirPath(workingDirPath string) {
+	f.workingDirPath = workingDirPath
 }
 
 func Initialize() (*grpc.ClientConn, error) {
@@ -67,7 +80,7 @@ func Initialize() (*grpc.ClientConn, error) {
 
 	Session = FileSystemSession{
 		sessionId:               resp.GetSessionId(),
-		workingDirName:          resp.GetWorkingDirectoryName(),
+		workingDirPath:          resp.GetWorkingDirectoryPath(),
 		FileSystemServiceClient: fsClient,
 		SessionServiceClient:    sessionClient,
 	}

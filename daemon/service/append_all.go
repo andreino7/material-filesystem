@@ -18,12 +18,14 @@ func (daemon *FileSystemDaemon) ReadAll(ctx context.Context, request *pb.Request
 		return nil, err
 	}
 
+	workDir := path.WorkingDir()
 	content, err := daemon.fs.ReadAll(path)
 	if err != nil {
-		return daemon.extractError(request.GetSessionId(), err)
+		return daemon.extractError(request.GetSessionId(), workDir, err)
 	}
 
 	return &pb.Response{
+		WorkingDirPath: workDir.Info().AbsolutePath(),
 		Response: &pb.Response_ReadAll{
 			ReadAll: &pb.ReadAllResponse{Content: content},
 		},

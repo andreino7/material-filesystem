@@ -66,23 +66,24 @@ message Request {
 message Response {
     // The session id
     optional string error = 1;
+    string working_dir_path = 2;
     oneof response {
-        MkdirResponse mkdir = 2;
-        CreateRegularFileResponse create_regular_file = 3;
-        ChangeWorkingDirectoryResponse change_working_directory = 4;
-        RemoveResponse remove = 5;
-        FindFilesResponse find = 6;
-        ListFilesResponse list = 7;
-        CopyResponse copy = 8;
-        MoveResponse move = 9;
-        CreateHardLinkResponse hardLink = 10;
-        CreateSymbolicLinkResponse symLink = 11;
-        AppendAllResponse appendAll = 12;
-        ReadAllResponse readAll = 13;
-        OpenResponse open = 14;
-        CloseResponse close = 15;
-        ReadAtResponse readAt = 16;
-        WriteAtResponse writeAt = 17;
+        MkdirResponse mkdir = 3;
+        CreateRegularFileResponse create_regular_file = 4;
+        ChangeWorkingDirectoryResponse change_working_directory = 5;
+        RemoveResponse remove = 6;
+        FindFilesResponse find = 7;
+        ListFilesResponse list = 8;
+        CopyResponse copy = 9;
+        MoveResponse move = 10;
+        CreateHardLinkResponse hardLink = 11;
+        CreateSymbolicLinkResponse symLink = 12;
+        AppendAllResponse appendAll = 13;
+        ReadAllResponse readAll = 14;
+        OpenResponse open = 15;
+        CloseResponse close = 16;
+        ReadAtResponse readAt = 17;
+        WriteAtResponse writeAt = 18;
     }
 }
 
@@ -115,7 +116,7 @@ message ChangeWorkingDirectoryRequest {
 
 message ChangeWorkingDirectoryResponse {
     // New file name
-    string name = 1;
+    string path = 1;
 }
 
 message RemoveRequest {

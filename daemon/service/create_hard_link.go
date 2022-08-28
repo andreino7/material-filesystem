@@ -24,11 +24,13 @@ func (daemon *FileSystemDaemon) CreateHardLink(ctx context.Context, request *pb.
 
 	file, err := daemon.fs.CreateHardLink(srcPath, destPath)
 
+	workDir := srcPath.WorkingDir()
 	if err != nil {
-		return daemon.extractError(request.GetSessionId(), err)
+		return daemon.extractError(request.GetSessionId(), workDir, err)
 	}
 
 	return &pb.Response{
+		WorkingDirPath: workDir.Info().AbsolutePath(),
 		Response: &pb.Response_HardLink{
 			HardLink: &pb.CreateHardLinkResponse{Name: file.Name()},
 		},

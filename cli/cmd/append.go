@@ -7,11 +7,10 @@ import (
 	"fmt"
 	"material/filesystem/cli/fsclient"
 	"material/filesystem/pb/proto/fsservice"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
-
-var text *string
 
 // appendCmd represents the append command
 var appendCmd = &cobra.Command{
@@ -24,17 +23,17 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		fmt.Println("qui")
-		fmt.Println(args)
-		if len(args) != 1 {
+		if len(args) < 2 {
 			return fmt.Errorf("invalid argument")
 		}
+
+		text := strings.Join(args[1:], " ")
 
 		req := &fsservice.Request{
 			Request: &fsservice.Request_AppendAll{
 				AppendAll: &fsservice.AppendAllRequest{
 					Path:    args[0],
-					Content: []byte(*text),
+					Content: []byte(text),
 				},
 			},
 		}
@@ -45,11 +44,4 @@ to quickly create a Cobra application.`,
 
 func init() {
 	rootCmd.AddCommand(appendCmd)
-	appendCmd.PostRun = appendPostRun
-	appendPostRun(nil, nil)
-}
-
-func appendPostRun(cmd *cobra.Command, args []string) {
-	appendCmd.ResetFlags()
-	text = appendCmd.Flags().String("string", "", "usage")
 }

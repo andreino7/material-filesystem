@@ -26,11 +26,13 @@ func (daemon *FileSystemDaemon) Mkdir(ctx context.Context, request *pb.Request) 
 		file, err = daemon.fs.Mkdir(path)
 	}
 
+	workDir := path.WorkingDir()
 	if err != nil {
-		return daemon.extractError(request.GetSessionId(), err)
+		return daemon.extractError(request.GetSessionId(), workDir, err)
 	}
 
 	return &pb.Response{
+		WorkingDirPath: workDir.Info().AbsolutePath(),
 		Response: &pb.Response_Mkdir{
 			Mkdir: &pb.MkdirResponse{Name: file.Info().Name()},
 		},

@@ -24,11 +24,13 @@ func (daemon *FileSystemDaemon) CreateSymbolicLink(ctx context.Context, request 
 
 	file, err := daemon.fs.CreateSymbolicLink(srcPath, destPath)
 
+	workDir := srcPath.WorkingDir()
 	if err != nil {
-		return daemon.extractError(request.GetSessionId(), err)
+		return daemon.extractError(request.GetSessionId(), workDir, err)
 	}
 
 	return &pb.Response{
+		WorkingDirPath: workDir.Info().AbsolutePath(),
 		Response: &pb.Response_SymLink{
 			SymLink: &pb.CreateSymbolicLinkResponse{Name: file.Name()},
 		},

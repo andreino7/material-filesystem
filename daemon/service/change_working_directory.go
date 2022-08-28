@@ -19,7 +19,7 @@ func (daemon *FileSystemDaemon) ChangeWorkingDirectory(ctx context.Context, requ
 
 	file, err := daemon.fs.GetDirectory(path)
 	if err != nil {
-		return daemon.extractError(request.GetSessionId(), err)
+		return daemon.extractError(request.GetSessionId(), path.WorkingDir(), err)
 	}
 
 	err = daemon.sessionStore.ChangeWorkingDirectory(request.GetSessionId(), file)
@@ -28,8 +28,9 @@ func (daemon *FileSystemDaemon) ChangeWorkingDirectory(ctx context.Context, requ
 	}
 
 	return &pb.Response{
+		WorkingDirPath: file.Info().AbsolutePath(),
 		Response: &pb.Response_ChangeWorkingDirectory{
-			ChangeWorkingDirectory: &pb.ChangeWorkingDirectoryResponse{Name: file.Info().Name()},
+			ChangeWorkingDirectory: &pb.ChangeWorkingDirectoryResponse{Path: file.Info().AbsolutePath()},
 		},
 	}, nil
 }

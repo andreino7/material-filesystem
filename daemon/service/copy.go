@@ -23,12 +23,13 @@ func (daemon *FileSystemDaemon) Copy(ctx context.Context, request *pb.Request) (
 	}
 
 	file, err := daemon.fs.Copy(srcPath, destPath)
-
+	workDir := srcPath.WorkingDir()
 	if err != nil {
-		return daemon.extractError(request.GetSessionId(), err)
+		return daemon.extractError(request.GetSessionId(), workDir, err)
 	}
 
 	return &pb.Response{
+		WorkingDirPath: workDir.Info().AbsolutePath(),
 		Response: &pb.Response_Copy{
 			Copy: &pb.CopyResponse{Name: file.Name()},
 		},

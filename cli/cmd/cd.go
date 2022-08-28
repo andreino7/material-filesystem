@@ -13,14 +13,10 @@ import (
 
 // cdCmd represents the cd command
 var cdCmd = &cobra.Command{
-	Use:   "cd",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Use:   "cd [directory]",
+	Short: "Change the working directory",
+	Long: `The cd utility change the working directory of the current
+session`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 1 {
 			return fmt.Errorf("invalid arguments")
@@ -38,7 +34,7 @@ to quickly create a Cobra application.`,
 }
 
 func updateWokingDirectory(resp *fsservice.Response) {
-	fsclient.Session.SetWorkingDirName(resp.GetChangeWorkingDirectory().GetName())
+	fsclient.Session.SetWorkingDirPath(resp.GetChangeWorkingDirectory().GetPath())
 }
 
 func init() {

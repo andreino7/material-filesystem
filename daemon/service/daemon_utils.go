@@ -12,19 +12,24 @@ import (
 
 type pathExtractorFn func() string
 
-func (daemon *FileSystemDaemon) extractError(sessionId string, err error) (*pb.Response, error) {
+func (daemon *FileSystemDaemon) extractError(sessionId string, workDir file.File, err error) (*pb.Response, error) {
 	target := &fserrors.FileSystemError{}
 	if errors.As(err, &target) {
-		daemon.maybeChangeWorkDirectory(sessionId, target)
-		return &pb.Response{Error: proto.String(err.Error())}, nil
+		workDir := daemon.maybeChangeWorkDirectory(sessionId, workDir, target)
+		return &pb.Response{
+			Error:          proto.String(err.Error()),
+			WorkingDirPath: workDir.Info().AbsolutePath(),
+		}, nil
 	}
 	return nil, err
 }
 
-func (daemon *FileSystemDaemon) maybeChangeWorkDirectory(sessionId string, err *fserrors.FileSystemError) {
+func (daemon *FileSystemDaemon) maybeChangeWorkDirectory(sessionId string, workDir file.File, err *fserrors.FileSystemError) file.File {
 	if err == fserrors.ErrInvalidWorkingDirectory {
 		daemon.sessionStore.ChangeWorkingDirectory(sessionId, daemon.fs.DefaultWorkingDirectory())
+		return daemon.fs.DefaultWorkingDirectory()
 	}
+	return workDir
 }
 
 func (daemon *FileSystemDaemon) updateWorkingDirectory(sessionId string, deletedFile file.FileInfo) (file.File, error) {

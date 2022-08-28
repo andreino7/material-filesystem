@@ -18,8 +18,9 @@ func (daemon *FileSystemDaemon) ListFiles(ctx context.Context, request *pb.Reque
 	}
 
 	files, err := daemon.fs.ListFiles(path)
+	workDir := path.WorkingDir()
 	if err != nil {
-		return daemon.extractError(request.GetSessionId(), err)
+		return daemon.extractError(request.GetSessionId(), workDir, err)
 	}
 
 	names := []string{}
@@ -28,6 +29,7 @@ func (daemon *FileSystemDaemon) ListFiles(ctx context.Context, request *pb.Reque
 	}
 
 	return &pb.Response{
+		WorkingDirPath: workDir.Info().AbsolutePath(),
 		Response: &pb.Response_List{
 			List: &pb.ListFilesResponse{Names: names},
 		},

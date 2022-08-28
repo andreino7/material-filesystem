@@ -8,6 +8,7 @@ import (
 	"material/filesystem/cli/fsclient"
 	"material/filesystem/pb/proto/fsservice"
 	"strconv"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -23,7 +24,7 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if len(args) != 3 {
+		if len(args) < 3 {
 			return fmt.Errorf("invalid argument")
 		}
 
@@ -32,12 +33,14 @@ to quickly create a Cobra application.`,
 			return fmt.Errorf("invalid argument")
 		}
 
+		text := strings.Join(args[2:], " ")
+
 		req := &fsservice.Request{
 			Request: &fsservice.Request_WriteAt{
 				WriteAt: &fsservice.WriteAtRequest{
 					FileDescriptor: args[0],
 					Pos:            int32(start),
-					Content:        []byte(args[2]),
+					Content:        []byte(text),
 				},
 			},
 		}
