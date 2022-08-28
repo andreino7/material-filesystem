@@ -17,7 +17,7 @@ message NewSessionRequest {
 
 message NewSessionResponse {
     string session_id = 1;
-    string working_directory_name = 2;
+    string working_directory_path = 2;
 }
 
 message DeleteSessionRequest {

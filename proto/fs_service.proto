@@ -21,6 +21,23 @@ service FileSystemService {
     rpc Move(Request) returns (Response) {}
     // Copy file or directory to a given location
     rpc Copy(Request) returns (Response) {}
+    // Create hard link between two files
+    rpc CreateHardLink(Request) returns (Response) {}
+    // Copy symbolic link between two files or directories
+    rpc CreateSymbolicLink(Request) returns (Response) {}
+    // Append all content to file
+    rpc AppendAll(Request) returns (Response) {}
+    // Read all file content
+    rpc ReadAll(Request) returns (Response) {}
+    // Open file
+    rpc Open(Request) returns (Response) {}
+    // Close file
+    rpc Close(Request) returns (Response) {}
+    // Read file at given location
+    rpc ReadAt(Request) returns (Response) {}
+    // Write file at given location
+    rpc WriteAt(Request) returns (Response) {}
+    
 }
 
 message Request {
@@ -35,21 +52,38 @@ message Request {
         ListFilesRequest list = 7;
         CopyRequest copy = 8;
         MoveRequest move = 9;
+        CreateHardLinkRequest hardLink = 10;
+        CreateSymbolicLinkRequest symLink = 11;
+        AppendAllRequest appendAll = 12;
+        ReadAllRequest readAll = 13;
+        OpenRequest open = 14;
+        CloseRequest close = 15;
+        ReadAtRequest readAt = 16;
+        WriteAtRequest writeAt = 17;
     }
 }
 
 message Response {
     // The session id
     optional string error = 1;
+    string working_dir_path = 2;
     oneof response {
-        MkdirResponse mkdir = 2;
-        CreateRegularFileResponse create_regular_file = 3;
-        ChangeWorkingDirectoryResponse change_working_directory = 4;
-        RemoveResponse remove = 5;
-        FindFilesResponse find = 6;
-        ListFilesResponse list = 7;
-        CopyResponse copy = 8;
-        MoveResponse move = 9;
+        MkdirResponse mkdir = 3;
+        CreateRegularFileResponse create_regular_file = 4;
+        ChangeWorkingDirectoryResponse change_working_directory = 5;
+        RemoveResponse remove = 6;
+        FindFilesResponse find = 7;
+        ListFilesResponse list = 8;
+        CopyResponse copy = 9;
+        MoveResponse move = 10;
+        CreateHardLinkResponse hardLink = 11;
+        CreateSymbolicLinkResponse symLink = 12;
+        AppendAllResponse appendAll = 13;
+        ReadAllResponse readAll = 14;
+        OpenResponse open = 15;
+        CloseResponse close = 16;
+        ReadAtResponse readAt = 17;
+        WriteAtResponse writeAt = 18;
     }
 }
 
@@ -82,7 +116,7 @@ message ChangeWorkingDirectoryRequest {
 
 message ChangeWorkingDirectoryResponse {
     // New file name
-    string name = 1;
+    string path = 1;
 }
 
 message RemoveRequest {
@@ -139,4 +173,95 @@ message MoveRequest {
 message MoveResponse {
     // Moved directory/file name
     string name = 1;
+}
+
+message CreateHardLinkRequest {
+    // File to link
+    string src_path = 1;
+    // Link destination
+    string dest_path = 2;
+}
+
+message CreateHardLinkResponse {
+    // Moved directory/file name
+    string name = 1;
+}
+
+message CreateSymbolicLinkRequest {
+    // File to link
+    string src_path = 1;
+    // Link destination
+    string dest_path = 2;
+}
+
+message CreateSymbolicLinkResponse {
+    // Moved directory/file name
+    string name = 1;
+}
+
+message AppendAllRequest {
+    // File to append
+    string path = 1;
+    // Content to append
+    bytes content = 2;
+}
+
+message AppendAllResponse {
+
+}
+
+message ReadAllRequest {
+    // File to read
+    string path = 1;
+}
+
+message ReadAllResponse {
+    // Content read
+    bytes content = 1;
+}
+
+message OpenRequest {
+    // File to open
+    string path = 1;
+}
+
+message OpenResponse {
+    // File descriptor
+    string file_descriptor = 1;
+}
+
+message CloseRequest {
+    // File descriptor
+    string file_descriptor = 1;
+}
+
+message CloseResponse {
+}
+
+message ReadAtRequest {
+    // File to open
+    string file_descriptor = 1;
+    // Position where to start to read
+    int32 start_pos = 2;
+    // Position where to stop to read
+    int32 end_pos = 3;
+}
+
+message ReadAtResponse {
+    // Content read
+    bytes content = 1;
+}
+
+message WriteAtRequest {
+    // File to open
+    string file_descriptor = 1;
+    // Position where to start to write
+    int32 pos = 2;
+    // Content to write
+    bytes content = 3;
+}
+
+message WriteAtResponse {
+    // Bytes written 
+    int32 n_bytes = 1;
 }

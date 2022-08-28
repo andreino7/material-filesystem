@@ -2,6 +2,7 @@ package session
 
 import (
 	"fmt"
+	"log"
 	"material/filesystem/filesystem/file"
 	pb "material/filesystem/pb/proto/session"
 	"sync"
@@ -39,9 +40,10 @@ func (store *SessionStore) AddSession(request *pb.NewSessionRequest, workingDire
 		return nil, fmt.Errorf("invalid session id")
 	}
 	store.sessions[session.sessionId] = session
+	log.Printf("new session created: %s", session.sessionId)
 	return &pb.NewSessionResponse{
 		SessionId:            session.sessionId,
-		WorkingDirectoryName: session.workingDirectory.Info().Name(),
+		WorkingDirectoryPath: session.workingDirectory.Info().AbsolutePath(),
 	}, nil
 }
 
@@ -53,6 +55,8 @@ func (store *SessionStore) DeleteSession(request *pb.DeleteSessionRequest) (*pb.
 		return nil, fmt.Errorf("session not found")
 	}
 	delete(store.sessions, request.SessionId)
+	log.Printf("session deleted: %s", request.GetSessionId())
+
 	return &pb.DeleteSessionResponse{
 		SessionId: request.SessionId,
 	}, nil

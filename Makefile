@@ -8,11 +8,11 @@ help:
 list-targets:
 	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$'
 
-build-fs:
-	go build -o ./build/fs ./fs/cmd/main.go
-
 build-daemon: generate-protobuf-models
 	go build -o ./build/fs-daemon ./daemon/cmd/main.go
+
+build-cli: generate-protobuf-models
+	go build -o ./build/fs-cli ./cli/main.go
 
 generate-protobuf-models:
 	@rm -rf pb/
