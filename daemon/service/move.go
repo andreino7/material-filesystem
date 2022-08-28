@@ -9,7 +9,7 @@ import (
 
 func (daemon *FileSystemDaemon) Move(ctx context.Context, request *pb.Request) (*pb.Response, error) {
 	log.Printf("%s - move request recevied: {%+v}", request.GetSessionId(), request)
-	mvReq := request.GetCopy()
+	mvReq := request.GetMove()
 	if mvReq == nil {
 		return nil, fmt.Errorf("invalid request")
 	}

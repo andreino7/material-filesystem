@@ -59,5 +59,5 @@ func init() {
 
 func lnPostRun(cmd *cobra.Command, args []string) {
 	lnCmd.ResetFlags()
-	isSymbolicLink = mkdirCmd.Flags().BoolP("symbolic", "s", false, "make parent directories as needed")
+	isSymbolicLink = lnCmd.Flags().BoolP("symbolic", "s", false, "make parent directories as needed")
 }

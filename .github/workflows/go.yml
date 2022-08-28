@@ -24,8 +24,11 @@ jobs:
     - name: Install Protoc Go
       run: go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28 && go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
 
-    - name: Build
+    - name: Build Daemon
       run: make build-daemon
+
+    - name: Build Client
+      run: make build-cli
     
     - name: Test
       run: make test
