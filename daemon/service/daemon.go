@@ -38,14 +38,14 @@ func (daemon *FileSystemDaemon) Run() error {
 	// TODO: make port configurable
 	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", 3333))
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		return err
 	}
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
 	pbSession.RegisterSessionServiceServer(grpcServer, daemon)
 	pbFs.RegisterFileSystemServiceServer(grpcServer, daemon)
 	reflection.Register(grpcServer)
-	fmt.Println("Daemon listening on port: 3333")
+	log.Println("Daemon listening on port: 3333")
 	grpcServer.Serve(lis)
 	return nil
 }

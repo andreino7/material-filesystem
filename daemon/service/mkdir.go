@@ -3,12 +3,14 @@ package daemon
 import (
 	"context"
 	"fmt"
+	"log"
 	"material/filesystem/filesystem/file"
 	pb "material/filesystem/pb/proto/fsservice"
 )
 
 // TODO: add mocking and unit tests
 func (daemon *FileSystemDaemon) Mkdir(ctx context.Context, request *pb.Request) (*pb.Response, error) {
+	log.Printf("%s - mkdir request recevied: {%+v}", request.GetSessionId(), request)
 	mkdirReq := request.GetMkdir()
 	if mkdirReq == nil {
 		return nil, fmt.Errorf("invalid request")
@@ -16,6 +18,7 @@ func (daemon *FileSystemDaemon) Mkdir(ctx context.Context, request *pb.Request) 
 
 	path, err := daemon.getPath(request, func() string { return mkdirReq.GetPath() })
 	if err != nil {
+		log.Printf("%s - mkdir daemon error: %s", request.GetSessionId(), err.Error())
 		return nil, err
 	}
 
@@ -28,6 +31,7 @@ func (daemon *FileSystemDaemon) Mkdir(ctx context.Context, request *pb.Request) 
 
 	workDir := path.WorkingDir()
 	if err != nil {
+		log.Printf("%s - mkdir fs error: %s", request.GetSessionId(), err.Error())
 		return daemon.extractError(request.GetSessionId(), workDir, err)
 	}
 

@@ -3,11 +3,13 @@ package daemon
 import (
 	"context"
 	"fmt"
+	"log"
 
 	pb "material/filesystem/pb/proto/fsservice"
 )
 
 func (daemon *FileSystemDaemon) ReadAt(ctx context.Context, request *pb.Request) (*pb.Response, error) {
+	log.Printf("%s - readAt request recevied: {%+v}", request.GetSessionId(), request)
 	readReq := request.GetReadAt()
 	if readReq == nil {
 		return nil, fmt.Errorf("invalid request")
@@ -15,11 +17,13 @@ func (daemon *FileSystemDaemon) ReadAt(ctx context.Context, request *pb.Request)
 
 	workDir, err := daemon.sessionStore.GetWorkingDirectoryForSession(request.GetSessionId())
 	if err != nil {
+		log.Printf("%s - readAt path error: %s", request.GetSessionId(), err.Error())
 		return nil, err
 	}
 
 	content, err := daemon.fs.ReadAt(readReq.GetFileDescriptor(), int(readReq.GetStartPos()), int(readReq.GetEndPos()))
 	if err != nil {
+		log.Printf("%s - readAt fs error: %s", request.GetSessionId(), err.Error())
 		return daemon.extractError(request.GetSessionId(), workDir, err)
 	}
 
