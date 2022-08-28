@@ -18,6 +18,7 @@ var Session FileSystemSession
 type FileSystemSession struct {
 	sessionId      string
 	workingDirPath string
+	conn           *grpc.ClientConn
 	fsservice.FileSystemServiceClient
 	session.SessionServiceClient
 }
@@ -61,12 +62,12 @@ func (f *FileSystemSession) SetWorkingDirPath(workingDirPath string) {
 	f.workingDirPath = workingDirPath
 }
 
-func Initialize() (*grpc.ClientConn, error) {
+func Initialize() error {
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 
 	conn, err := grpc.Dial("localhost:3333", opts...)
 	if err != nil {
-		return nil, fmt.Errorf("fail to dial: %v", err)
+		return fmt.Errorf("fail to dial: %v", err)
 	}
 	fsClient := fsservice.NewFileSystemServiceClient(conn)
 	sessionClient := session.NewSessionServiceClient(conn)
@@ -75,15 +76,27 @@ func Initialize() (*grpc.ClientConn, error) {
 	resp, err := sessionClient.NewSession(ctx, &session.NewSessionRequest{})
 	if err != nil {
 		conn.Close()
-		return nil, fmt.Errorf("error creating new session: %w", err)
+		return fmt.Errorf("error creating new session: %w", err)
 	}
 
 	Session = FileSystemSession{
 		sessionId:               resp.GetSessionId(),
 		workingDirPath:          resp.GetWorkingDirectoryPath(),
+		conn:                    conn,
 		FileSystemServiceClient: fsClient,
 		SessionServiceClient:    sessionClient,
 	}
 
-	return conn, err
+	return nil
+}
+
+func Close() {
+	ctx := context.Background()
+	if Session.sessionId != "" {
+		Session.DeleteSession(ctx, &session.DeleteSessionRequest{SessionId: Session.sessionId})
+	}
+
+	if Session.conn != nil {
+		Session.conn.Close()
+	}
 }

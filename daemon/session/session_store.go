@@ -2,6 +2,7 @@ package session
 
 import (
 	"fmt"
+	"log"
 	"material/filesystem/filesystem/file"
 	pb "material/filesystem/pb/proto/session"
 	"sync"
@@ -39,6 +40,7 @@ func (store *SessionStore) AddSession(request *pb.NewSessionRequest, workingDire
 		return nil, fmt.Errorf("invalid session id")
 	}
 	store.sessions[session.sessionId] = session
+	log.Printf("new session created: %s", session.sessionId)
 	return &pb.NewSessionResponse{
 		SessionId:            session.sessionId,
 		WorkingDirectoryPath: session.workingDirectory.Info().AbsolutePath(),
