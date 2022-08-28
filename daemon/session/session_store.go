@@ -55,6 +55,8 @@ func (store *SessionStore) DeleteSession(request *pb.DeleteSessionRequest) (*pb.
 		return nil, fmt.Errorf("session not found")
 	}
 	delete(store.sessions, request.SessionId)
+	log.Printf("session deleted: %s", request.GetSessionId())
+
 	return &pb.DeleteSessionResponse{
 		SessionId: request.SessionId,
 	}, nil

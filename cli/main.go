@@ -15,9 +15,16 @@ import (
 	"syscall"
 )
 
+const defaultPort = "2222"
+
 func main() {
+
+	port := os.Getenv("FS_DAEMON_PORT")
+	if port == "" {
+		port = defaultPort
+	}
 	// Start grpc
-	if err := fsclient.Initialize(); err != nil {
+	if err := fsclient.Initialize(port); err != nil {
 		log.Fatalf("critical error: %v", err)
 		os.Exit(1)
 	}

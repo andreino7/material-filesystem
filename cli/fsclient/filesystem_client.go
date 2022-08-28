@@ -62,10 +62,10 @@ func (f *FileSystemSession) SetWorkingDirPath(workingDirPath string) {
 	f.workingDirPath = workingDirPath
 }
 
-func Initialize() error {
+func Initialize(port string) error {
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 
-	conn, err := grpc.Dial("localhost:3333", opts...)
+	conn, err := grpc.Dial("localhost:"+port, opts...)
 	if err != nil {
 		return fmt.Errorf("fail to dial: %v", err)
 	}
