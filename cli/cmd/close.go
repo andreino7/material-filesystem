@@ -13,14 +13,12 @@ import (
 
 // closeCmd represents the close command
 var closeCmd = &cobra.Command{
-	Use:   "close",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Use:   "close [FILE_DESCRIPTOR]",
+	Short: "Close a file",
+	Long: `Close a file using the file descriptor.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+Examples:
+	close file-descriptor`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 1 {
 			return fmt.Errorf("invalid argument")

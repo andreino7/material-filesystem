@@ -12,15 +12,16 @@ import (
 )
 
 // touchCmd represents the touch command
-var touchCmd = &cobra.Command{
-	Use:   "touch",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+var createCmd = &cobra.Command{
+	Use:   "create [FILE]",
+	Short: "Create a file",
+	Long: `Create the FILE, if it does not already exist.
+Supports absolute and relative paths.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+Examples:
+create file1
+create /dir1/file1
+`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 1 {
 			return fmt.Errorf("invalid argument")
@@ -38,5 +39,5 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-	rootCmd.AddCommand(touchCmd)
+	rootCmd.AddCommand(createCmd)
 }

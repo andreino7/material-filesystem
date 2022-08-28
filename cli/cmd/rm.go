@@ -15,14 +15,16 @@ var removeChildren *bool
 
 // rmCmd represents the rm command
 var rmCmd = &cobra.Command{
-	Use:   "rm",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Use:   "rm [FILE]",
+	Short: "Remove files or directories",
+	Long: `rm removes each specified file. By default, it does not remove directories.
+Supports absolute and relative paths
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+Examples:
+rm /file1
+rm -r /dir1/dir2
+rm file1
+`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 1 {
 			return fmt.Errorf("invalid argument")
@@ -48,6 +50,6 @@ func init() {
 
 func rmPostRun(cmd *cobra.Command, args []string) {
 	rmCmd.ResetFlags()
-	removeChildren = rmCmd.Flags().BoolP("recursive", "r", false, "make parent directories as needed")
+	removeChildren = rmCmd.Flags().BoolP("recursive", "r", false, "remove directories and their contents recursively")
 
 }

@@ -15,14 +15,20 @@ var isSymbolicLink *bool
 
 // lnCmd represents the ln command
 var lnCmd = &cobra.Command{
-	Use:   "ln",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Use:   "ln [LINK_TARGET] [LINK_PATH]",
+	Short: "Make links between files",
+	Long: `Create a link to LINK_TARGET at the given LINK_PATH.
+Create hard links by default, symbolic links with --symbolic.
+Hard links to directories are not supported.
+Supports absolute and relative paths.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+Examples:
+ln file1 file1-link
+ln /dir/file1 /dir2/file1-link
+
+ln -s file1 file1-link
+ln -s /dir/file1 /dir-link
+`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 2 {
 			return fmt.Errorf("invalid argument")
@@ -59,5 +65,5 @@ func init() {
 
 func lnPostRun(cmd *cobra.Command, args []string) {
 	lnCmd.ResetFlags()
-	isSymbolicLink = lnCmd.Flags().BoolP("symbolic", "s", false, "make parent directories as needed")
+	isSymbolicLink = lnCmd.Flags().BoolP("symbolic", "s", false, "make symbolic links instead of hard links")
 }

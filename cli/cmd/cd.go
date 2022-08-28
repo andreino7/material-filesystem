@@ -16,7 +16,12 @@ var cdCmd = &cobra.Command{
 	Use:   "cd [directory]",
 	Short: "Change the working directory",
 	Long: `The cd utility change the working directory of the current
-session`,
+session. Supports absolute or relative paths
+
+Examples:
+	cd dir1
+	cd ../dir1/dir2
+	cd /dir1/dir2/dir3`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 1 {
 			return fmt.Errorf("invalid arguments")

@@ -13,14 +13,15 @@ import (
 
 // findCmd represents the find command
 var findCmd = &cobra.Command{
-	Use:   "find",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Use:   "find [PATH] [NAME]",
+	Short: "Search for files in a directory hierarchy",
+	Long: `Find searches the directory tree rooted at the given
+path and prints list of files/directories matching the given name. 
+Supports absolute and relative paths.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+Examples:
+find / some_name
+find dir1/dir2 some_name`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 2 {
 			return fmt.Errorf("invalid argument")

@@ -13,10 +13,16 @@ import (
 
 // cpCmd represents the cp command
 var cpCmd = &cobra.Command{
-	Use:   "cp",
+	Use:   "cp [SOURCE] [DEST]",
 	Short: "Copy files and directories",
 	Long: `Copy SOURCE to DEST and resolves any name conflict
-by merging directories and renaming files`,
+by merging directories and renaming files.
+Creates all parent directories of DEST.
+Supports relative and absolute paths. 
+
+Examples:
+cp dir1 dir2
+cp /dir1/file1 dir2/file1`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 2 {
 			return fmt.Errorf("invalid argument")
