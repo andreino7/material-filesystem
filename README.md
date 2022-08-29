@@ -25,6 +25,8 @@ Please note that they have been tested only on a Mac Intel, there's no guarantee
 
 If you need to build the binaries please go to the [build](#build) section.
 
+You can configure the grpc server port using the `FS_DAEMON_PORT` env variable.
+
 ### Daemon
 
 ```console
