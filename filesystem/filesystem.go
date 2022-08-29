@@ -72,6 +72,9 @@ type FileSystem interface {
 	// and returns the number of bytes written.
 	// If there is an error, it will be of type *FileSystemError.
 	WriteAt(fileDescriptor string, content []byte, pos int) (int, error)
+	// Walk walks the file tree rooted at root, calling filterFn for each file or directory in the tree, including root,
+	// and calls walkFn for each file or directory matching the filter.
+	// Optionally follow symbolic links.
 	Walk(path *fspath.FileSystemPath, walkFn file.WalkFn, filterFn file.FilterFn, followLinks bool) error
 }
 

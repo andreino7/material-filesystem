@@ -167,7 +167,8 @@ func TestMove(t *testing.T) {
 				files, _ = fs.FindFiles(info.Name(), p)
 				assert.Len(t, files, 1)
 				files, _ = fs.FindFiles("file2", p)
-				assert.Len(t, files, 1)
+				assert.Len(t, files, 2)
+				assert.NotEqual(t, files[0].Name(), files[1].Name())
 			},
 		},
 		{
@@ -277,7 +278,8 @@ func TestMove(t *testing.T) {
 				files, _ = fs.FindFiles(info.Name(), p)
 				assert.Len(t, files, 1)
 				files, _ = fs.FindFiles("file1", p)
-				assert.Len(t, files, 1)
+				assert.Len(t, files, 2)
+				assert.NotEqual(t, files[0], files[1])
 			},
 		},
 		{
@@ -354,7 +356,8 @@ func TestMove(t *testing.T) {
 				files, _ = fs.FindFiles(info.Name(), p)
 				assert.Len(t, files, 1)
 				files, _ = fs.FindFiles("file2", p)
-				assert.Len(t, files, 1)
+				assert.Len(t, files, 2)
+				assert.NotEqual(t, files[0].Name(), files[1].Name())
 			},
 		},
 		{
@@ -656,7 +659,8 @@ func TestMove(t *testing.T) {
 				files, _ = fs.FindFiles(info.Name(), p)
 				assert.Len(t, files, 1)
 				files, _ = fs.FindFiles("file2", p)
-				assert.Len(t, files, 1)
+				assert.Len(t, files, 2)
+				assert.NotEqual(t, files[0].Name(), files[1].Name())
 			},
 		},
 		{
@@ -769,7 +773,8 @@ func TestMove(t *testing.T) {
 				files, _ = fs.FindFiles(info.Name(), p)
 				assert.Len(t, files, 1)
 				files, _ = fs.FindFiles("file1", p)
-				assert.Len(t, files, 1)
+				assert.Len(t, files, 2)
+				assert.NotEqual(t, files[0], files[1])
 			},
 		},
 		{
@@ -849,7 +854,8 @@ func TestMove(t *testing.T) {
 				files, _ = fs.FindFiles(info.Name(), p)
 				assert.Len(t, files, 1)
 				files, _ = fs.FindFiles("file2", p)
-				assert.Len(t, files, 1)
+				assert.Len(t, files, 2)
+				assert.NotEqual(t, files[0].Name(), files[1].Name())
 			},
 		},
 		{
@@ -1175,7 +1181,8 @@ func TestCopy(t *testing.T) {
 				files, _ = fs.FindFiles(info.Name(), p)
 				assert.Len(t, files, 1)
 				files, _ = fs.FindFiles("file2", p)
-				assert.Len(t, files, 1)
+				assert.Len(t, files, 2)
+				assert.NotEmptyf(t, files[0].Name(), files[1].Name())
 			},
 		},
 		{
@@ -1551,7 +1558,8 @@ func TestCopy(t *testing.T) {
 				files, _ = fs.FindFiles(info.Name(), p)
 				assert.Len(t, files, 1)
 				files, _ = fs.FindFiles("file2", p)
-				assert.Len(t, files, 1)
+				assert.Len(t, files, 2)
+				assert.NotEqual(t, files[0].Name(), files[1].Name())
 			},
 		},
 		{

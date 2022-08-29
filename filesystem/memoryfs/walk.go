@@ -7,49 +7,51 @@ import (
 
 type visitFn func(string, *inMemoryFile) error
 
+// Walk walks the file tree rooted at root, calling filterFn for each file or directory in the tree, including root,
+// and calls walkFn for each file or directory matching the filter.
+// Optionally follow symbolic links.
+// If walkFn returns an error, the function stops immediately.
+//
+// Returns an error when:
+// - too many links were followed
+// - walkfn returns an error
+// - the symbolic link doesn't exist
 func (fs *MemoryFileSystem) Walk(path *fspath.FileSystemPath, walkFn file.WalkFn, filterFn file.FilterFn, followLinks bool) error {
 	pathRoot, err := fs.traverseToBase(path)
 	if err != nil {
 		return err
 	}
 
-	return fs.doWalk(pathRoot, walkFn, filterFn, followLinks)
+	return fs.doWalk(pathRoot, walkFn, filterFn, followLinks, 0)
 }
 
-func (fs *MemoryFileSystem) doWalk(rootFile *inMemoryFile, walkFn file.WalkFn, filterFn file.FilterFn, followLinks bool) error {
-	for fileName, curr := range rootFile.fileMap {
-		// skip special keys to avoid infinite cycle
-		if fileName == ".." || fileName == "." || fileName == "/" {
-			continue
-		}
+func (fs *MemoryFileSystem) doWalk(rootFile *inMemoryFile, walkFn file.WalkFn, filterFn file.FilterFn, followLinks bool, linkDepth int) error {
+	// check if current path is filtered out
+	if !filterFn(rootFile) {
+		return nil
+	}
 
-		if followLinks && curr.info.fileType == file.SymbolicLink {
-			currLink, err := fs.resolveSymlink(curr, 0)
-			if err != nil {
-				return err
-			}
-			curr = currLink
-		}
+	// visit the current file
+	if err := walkFn(rootFile); err != nil {
+		return err
+	}
 
-		if !filterFn(curr) {
-			continue
-		}
-
-		if err := walkFn(curr); err != nil {
+	// Optionally follow links
+	if followLinks && rootFile.info.fileType == file.SymbolicLink {
+		currLink, err := fs.resolveSymlink(rootFile, linkDepth)
+		if err != nil {
 			return err
 		}
-
-		if curr.info.fileType != file.Directory {
-			continue
-		}
-
-		err := fs.doWalk(curr, walkFn, filterFn, followLinks)
-		if err != nil {
+		rootFile = currLink
+		// Invoke walkfn on the link target
+		if err := walkFn(rootFile); err != nil {
 			return err
 		}
 	}
 
-	return nil
+	return fs.visitDir(rootFile, func(_ string, curr *inMemoryFile) error {
+		return fs.doWalk(curr, walkFn, filterFn, followLinks, linkDepth+1)
+	})
 }
 
 func (fs *MemoryFileSystem) visitDir(rootFile *inMemoryFile, visitFn visitFn) error {

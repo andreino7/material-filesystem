@@ -79,6 +79,7 @@ This will create a binary in `build/fs-cli`
 * Hard links to regular files
 * Symbolic links to files and directories
 * Files can have multiple readers at the same time
+* Walking a filesystem tree (Only library support)
 
 
 See [filesystem.go](https://github.com/andreino7/material-filesystem/blob/main/filesystem/filesystem.go) for more details or type help in `fs-cli`:

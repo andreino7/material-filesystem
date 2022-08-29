@@ -76,10 +76,11 @@ func TestFindFiles(t *testing.T) {
 			Assertions: func(t *testing.T, files []file.FileInfo, err error) {
 				assert.Nil(t, err)
 				assert.NotNil(t, files)
-				assert.Len(t, files, 2)
+				assert.Len(t, files, 3)
 
-				assert.Equal(t, files[0].AbsolutePath(), "/target/target")
-				assert.Equal(t, files[1].AbsolutePath(), "/target/target/dir/target")
+				assert.Equal(t, files[0].AbsolutePath(), "/target")
+				assert.Equal(t, files[1].AbsolutePath(), "/target/target")
+				assert.Equal(t, files[2].AbsolutePath(), "/target/target/dir/target")
 			},
 		},
 		{
@@ -339,10 +340,11 @@ func TestFindFiles(t *testing.T) {
 			Assertions: func(t *testing.T, files []file.FileInfo, err error) {
 				assert.Nil(t, err)
 				assert.NotNil(t, files)
-				assert.Len(t, files, 2)
+				assert.Len(t, files, 3)
 
-				assert.Equal(t, files[0].AbsolutePath(), "/target/target")
-				assert.Equal(t, files[1].AbsolutePath(), "/target/target/dir/target")
+				assert.Equal(t, files[0].AbsolutePath(), "/target")
+				assert.Equal(t, files[1].AbsolutePath(), "/target/target")
+				assert.Equal(t, files[2].AbsolutePath(), "/target/target/dir/target")
 			},
 		},
 	}

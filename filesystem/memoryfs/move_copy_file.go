@@ -90,7 +90,7 @@ func (fs *MemoryFileSystem) moveOrCopyDirectory(fileToMove *inMemoryFile, dest *
 }
 
 func (fs *MemoryFileSystem) renameAndMoveOrCopyDirectory(fileToMove *inMemoryFile, dest *inMemoryFile, newName string, isCopy bool) (*inMemoryFile, error) {
-	return fs.renameAndMoveOrCopyRegularFile(fileToMove, dest, newName, isCopy)
+	return fs.renameAndMoveOrCopy(fileToMove, dest, newName, isCopy)
 }
 
 // This method moves/copies the source directory to an existing destination.
@@ -102,7 +102,7 @@ func (fs *MemoryFileSystem) moveOrCopyDirectoryToExistingDestination(fileToMove 
 	}
 
 	// move/copy to dest parent dir, and rename
-	return fs.renameAndMoveOrCopyRegularFile(fileToMove, dest.fileMap[".."], fileToMove.info.Name(), isCopy)
+	return fs.renameAndMoveOrCopy(fileToMove, dest.fileMap[".."], fileToMove.info.Name(), isCopy)
 }
 
 // This method merges two directories and recursively all the subdirectories.
@@ -153,7 +153,7 @@ func shouldMergeSubDirectories(fileToMove *inMemoryFile, dest *inMemoryFile) boo
 }
 
 func (fs *MemoryFileSystem) moveOrCopyRegularFile(fileToMove *inMemoryFile, dest *inMemoryFile, finalDestName string, isCopy bool) (*inMemoryFile, error) {
-	return fs.doMoveOrCopy(fileToMove, dest, finalDestName, fs.moveOrCopyRegularFileToExistingDestination, fs.renameAndMoveOrCopyRegularFile, isCopy)
+	return fs.doMoveOrCopy(fileToMove, dest, finalDestName, fs.moveOrCopyRegularFileToExistingDestination, fs.renameAndMoveOrCopy, isCopy)
 }
 
 // This method moves/copies a file to an existing destination.
@@ -169,7 +169,7 @@ func (fs *MemoryFileSystem) moveOrCopyRegularFileToExistingDestination(fileToMov
 		newName = dest.Info().Name()
 	}
 
-	return fs.renameAndMoveOrCopyRegularFile(fileToMove, finalDir, newName, isCopy)
+	return fs.renameAndMoveOrCopy(fileToMove, finalDir, newName, isCopy)
 }
 
 // In case of "Move", this method removes the source file from the original location
@@ -177,7 +177,7 @@ func (fs *MemoryFileSystem) moveOrCopyRegularFileToExistingDestination(fileToMov
 // In case of "Copy", this method copies the source file from the original location
 // and attaches it to the new location and renames it to the given name.
 // If there's a name the conflict the source file is automatically renamed.
-func (fs *MemoryFileSystem) renameAndMoveOrCopyRegularFile(fileToMove *inMemoryFile, dest *inMemoryFile, newName string, isCopy bool) (*inMemoryFile, error) {
+func (fs *MemoryFileSystem) renameAndMoveOrCopy(fileToMove *inMemoryFile, dest *inMemoryFile, newName string, isCopy bool) (*inMemoryFile, error) {
 	// check for name conflicts
 	finalName := newName
 	if _, found := dest.fileMap[finalName]; found {
@@ -238,7 +238,7 @@ func (fs *MemoryFileSystem) copyFile(fileToMove *inMemoryFile, newAbsPath string
 
 	if fileToMove.info.fileType == file.Directory {
 		err := fs.visitDir(fileToMove, func(fileName string, child *inMemoryFile) error {
-			fs.renameAndMoveOrCopyRegularFile(child, newFile, fileName, true)
+			fs.renameAndMoveOrCopy(child, newFile, fileName, true)
 			return nil
 		})
 		if err != nil {
