@@ -2,7 +2,7 @@
 
 material-filesystem is an in-memory file system
 
-[!Build Status](https://github.com/andreino7/material-filesystem/actions/workflows/go.yml/badge.svg?branch=main)
+![Build Status](https://github.com/andreino7/material-filesystem/actions/workflows/go.yml/badge.svg?branch=main)
 
 ## Structure
 ### filesystem
