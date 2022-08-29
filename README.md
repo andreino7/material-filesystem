@@ -72,13 +72,16 @@ This will create a binary in `build/fs-cli`
 * Listing a directory content
 * Creating empty files
 * Removing files or directories
-* Appending content to files or write at specific positions.
-* Reading all content of a file or only a portion of it.
+* Appending all content to a file.
+* Write in chunks or at specific file offset.
+* Reading all content of a file
+* Reading a file in chunks and/or starting from a specific postion.
 * Moving (rename) a file or directory to a new location and automatically resolves any name conflict.
 * Copying a file or directory to a new location and automatically resolves any name conflict
 * Hard links to regular files
 * Symbolic links to files and directories
 * Files can have multiple readers at the same time
+* Walking a filesystem tree (Only library support)
 
 
 See [filesystem.go](https://github.com/andreino7/material-filesystem/blob/main/filesystem/filesystem.go) for more details or type help in `fs-cli`:

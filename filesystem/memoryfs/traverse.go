@@ -101,7 +101,7 @@ func (fs *MemoryFileSystem) traverseFromRootToLastDir(pathRoot *inMemoryFile, pa
 		}
 
 		// resolve symlink if needed
-		next, linkErr := fs.resolveSymlink(next, linkDepth+1)
+		next, linkErr := fs.resolveSymlink(next, linkDepth)
 		if linkErr != nil {
 			return nil, linkErr
 		}
@@ -116,8 +116,7 @@ func (fs *MemoryFileSystem) traverseFromRootToLastDir(pathRoot *inMemoryFile, pa
 	return curr, nil
 }
 
-// moveToBase moves from the last dir in path.Dir()
-// to path.Base()
+// moveToBase moves from the last dir in path.Dir() to path.Base()
 // If base is a symlink is resolved only if skipLink is false.
 func (fs *MemoryFileSystem) moveToBase(dir *inMemoryFile, fileName string, skipLink bool, linkDepth int) (*inMemoryFile, error) {
 	targetFile, found := dir.fileMap[fileName]

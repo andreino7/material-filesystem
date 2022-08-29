@@ -63,6 +63,7 @@ func (fs *MemoryFileSystem) CreateRegularFile(path *fspath.FileSystemPath) (file
 // - srcPath already exists
 // - destPath does not exist
 // - destPath is not a regular file
+//
 // TODO: make create parent directories configurable
 func (fs *MemoryFileSystem) CreateHardLink(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath) (file.FileInfo, error) {
 	fs.Lock()
@@ -99,7 +100,8 @@ func (fs *MemoryFileSystem) CreateHardLink(srcPath *fspath.FileSystemPath, destP
 // Returns an error when:
 // - srcPath file name is invalid
 // - srcPath already exists
-// TODO: make create intermediate directories configurable
+//
+// TODO: make create parent directories configurable
 func (fs *MemoryFileSystem) CreateSymbolicLink(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath) (file.FileInfo, error) {
 	fs.Lock()
 	defer fs.Unlock()

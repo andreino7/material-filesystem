@@ -35,7 +35,6 @@ func NewFileSystemDaemon(fsType filesystem.FileSystemType) (*FileSystemDaemon, e
 }
 
 func (daemon *FileSystemDaemon) Run(port string) error {
-	// TODO: make port configurable
 	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", port))
 	if err != nil {
 		return err

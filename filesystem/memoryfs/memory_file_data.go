@@ -4,8 +4,8 @@ import "sync"
 
 // inMemoryFile implements the FileData interface
 type inMemoryFileData struct {
-	// TODO: Optimization. make this a slice of slice so that
-	// expanding size/inserting is more efficient becuase you just need to copy
+	// TODO: Optimization. make this a slice of slice of fixed size so that
+	// expanding size/inserting is more efficient because you just need to copy
 	// the pointers to the slices
 	data []byte
 	sync.RWMutex
@@ -15,9 +15,13 @@ func (data *inMemoryFileData) Data() []byte {
 	return data.data
 }
 
-// writeAt writes the content at the given offset.
+func (data *inMemoryFileData) Size() int {
+	return len(data.data)
+}
+
+// write writes the content at the given offset.
 // If the offset > len(data) fill the gap with 0s.
-func (d *inMemoryFileData) writeAt(content []byte, offset int) int {
+func (d *inMemoryFileData) write(content []byte, offset int) int {
 
 	if offset == len(d.data) {
 		return d.append(content)
@@ -34,16 +38,18 @@ func (d *inMemoryFileData) writeAt(content []byte, offset int) int {
 	return d.insert(content, offset)
 }
 
-func (d *inMemoryFileData) readAt(start int, end int) []byte {
+func (d *inMemoryFileData) read(start int, buff []byte) int {
 	if start >= len(d.data) {
-		return []byte{}
+		return 0
 	}
 
-	total := end + 1
-	if total > len(d.data) {
-		total = len(d.data)
+	end := start + len(buff)
+	if end >= len(d.data) {
+		end = len(d.data)
 	}
-	return d.data[start:total]
+
+	copy(buff, d.data[start:end])
+	return end - start
 }
 
 // TODO: improve, see optimization above

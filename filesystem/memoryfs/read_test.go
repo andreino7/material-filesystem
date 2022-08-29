@@ -150,21 +150,20 @@ func TestReadAll(t *testing.T) {
 	}
 }
 
-// read closed file
 func TestReadAt(t *testing.T) {
 	cases := []struct {
 		CaseName   string
 		Path       string
 		Initialize func() (*memoryfs.MemoryFileSystem, file.File, error)
-		Start      int
-		End        int
-		Assertions func(*testing.T, []byte, error)
+		Offset     int
+		BuffSize   int
+		Assertions func(*testing.T, int, []byte, error)
 	}{
 		{
 			CaseName: "Read from non empty file - absolute path",
 			Path:     "/file1",
-			Start:    3,
-			End:      7,
+			Offset:   3,
+			BuffSize: 5,
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
@@ -173,16 +172,16 @@ func TestReadAt(t *testing.T) {
 				}
 				return fs, nil, nil
 			},
-			Assertions: func(t *testing.T, content []byte, err error) {
+			Assertions: func(t *testing.T, nBytes int, buff []byte, err error) {
 				assert.Nil(t, err)
-				assert.Equal(t, []byte("lo wo"), content)
+				assert.Equal(t, []byte("lo wo"), buff)
 			},
 		},
 		{
 			CaseName: "Read empty file should return empty bytes - absolute path",
 			Path:     "/file1",
-			Start:    3,
-			End:      7,
+			Offset:   3,
+			BuffSize: 5,
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
@@ -191,16 +190,17 @@ func TestReadAt(t *testing.T) {
 				}
 				return fs, nil, nil
 			},
-			Assertions: func(t *testing.T, content []byte, err error) {
+			Assertions: func(t *testing.T, nBytes int, buff []byte, err error) {
 				assert.Nil(t, err)
-				assert.Len(t, content, 0)
+				assert.Equal(t, nBytes, 0)
+				assert.Equal(t, make([]byte, 5), buff)
 			},
 		},
 		{
 			CaseName: "Read from non empty file, both out of bound - absolute path",
 			Path:     "/file1",
-			Start:    15,
-			End:      18,
+			Offset:   15,
+			BuffSize: 5,
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
@@ -209,16 +209,17 @@ func TestReadAt(t *testing.T) {
 				}
 				return fs, nil, nil
 			},
-			Assertions: func(t *testing.T, content []byte, err error) {
+			Assertions: func(t *testing.T, nBytes int, buff []byte, err error) {
 				assert.Nil(t, err)
-				assert.Len(t, content, 0)
+				assert.Equal(t, nBytes, 0)
+				assert.Equal(t, make([]byte, 5), buff)
 			},
 		},
 		{
 			CaseName: "Read from non empty file, right out of bound - absolute path",
 			Path:     "/file1",
-			Start:    9,
-			End:      18,
+			Offset:   9,
+			BuffSize: 20,
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
 				p, _ := fspath.NewFileSystemPath("/file1", nil)
@@ -227,27 +228,14 @@ func TestReadAt(t *testing.T) {
 				}
 				return fs, nil, nil
 			},
-			Assertions: func(t *testing.T, content []byte, err error) {
+			Assertions: func(t *testing.T, nBytes int, buff []byte, err error) {
 				assert.Nil(t, err)
-				assert.Equal(t, []byte("ld!"), content)
-			},
-		},
-		{
-			CaseName: "End pos < start pos - absolute path",
-			Path:     "/file1",
-			Start:    5,
-			End:      3,
-			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
-				fs := memoryfs.NewMemoryFileSystem()
-				p, _ := fspath.NewFileSystemPath("/file1", nil)
-				if err := fs.AppendAll(p, []byte("Hello world!")); err != nil {
-					return nil, nil, err
-				}
-				return fs, nil, nil
-			},
-			Assertions: func(t *testing.T, content []byte, err error) {
-				assert.NotNil(t, err)
-				assert.Equal(t, fserrors.ErrInvalid, err)
+				assert.Equal(t, nBytes, 3)
+				expected := make([]byte, 20)
+				expected[0] = 'l'
+				expected[1] = 'd'
+				expected[2] = '!'
+				assert.Equal(t, expected, buff)
 			},
 		},
 	}
@@ -262,8 +250,9 @@ func TestReadAt(t *testing.T) {
 			t.Fatal("error opening file")
 		}
 
-		content, err := fs.ReadAt(fd, testCase.Start, testCase.End)
-		testCase.Assertions(t, content, err)
+		buff := make([]byte, testCase.BuffSize)
+		nBytes, err := fs.ReadAt(fd, buff, testCase.Offset)
+		testCase.Assertions(t, nBytes, buff, err)
 	}
 }
 
@@ -272,7 +261,7 @@ func TestReadAtClosedFile(t *testing.T) {
 		CaseName   string
 		Path       string
 		Initialize func() (*memoryfs.MemoryFileSystem, file.File, error)
-		Assertions func(*testing.T, []byte, error)
+		Assertions func(*testing.T, int, error)
 	}{
 		{
 			CaseName: "Read closed file - absolute path",
@@ -285,9 +274,10 @@ func TestReadAtClosedFile(t *testing.T) {
 				}
 				return fs, nil, nil
 			},
-			Assertions: func(t *testing.T, content []byte, err error) {
+			Assertions: func(t *testing.T, nBytes int, err error) {
 				assert.NotNil(t, err)
 				assert.Equal(t, fserrors.ErrNotOpen, err)
+				assert.Equal(t, 0, nBytes)
 			},
 		},
 	}
@@ -303,18 +293,18 @@ func TestReadAtClosedFile(t *testing.T) {
 		}
 		fs.Close(fd)
 
-		content, err := fs.ReadAt(fd, 0, 5)
-		testCase.Assertions(t, content, err)
+		nBytes, err := fs.ReadAt(fd, make([]byte, 15), 5)
+		testCase.Assertions(t, nBytes, err)
 	}
 }
 
-func TestReadMovedOrRemovedFile(t *testing.T) {
+func TestReadAtMovedOrRemovedFile(t *testing.T) {
 	cases := []struct {
 		CaseName    string
 		Path        string
 		FsOperation func(*memoryfs.MemoryFileSystem) error
 		Initialize  func() (*memoryfs.MemoryFileSystem, file.File, error)
-		Assertions  func(*testing.T, []byte, error)
+		Assertions  func(*testing.T, int, []byte, error)
 	}{
 		{
 			CaseName: "Read from renamed file after opening it should still work - absolute path",
@@ -333,9 +323,10 @@ func TestReadMovedOrRemovedFile(t *testing.T) {
 				}
 				return fs, nil, nil
 			},
-			Assertions: func(t *testing.T, content []byte, err error) {
+			Assertions: func(t *testing.T, nBytes int, content []byte, err error) {
 				assert.Nil(t, err)
-				assert.Equal(t, []byte("Hello world!"), content)
+				assert.Equal(t, []byte("Hello"), content)
+				assert.Equal(t, nBytes, 5)
 			},
 		},
 		{
@@ -363,9 +354,10 @@ func TestReadMovedOrRemovedFile(t *testing.T) {
 				}
 				return fs, nil, nil
 			},
-			Assertions: func(t *testing.T, content []byte, err error) {
+			Assertions: func(t *testing.T, nBytes int, content []byte, err error) {
 				assert.Nil(t, err)
-				assert.Equal(t, []byte("Hello world!"), content)
+				assert.Equal(t, []byte("Hello"), content)
+				assert.Equal(t, nBytes, 5)
 			},
 		},
 		{
@@ -384,9 +376,10 @@ func TestReadMovedOrRemovedFile(t *testing.T) {
 				}
 				return fs, nil, nil
 			},
-			Assertions: func(t *testing.T, content []byte, err error) {
+			Assertions: func(t *testing.T, nBytes int, content []byte, err error) {
 				assert.Nil(t, err)
-				assert.Equal(t, []byte("Hello world!"), content)
+				assert.Equal(t, []byte("Hello"), content)
+				assert.Equal(t, nBytes, 5)
 			},
 		},
 	}
@@ -404,7 +397,124 @@ func TestReadMovedOrRemovedFile(t *testing.T) {
 			t.Fatal("error running fs operation")
 		}
 
-		content, err := fs.ReadAt(fd, 0, 30)
-		testCase.Assertions(t, content, err)
+		buff := make([]byte, 5)
+		n, err := fs.ReadAt(fd, buff, 0)
+		testCase.Assertions(t, n, buff, err)
 	}
+}
+
+func TestRead(t *testing.T) {
+	cases := []struct {
+		CaseName   string
+		Path       string
+		Initialize func() (*memoryfs.MemoryFileSystem, file.File, error)
+		BuffSize   int
+		Assertions func(*testing.T, int, []byte, error)
+	}{
+		{
+			CaseName: "Read from non empty file - absolute path",
+			Path:     "/file1",
+			BuffSize: 5,
+			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
+				fs := memoryfs.NewMemoryFileSystem()
+				p, _ := fspath.NewFileSystemPath("/file1", nil)
+				if err := fs.AppendAll(p, []byte("Hello world!")); err != nil {
+					return nil, nil, err
+				}
+				return fs, nil, nil
+			},
+			Assertions: func(t *testing.T, nBytes int, buff []byte, err error) {
+				assert.Nil(t, err)
+				assert.Equal(t, []byte("Hello"), buff)
+			},
+		},
+		{
+			CaseName: "Read empty file should return empty bytes - absolute path",
+			Path:     "/file1",
+			BuffSize: 5,
+			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
+				fs := memoryfs.NewMemoryFileSystem()
+				p, _ := fspath.NewFileSystemPath("/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
+					return nil, nil, err
+				}
+				return fs, nil, nil
+			},
+			Assertions: func(t *testing.T, nBytes int, buff []byte, err error) {
+				assert.Nil(t, err)
+				assert.Equal(t, nBytes, 0)
+				assert.Equal(t, make([]byte, 5), buff)
+			},
+		},
+		{
+			CaseName: "Read from non empty file, right out of bound - absolute path",
+			Path:     "/file1",
+			BuffSize: 20,
+			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
+				fs := memoryfs.NewMemoryFileSystem()
+				p, _ := fspath.NewFileSystemPath("/file1", nil)
+				if err := fs.AppendAll(p, []byte("Hello world!")); err != nil {
+					return nil, nil, err
+				}
+				return fs, nil, nil
+			},
+			Assertions: func(t *testing.T, nBytes int, buff []byte, err error) {
+				assert.Nil(t, err)
+				assert.Equal(t, 12, nBytes)
+				expected := make([]byte, 20)
+				copy(expected, []byte("Hello world!")[0:12])
+				assert.Equal(t, expected, buff)
+			},
+		},
+	}
+	for _, testCase := range cases {
+		fs, workingDir, err := testCase.Initialize()
+		if err != nil {
+			t.Fatal("error initializing file system")
+		}
+		path, _ := fspath.NewFileSystemPath(testCase.Path, workingDir)
+		fd, err := fs.Open(path)
+		if err != nil {
+			t.Fatal("error opening file")
+		}
+
+		buff := make([]byte, testCase.BuffSize)
+		nBytes, err := fs.Read(fd, buff)
+		testCase.Assertions(t, nBytes, buff, err)
+	}
+}
+
+func TestReadInChuncks(t *testing.T) {
+	fs := memoryfs.NewMemoryFileSystem()
+	p, _ := fspath.NewFileSystemPath("/file1", nil)
+	if err := fs.AppendAll(p, []byte("Hello world!")); err != nil {
+		t.Fatal("error initializing file system")
+	}
+	fd, err := fs.Open(p)
+	if err != nil {
+		t.Fatal("error opening file")
+	}
+
+	// First chunk
+	buff := make([]byte, 5)
+	nBytes, err := fs.Read(fd, buff)
+	assert.Nil(t, err)
+	assert.Equal(t, 5, nBytes)
+	assert.Equal(t, []byte("Hello"), buff)
+
+	// Second chunk
+	buff = make([]byte, 5)
+	nBytes, err = fs.Read(fd, buff)
+	assert.Nil(t, err)
+	assert.Equal(t, 5, nBytes)
+	assert.Equal(t, []byte(" worl"), buff)
+
+	// Third chunk
+	buff = make([]byte, 5)
+	nBytes, err = fs.Read(fd, buff)
+	assert.Nil(t, err)
+	epected := []byte("d!")
+	epected = append(epected, 0, 0, 0)
+	assert.Equal(t, 2, nBytes)
+	assert.Equal(t, epected, buff)
 }

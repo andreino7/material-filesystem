@@ -4,26 +4,9 @@ import (
 	"material/filesystem/filesystem/file"
 	"material/filesystem/filesystem/fserrors"
 	"material/filesystem/filesystem/fspath"
-	"sync"
 
 	"github.com/google/uuid"
 )
-
-type fileDataWrapper struct {
-	data *inMemoryFileData
-	pos  int
-}
-
-type fileTable struct {
-	table map[string]*fileDataWrapper
-	sync.RWMutex
-}
-
-func newFileTable() *fileTable {
-	return &fileTable{
-		table: map[string]*fileDataWrapper{},
-	}
-}
 
 // Open opens the named file for reading or writing.
 // Returns an error if the file was not found or it's not a "regular" file.
@@ -41,6 +24,10 @@ func (fs *MemoryFileSystem) Open(path *fspath.FileSystemPath) (string, error) {
 		return "", err
 	}
 
+	return fs.doOpen(fileToOpen)
+}
+
+func (fs *MemoryFileSystem) doOpen(fileToOpen *inMemoryFile) (string, error) {
 	if fileToOpen.info.fileType != file.RegularFile {
 		return "", fserrors.ErrInvalidFileType
 	}
@@ -50,8 +37,7 @@ func (fs *MemoryFileSystem) Open(path *fspath.FileSystemPath) (string, error) {
 
 	// TODO: fd could just be an int
 	fd := uuid.NewString()
-	// TODO set pos to size
-	fs.openFiles.table[fd] = &fileDataWrapper{data: fileToOpen.data, pos: 0}
+	fs.openFiles.table[fd] = &fileDescriptor{data: fileToOpen.data, offset: 0}
 	return fd, nil
 }
 

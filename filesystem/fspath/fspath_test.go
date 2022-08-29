@@ -40,6 +40,10 @@ func (data TestFileData) Data() []byte {
 	return data.data
 }
 
+func (data TestFileData) Size() int {
+	return len(data.data)
+}
+
 func (f TestFile) Info() file.FileInfo {
 	return f.info
 }

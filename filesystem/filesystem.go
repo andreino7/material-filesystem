@@ -64,14 +64,24 @@ type FileSystem interface {
 	Open(path *fspath.FileSystemPath) (string, error)
 	// Close closes the file associated to the given descriptor
 	Close(fileDescriptor string)
-	// ReadAt reads endPos - startPos bytes from the file starting at startPos
-	// and returns them.
+	// ReadAt reads up of len(buff) bytes starting at the given offset and
+	// returns the number of bytes read.
 	// If there is an error, it will be of type *FileSystemError.
-	ReadAt(fileDescriptor string, startPos int, endPos int) ([]byte, error)
-	// WriteAt writes content to the file starting at pos
+	ReadAt(fileDescriptor string, buff []byte, offset int) (int, error)
+	// Read reads up of len(buff) bytes starting
+	// If there is an error, it will be of type *FileSystemError.
+	Read(fileDescriptor string, buff []byte) (int, error)
+	// Write writes content and returns the number of bytes written.
+	// If there is an error, it will be of type *FileSystemError.
+	Write(fileDescriptor string, content []byte) (int, error)
+	// WriteAt writes content to the file starting at offset
 	// and returns the number of bytes written.
 	// If there is an error, it will be of type *FileSystemError.
-	WriteAt(fileDescriptor string, content []byte, pos int) (int, error)
+	WriteAt(fileDescriptor string, content []byte, offset int) (int, error)
+	// Walk walks the file tree rooted at root, calling filterFn for each file or directory in the tree, including root,
+	// and calls walkFn for each file or directory matching the filter.
+	// Optionally follow symbolic links.
+	Walk(path *fspath.FileSystemPath, walkFn file.WalkFn, filterFn file.FilterFn, followLinks bool) error
 }
 
 // NewFileSystem creates a new filesystem for the given fsType.

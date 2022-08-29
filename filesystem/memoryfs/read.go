@@ -26,54 +26,61 @@ func (fs *MemoryFileSystem) ReadAll(path *fspath.FileSystemPath) ([]byte, error)
 		return nil, fserrors.ErrInvalidFileType
 	}
 
-	// Read lock file
-	fileToRead.data.RLock()
-	defer fileToRead.data.RUnlock()
+	descriptor, err := fs.doOpen(fileToRead)
 	fs.Unlock()
+	if err != nil {
+		return nil, err
+	}
+	defer fs.Close(descriptor)
 
-	return fileToRead.data.data, nil
+	var buff []byte
+	fs.doRead(descriptor, func(fd *fileDescriptor) (int, error) {
+		buff = make([]byte, fd.data.Size())
+		return fd.Read(buff)
+	})
+
+	return buff, nil
 }
 
-// ReadAt reads endPos - startPos bytes from the file starting at startPos
-// and returns them.
+// Read reads up to len(buff) bytes into buff.
 // This implementation is thread safe.
 //
 // Returns an error when:
 // - the file is not open
-// - startPos or endPos are invalid
-func (fs *MemoryFileSystem) ReadAt(fileDescriptor string, startPos int, endPos int) ([]byte, error) {
-	if err := validatePos(startPos, endPos); err != nil {
-		return nil, err
-	}
+func (fs *MemoryFileSystem) Read(descriptor string, buff []byte) (int, error) {
+	return fs.doRead(descriptor, func(fd *fileDescriptor) (int, error) {
+		return fd.Read(buff)
+	})
+}
 
+// ReadAt reads up to len(buff) bytes starting at offset into buff.
+// This implementation is thread safe.
+//
+// Returns an error when:
+// - the file is not open
+func (fs *MemoryFileSystem) ReadAt(descriptor string, buff []byte, offset int) (int, error) {
+	return fs.doRead(descriptor, func(fd *fileDescriptor) (int, error) {
+		return fd.ReadAt(buff, offset)
+	})
+}
+
+func (fs *MemoryFileSystem) doRead(fileDescriptor string, readFn func(fd *fileDescriptor) (int, error)) (int, error) {
 	// Read lock the open file table
 	fs.openFiles.RLock()
 
 	// Get the file from the open files table
-	data, found := fs.openFiles.table[fileDescriptor]
+	fd, found := fs.openFiles.table[fileDescriptor]
 	if !found {
 		fs.openFiles.RUnlock()
-		return nil, fserrors.ErrNotOpen
+		return 0, fserrors.ErrNotOpen
 	}
 
 	// Read lock file
-	data.data.RLock()
-	defer data.data.RUnlock()
+	fd.data.RLock()
+	defer fd.data.RUnlock()
 
 	// Unlock file table
 	fs.openFiles.RUnlock()
 
-	return data.data.readAt(startPos, endPos), nil
-}
-
-func validatePos(start int, end int) error {
-	if end < start {
-		return fserrors.ErrInvalid
-	}
-
-	if start < 0 {
-		return fserrors.ErrInvalid
-	}
-
-	return nil
+	return readFn(fd)
 }

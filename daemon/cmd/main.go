@@ -10,7 +10,7 @@ import (
 const defaultPort = "2222"
 
 func main() {
-	// TODO: file system type should be an cli flag
+	// TODO: file system type should be a cli or en var
 	log.Println("Initializing file system daemon")
 	daemon, err := daemon.NewFileSystemDaemon(filesystem.InMemoryFileSystem)
 	if err != nil {

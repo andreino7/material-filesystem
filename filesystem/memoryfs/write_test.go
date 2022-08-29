@@ -356,7 +356,7 @@ func TestWriteAtClosedFile(t *testing.T) {
 	}
 }
 
-func TestWriteMovedOrRemovedFile(t *testing.T) {
+func TestWriteAtMovedOrRemovedFile(t *testing.T) {
 	cases := []struct {
 		CaseName    string
 		Path        string
@@ -467,4 +467,105 @@ func TestWriteMovedOrRemovedFile(t *testing.T) {
 		b, err := fs.WriteAt(fd, []byte("Hello world!"), 0)
 		testCase.Assertions(t, fs, b, err)
 	}
+}
+
+func TestWrite(t *testing.T) {
+	cases := []struct {
+		CaseName   string
+		Path       string
+		Initialize func() (*memoryfs.MemoryFileSystem, file.File, error)
+		Text       []byte
+		Assertions func(*testing.T, *memoryfs.MemoryFileSystem, *fspath.FileSystemPath, int, error)
+	}{
+		{
+			CaseName: "Write to empty open file - absolute path",
+			Path:     "/file1",
+			Text:     []byte("Hello world!"),
+			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
+				fs := memoryfs.NewMemoryFileSystem()
+				p, _ := fspath.NewFileSystemPath("/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
+					return nil, nil, err
+				}
+				return fs, nil, nil
+			},
+			Assertions: func(t *testing.T, fs *memoryfs.MemoryFileSystem, p *fspath.FileSystemPath, b int, err error) {
+				assert.Nil(t, err)
+				assert.Equal(t, b, 12)
+
+				data, _ := fs.ReadAll(p)
+				assert.Equal(t, []byte("Hello world!"), data)
+			},
+		},
+		{
+			CaseName: "Write to not empty open file - absolute path",
+			Path:     "/file1",
+			Text:     []byte("Hello universe! "),
+			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
+				fs := memoryfs.NewMemoryFileSystem()
+				p, _ := fspath.NewFileSystemPath("/file1", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
+					return nil, nil, err
+				}
+				if err := fs.AppendAll(p, []byte("Hello world!")); err != nil {
+					return nil, nil, err
+				}
+				return fs, nil, nil
+			},
+			Assertions: func(t *testing.T, fs *memoryfs.MemoryFileSystem, p *fspath.FileSystemPath, b int, err error) {
+				assert.Nil(t, err)
+				assert.Equal(t, b, 16)
+
+				data, _ := fs.ReadAll(p)
+				assert.Equal(t, []byte("Hello universe! Hello world!"), data)
+			},
+		},
+	}
+	for _, testCase := range cases {
+		fs, workingDir, err := testCase.Initialize()
+		if err != nil {
+			t.Fatal("error initializing file system")
+		}
+		path, _ := fspath.NewFileSystemPath(testCase.Path, workingDir)
+		fd, err := fs.Open(path)
+		if err != nil {
+			t.Fatal("error opening file")
+		}
+
+		b, err := fs.Write(fd, testCase.Text)
+		testCase.Assertions(t, fs, path, b, err)
+	}
+}
+
+func TestWriteInChuncks(t *testing.T) {
+	fs := memoryfs.NewMemoryFileSystem()
+	p, _ := fspath.NewFileSystemPath("/file1", nil)
+	if _, err := fs.CreateRegularFile(p); err != nil {
+		t.Fatal("error initializing file system")
+	}
+	fd, err := fs.Open(p)
+	if err != nil {
+		t.Fatal("error opening file")
+	}
+
+	// First chunk
+	buff := []byte("Hello")
+	nBytes, err := fs.Write(fd, buff)
+	assert.Nil(t, err)
+	assert.Equal(t, 5, nBytes)
+
+	// Second chunk
+	buff = []byte(" worl")
+	nBytes, err = fs.Write(fd, buff)
+	assert.Nil(t, err)
+	assert.Equal(t, 5, nBytes)
+
+	// Third chunk
+	buff = []byte("d!")
+	nBytes, err = fs.Write(fd, buff)
+	assert.Nil(t, err)
+	assert.Equal(t, 2, nBytes)
+
+	res, _ := fs.ReadAll(p)
+	assert.Equal(t, []byte("Hello world!"), res)
 }
