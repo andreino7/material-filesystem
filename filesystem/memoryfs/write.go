@@ -36,7 +36,7 @@ func (fs *MemoryFileSystem) AppendAll(path *fspath.FileSystemPath, content []byt
 	defer fs.Close(descriptor)
 
 	_, err = fs.doWrite(descriptor, content, func(fd *fileDescriptor) (int, error) {
-		return fd.Write(content)
+		return fd.WriteAt(content, fd.data.Size())
 	})
 
 	if err != nil {

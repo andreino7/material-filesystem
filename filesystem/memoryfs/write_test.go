@@ -18,7 +18,7 @@ func TestAppendAll(t *testing.T) {
 		Assertions func(*testing.T, []byte, error)
 	}{
 		{
-			CaseName: "Append to existing file - absolute path",
+			CaseName: "Append to existing empty file - absolute path",
 			Path:     "/file1",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
 				fs := memoryfs.NewMemoryFileSystem()
@@ -31,6 +31,22 @@ func TestAppendAll(t *testing.T) {
 			Assertions: func(t *testing.T, data []byte, err error) {
 				assert.Nil(t, err)
 				assert.Equal(t, data, []byte("Hello world!"))
+			},
+		},
+		{
+			CaseName: "Append to existing not empty empty file - absolute path",
+			Path:     "/file1",
+			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
+				fs := memoryfs.NewMemoryFileSystem()
+				p, _ := fspath.NewFileSystemPath("/file1", nil)
+				if err := fs.AppendAll(p, []byte("Ciao mondo!")); err != nil {
+					return nil, nil, err
+				}
+				return fs, nil, nil
+			},
+			Assertions: func(t *testing.T, data []byte, err error) {
+				assert.Nil(t, err)
+				assert.Equal(t, data, []byte("Ciao mondo!Hello world!"))
 			},
 		},
 		{
