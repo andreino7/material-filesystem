@@ -15,6 +15,8 @@ type session struct {
 	workingDirectory file.File
 }
 
+// SessionStore stores any open "shell".
+// SessionStore is thread safe.
 // TODO: implement cleanup for inactive sessions
 type SessionStore struct {
 	sessions map[string]*session
@@ -27,6 +29,9 @@ func NewSessionStore() *SessionStore {
 	}
 }
 
+// AddSession adds a new session to the session store.
+//
+// Returns an error if the session already exists.
 func (store *SessionStore) AddSession(request *pb.NewSessionRequest, workingDirectory file.File) (*pb.NewSessionResponse, error) {
 	store.mutex.Lock()
 	defer store.mutex.Unlock()
@@ -47,6 +52,9 @@ func (store *SessionStore) AddSession(request *pb.NewSessionRequest, workingDire
 	}, nil
 }
 
+// DeleteSession removes a session from the session store.
+//
+// Returns an error if the session is not found.
 func (store *SessionStore) DeleteSession(request *pb.DeleteSessionRequest) (*pb.DeleteSessionResponse, error) {
 	store.mutex.Lock()
 	defer store.mutex.Unlock()
@@ -62,6 +70,10 @@ func (store *SessionStore) DeleteSession(request *pb.DeleteSessionRequest) (*pb.
 	}, nil
 }
 
+// GetWorkingDirectoryForSession get the working directory for
+// the given sessionId.
+//
+// Returns an error if the session is not found or invalid.
 func (store *SessionStore) GetWorkingDirectoryForSession(sessionId string) (file.File, error) {
 	store.mutex.RLock()
 	defer store.mutex.RUnlock()
@@ -78,6 +90,10 @@ func (store *SessionStore) GetWorkingDirectoryForSession(sessionId string) (file
 	return session.workingDirectory, nil
 }
 
+// ChangeWorkingDirectory changes the working directory
+// the given sessionId.
+//
+// Returns an error if the session is not found.
 func (store *SessionStore) ChangeWorkingDirectory(sessionId string, workingDir file.File) error {
 	store.mutex.Lock()
 	defer store.mutex.Unlock()

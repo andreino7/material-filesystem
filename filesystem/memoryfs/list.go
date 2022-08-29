@@ -6,6 +6,14 @@ import (
 	"sort"
 )
 
+// ListFiles lists the files at the specified path
+// sorted alphabetically.
+// This implementation is thead safe.
+//
+// Returns an error when:
+// - the file name is invalid
+// - the target path is not a directory
+// - the target path path does not exist
 func (fs *MemoryFileSystem) ListFiles(path *fspath.FileSystemPath) ([]file.FileInfo, error) {
 	fs.RLock()
 	defer fs.RUnlock()

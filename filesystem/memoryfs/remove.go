@@ -6,11 +6,30 @@ import (
 	"material/filesystem/filesystem/fspath"
 )
 
-// TODO: handle deleting working dir
+// Remove removes the file located at the specified path.
+// The file will be garbage collected once everybody has
+// closed it, i.e. has been removed from the open files table.
+// This means that is possible to write to a deleted file, but the file will be
+// discarded as soon as it is closed.
+// This implementation is thread safe.
+//
+// Returns an error when:
+// - The file is a directory
+// - The file does not exist
 func (fs *MemoryFileSystem) Remove(path *fspath.FileSystemPath) (file.FileInfo, error) {
 	return fs.removeFileWithLock(path, false)
 }
 
+// RemoveAll removes the file or directory located at the specified path.
+// The file will be garbage collected once everybody has
+// closed it, i.e. has been removed from the open files table.
+// This means that is possible to write to a deleted file, but the file will be
+// discarded as soon as it is closed.
+// Removing "/" is not supported.
+// This implementation is thread safe.
+//
+// Returns an error when:
+// - The file does not exist
 func (fs *MemoryFileSystem) RemoveAll(path *fspath.FileSystemPath) (file.FileInfo, error) {
 	return fs.removeFileWithLock(path, true)
 }
@@ -21,7 +40,7 @@ func (fs *MemoryFileSystem) removeFileWithLock(path *fspath.FileSystemPath, isRe
 	defer fs.Unlock()
 
 	// find where to remove directory
-	pathEnd, err := fs.traverseToDir(path)
+	pathEnd, err := fs.traverseDirs(path)
 	if err != nil {
 		return nil, err
 	}
@@ -29,6 +48,7 @@ func (fs *MemoryFileSystem) removeFileWithLock(path *fspath.FileSystemPath, isRe
 	return fs.removeFile(path.Base(), pathEnd, isRecursive)
 }
 
+// removeFile removes the file from the fs tree
 func (fs *MemoryFileSystem) removeFile(fileName string, pathEnd *inMemoryFile, isRecursive bool) (file.FileInfo, error) {
 	// check if file exists
 	fileToRemove, found := pathEnd.fileMap[fileName]
@@ -43,10 +63,12 @@ func (fs *MemoryFileSystem) removeFile(fileName string, pathEnd *inMemoryFile, i
 
 	// unlink regular file (or symlink)
 	fs.detachFromParent(fileToRemove)
+	// mark file for deletion
 	fileToRemove.isDeleted = true
 	return fileToRemove.Info(), nil
 }
 
+// removeDirectory recursively removes any children file and directories
 func (fs *MemoryFileSystem) removeDirectory(fileToRemove *inMemoryFile, parent *inMemoryFile, isRecursive bool) (file.FileInfo, error) {
 	if !isRecursive {
 		return nil, fserrors.ErrInvalidFileType
@@ -79,5 +101,4 @@ func (fs *MemoryFileSystem) detachFromParent(fileToRemove *inMemoryFile) {
 	delete(parent.fileMap, fileToRemove.info.Name())
 	delete(fileToRemove.fileMap, "..")
 	delete(fileToRemove.fileMap, ".")
-
 }

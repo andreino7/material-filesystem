@@ -10,12 +10,42 @@ import (
 type onMoveOrCopyDestFound func(fileToMove *inMemoryFile, dest *inMemoryFile, isCopy bool) (*inMemoryFile, error)
 type onMoveOrCopyDestNotFound func(fileToMove *inMemoryFile, dest *inMemoryFile, newName string, isCopy bool) (*inMemoryFile, error)
 
+// Move moves (renames) srcPath to destPath and creates
+// any parent directories.
+// If destPath exists and is not a directory, the
+// "moved" file is automatically renamed to a unique name.
+// If destPath exists and is a directory, the
+// directories are merged and any name conflict is fixed.
+// Move stops at the first error encountered.
+// Moving "/" is not supported.
+// This implementation is thread safe
+//
+// Returns an error when:
+// - srcPath does not exist
+// - the new file name is invalid
+//
 // TODO: handle name conflicts as option
-// TODO: handle recursive as opttion
+// TODO: handle create parents dir as opttion
 func (fs *MemoryFileSystem) Move(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath) (file.FileInfo, error) {
 	return fs.moveOrCopy(srcPath, destPath, false)
 }
 
+// Copy copies srcPath to destPath and creates
+// any parent directories.
+// If destPath exists and is not a directory, the
+// "copied" file is automatically renamed to a unique name.
+// If destPath exists and is a directory, the
+// directories are merged and any name conflict is fixed.
+// Copy stops at the first error encountered.
+// Limitation: Copying "/" is not supported.
+// This implementation is thread safe
+//
+// Returns an error when:
+// - srcPath does not exist
+// - the new file name is invalid
+//
+// TODO: handle name conflicts as option
+// TODO: handle create parents dir as opttion
 func (fs *MemoryFileSystem) Copy(srcPath *fspath.FileSystemPath, destPath *fspath.FileSystemPath) (file.FileInfo, error) {
 	return fs.moveOrCopy(srcPath, destPath, true)
 }
@@ -35,7 +65,7 @@ func (fs *MemoryFileSystem) moveOrCopy(srcPath *fspath.FileSystemPath, destPath 
 	}
 
 	// find last directory in the destination path
-	dest, err := fs.traverseToDirAndCreateParentDirs(destPath)
+	dest, err := fs.traverseDirsAndCreateParentDirs(destPath)
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +136,6 @@ func (fs *MemoryFileSystem) mergeDirectories(dirToMove *inMemoryFile, dest *inMe
 	}
 
 	if !isCopy {
-		// TODO: document that working dir will be reset when this happens
 		fs.removeDirectory(dirToMove, dirToMove.fileMap[".."], true)
 	}
 	return finalDest, nil
@@ -154,6 +183,12 @@ func (fs *MemoryFileSystem) renameAndMoveOrCopyRegularFile(fileToMove *inMemoryF
 	if _, found := dest.fileMap[finalName]; found {
 		finalName = generateRandomNameFromBaseName(finalName)
 	}
+
+	if err := checkFileName(finalName); err != nil {
+		return nil, err
+	}
+
+	// if err checkFileName(finalName)
 
 	newAbsPath := filepath.Join(dest.info.AbsolutePath(), finalName)
 

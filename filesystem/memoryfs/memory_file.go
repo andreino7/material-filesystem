@@ -6,11 +6,13 @@ import (
 	"path/filepath"
 )
 
+// inMemoryFile implements the FileInfo interface
 type inMemoryFileInfo struct {
 	absolutePath string
 	fileType     file.FileType
 }
 
+// inMemoryFile implements the File interface
 type inMemoryFile struct {
 	info      *inMemoryFileInfo
 	data      *inMemoryFileData

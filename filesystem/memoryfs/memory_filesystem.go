@@ -5,9 +5,13 @@ import (
 	"sync"
 )
 
+// MemoryFileSystem implements the FileSystem interface
+// and it's an in-memory file system.
 type MemoryFileSystem struct {
 	sync.RWMutex
-	root      *inMemoryFile
+	// root of the file system
+	root *inMemoryFile
+	// table of open files
 	openFiles *fileTable
 }
 
