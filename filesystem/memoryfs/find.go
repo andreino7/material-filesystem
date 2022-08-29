@@ -3,22 +3,24 @@ package memoryfs
 import (
 	"material/filesystem/filesystem/file"
 	"material/filesystem/filesystem/fspath"
+	"regexp"
 	"sort"
 )
 
-func (fs *MemoryFileSystem) FindFiles(name string, path *fspath.FileSystemPath) ([]file.FileInfo, error) {
+func (fs *MemoryFileSystem) FindFiles(nameRegex string, path *fspath.FileSystemPath) ([]file.FileInfo, error) {
 	// Initialize result
 	matchingFiles := []file.FileInfo{}
-
-	if err := checkFileName(name); err != nil {
-		return nil, err
-	}
 
 	fs.RLock()
 	defer fs.RUnlock()
 	// Get directory to start the search
-	err := fs.Walk(path, func(f file.File) error {
-		if f.Info().Name() == name {
+	exp, err := regexp.Compile(nameRegex)
+	if err != nil {
+		return matchingFiles, err
+	}
+
+	err = fs.Walk(path, func(f file.File) error {
+		if exp.MatchString(f.Info().Name()) {
 			matchingFiles = append(matchingFiles, f.Info())
 		}
 		return nil
