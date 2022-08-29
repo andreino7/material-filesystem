@@ -1127,7 +1127,7 @@ func TestCopy(t *testing.T) {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
-				if _, err := fs.CreateRegularFile(p); err != nil {
+				if err := fs.AppendAll(p, []byte("Hello world!")); err != nil {
 					return nil, nil, err
 				}
 				p, _ = fspath.NewFileSystemPath("/dir1/file2", nil)
@@ -1145,8 +1145,14 @@ func TestCopy(t *testing.T) {
 				p, _ := fspath.NewFileSystemPath("/", nil)
 				files, _ := fs.FindFiles("file1", p)
 				assert.Len(t, files, 1)
-				files, _ = fs.FindFiles("file1", p)
+				files, _ = fs.FindFiles("file3", p)
 				assert.Len(t, files, 1)
+				p, _ = fspath.NewFileSystemPath("/dir1/file1", nil)
+				b1, _ := fs.ReadAll(p)
+				p, _ = fspath.NewFileSystemPath("/dir1/file3", nil)
+				b2, _ := fs.ReadAll(p)
+				assert.Equal(t, b1, b2)
+
 			},
 		},
 		{

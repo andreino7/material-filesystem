@@ -245,7 +245,7 @@ func (fs *MemoryFileSystem) copyFile(fileToMove *inMemoryFile, newAbsPath string
 			return nil, err
 		}
 	} else if fileToMove.info.fileType == file.RegularFile {
-		var newDataArr []byte
+		newDataArr := make([]byte, fileToMove.data.Size())
 		copy(newDataArr, fileToMove.data.data)
 		newData := &inMemoryFileData{
 			data: newDataArr,
