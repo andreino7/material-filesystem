@@ -34,46 +34,53 @@ func (fs *MemoryFileSystem) ReadAll(path *fspath.FileSystemPath) ([]byte, error)
 	return fileToRead.data.data, nil
 }
 
-// ReadAt reads endPos - startPos bytes from the file starting at startPos
-// and returns them.
+// Read reads up to len(buff) bytes into buff.
 // This implementation is thread safe.
 //
 // Returns an error when:
 // - the file is not open
-// - startPos or endPos are invalid
-func (fs *MemoryFileSystem) ReadAt(fileDescriptor string, startPos int, endPos int) ([]byte, error) {
-	if err := validatePos(startPos, endPos); err != nil {
-		return nil, err
-	}
-
+func (fs *MemoryFileSystem) Read(fileDescriptor string, buff []byte) (int, error) {
 	// Read lock the open file table
 	fs.openFiles.RLock()
 
 	// Get the file from the open files table
-	data, found := fs.openFiles.table[fileDescriptor]
+	fd, found := fs.openFiles.table[fileDescriptor]
 	if !found {
 		fs.openFiles.RUnlock()
-		return nil, fserrors.ErrNotOpen
+		return 0, fserrors.ErrNotOpen
 	}
 
 	// Read lock file
-	data.data.RLock()
-	defer data.data.RUnlock()
+	fd.data.RLock()
+	defer fd.data.RUnlock()
+
+	// Unlock file table
+	fs.openFiles.RUnlock()
+	return fd.Read(buff)
+}
+
+// ReadAt reads up to len(buff) bytes starting at offset into buff.
+// This implementation is thread safe.
+//
+// Returns an error when:
+// - the file is not open
+func (fs *MemoryFileSystem) ReadAt(fileDescriptor string, buff []byte, offset int) (int, error) {
+	// Read lock the open file table
+	fs.openFiles.RLock()
+
+	// Get the file from the open files table
+	fd, found := fs.openFiles.table[fileDescriptor]
+	if !found {
+		fs.openFiles.RUnlock()
+		return 0, fserrors.ErrNotOpen
+	}
+
+	// Read lock file
+	fd.data.RLock()
+	defer fd.data.RUnlock()
 
 	// Unlock file table
 	fs.openFiles.RUnlock()
 
-	return data.data.readAt(startPos, endPos), nil
-}
-
-func validatePos(start int, end int) error {
-	if end < start {
-		return fserrors.ErrInvalid
-	}
-
-	if start < 0 {
-		return fserrors.ErrInvalid
-	}
-
-	return nil
+	return fd.ReadAt(buff, offset)
 }

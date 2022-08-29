@@ -21,7 +21,9 @@ func (daemon *FileSystemDaemon) ReadAt(ctx context.Context, request *pb.Request)
 		return nil, err
 	}
 
-	content, err := daemon.fs.ReadAt(readReq.GetFileDescriptor(), int(readReq.GetStartPos()), int(readReq.GetEndPos()))
+	size := readReq.GetEndPos() - readReq.GetStartPos()
+	buff := make([]byte, size)
+	_, err = daemon.fs.ReadAt(readReq.GetFileDescriptor(), buff, int(readReq.GetStartPos()))
 	if err != nil {
 		log.Printf("%s - readAt fs error: %s", request.GetSessionId(), err.Error())
 		return daemon.extractError(request.GetSessionId(), workDir, err)
@@ -31,7 +33,7 @@ func (daemon *FileSystemDaemon) ReadAt(ctx context.Context, request *pb.Request)
 		WorkingDirPath: workDir.Info().AbsolutePath(),
 		Response: &pb.Response_ReadAt{
 			ReadAt: &pb.ReadAtResponse{
-				Content: content,
+				Content: buff,
 			},
 		},
 	}, nil

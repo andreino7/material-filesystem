@@ -73,7 +73,8 @@ This will create a binary in `build/fs-cli`
 * Creating empty files
 * Removing files or directories
 * Appending content to files or write at specific positions.
-* Reading all content of a file or only a portion of it.
+* Reading all content of a file
+* Reading a file in chunks and/or starting from a specific postion.
 * Moving (rename) a file or directory to a new location and automatically resolves any name conflict.
 * Copying a file or directory to a new location and automatically resolves any name conflict
 * Hard links to regular files

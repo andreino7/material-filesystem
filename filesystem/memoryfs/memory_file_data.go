@@ -34,16 +34,18 @@ func (d *inMemoryFileData) writeAt(content []byte, offset int) int {
 	return d.insert(content, offset)
 }
 
-func (d *inMemoryFileData) readAt(start int, end int) []byte {
+func (d *inMemoryFileData) read(start int, buff []byte) int {
 	if start >= len(d.data) {
-		return []byte{}
+		return 0
 	}
 
-	total := end + 1
-	if total > len(d.data) {
-		total = len(d.data)
+	end := start + len(buff)
+	if end >= len(d.data) {
+		end = len(d.data)
 	}
-	return d.data[start:total]
+
+	copy(buff, d.data[start:end])
+	return end - start
 }
 
 // TODO: improve, see optimization above
