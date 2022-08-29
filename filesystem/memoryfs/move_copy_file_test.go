@@ -500,6 +500,9 @@ func TestMove(t *testing.T) {
 				p, _ = fspath.NewFileSystemPath("/dir2", nil)
 				files, _ = fs.FindFiles("dir1", p)
 				assert.Len(t, files, 1)
+
+				p, _ = fspath.NewFileSystemPath("/dir2/dir1/dir5/dir6", nil)
+				fs.ListFiles(p)
 			},
 		},
 		{

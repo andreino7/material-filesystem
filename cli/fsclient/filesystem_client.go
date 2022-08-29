@@ -28,7 +28,7 @@ type onSuccessFn func(*fsservice.Response)
 
 func (f *FileSystemSession) DoRequest(req *fsservice.Request, call grpcFileSystemCall, onSuonSuccessFn onSuccessFn) {
 	// TODO: make timeout configurable
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
 	defer cancel()
 
 	req.SessionId = f.sessionId

@@ -136,7 +136,7 @@ func (fs *MemoryFileSystem) mergeDirectories(dirToMove *inMemoryFile, dest *inMe
 	}
 
 	if !isCopy {
-		fs.removeDirectory(dirToMove, dirToMove.fileMap[".."], true)
+		fs.removeDirectory(dirToMove, true)
 	}
 	return finalDest, nil
 }
@@ -188,8 +188,6 @@ func (fs *MemoryFileSystem) renameAndMoveOrCopyRegularFile(fileToMove *inMemoryF
 		return nil, err
 	}
 
-	// if err checkFileName(finalName)
-
 	newAbsPath := filepath.Join(dest.info.AbsolutePath(), finalName)
 
 	var result *inMemoryFile
@@ -197,7 +195,7 @@ func (fs *MemoryFileSystem) renameAndMoveOrCopyRegularFile(fileToMove *inMemoryF
 	if isCopy {
 		result, err = fs.copyFile(fileToMove, newAbsPath)
 	} else {
-		result = fs.moveFile(fileToMove, newAbsPath)
+		result, err = fs.moveFile(fileToMove, newAbsPath)
 	}
 	if err != nil {
 		return nil, err
@@ -210,11 +208,27 @@ func (fs *MemoryFileSystem) renameAndMoveOrCopyRegularFile(fileToMove *inMemoryF
 }
 
 // This method detaches the file from the original parent and uptades the absolute path
-func (fs *MemoryFileSystem) moveFile(fileToMove *inMemoryFile, newAbsPath string) *inMemoryFile {
+func (fs *MemoryFileSystem) moveFile(fileToMove *inMemoryFile, newAbsPath string) (*inMemoryFile, error) {
+
 	// detach from parent dir
 	fs.detachFromParent(fileToMove)
-	fileToMove.info.absolutePath = newAbsPath
-	return fileToMove
+	// Update absolute path
+	return fs.updatePaths(fileToMove, newAbsPath)
+}
+
+func (fs *MemoryFileSystem) updatePaths(fileToUpdate *inMemoryFile, newAbsPath string) (*inMemoryFile, error) {
+	fileToUpdate.info.absolutePath = newAbsPath
+
+	if fileToUpdate.info.fileType == file.Directory {
+		err := fs.visitDir(fileToUpdate, func(fileName string, child *inMemoryFile) error {
+			fs.updatePaths(child, filepath.Join(newAbsPath, fileName))
+			return nil
+		})
+		if err != nil {
+			return nil, err
+		}
+	}
+	return fileToUpdate, nil
 }
 
 // This method creates a copy of the original file.
