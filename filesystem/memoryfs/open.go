@@ -24,6 +24,10 @@ func (fs *MemoryFileSystem) Open(path *fspath.FileSystemPath) (string, error) {
 		return "", err
 	}
 
+	return fs.doOpen(fileToOpen)
+}
+
+func (fs *MemoryFileSystem) doOpen(fileToOpen *inMemoryFile) (string, error) {
 	if fileToOpen.info.fileType != file.RegularFile {
 		return "", fserrors.ErrInvalidFileType
 	}

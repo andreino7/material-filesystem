@@ -15,9 +15,13 @@ func (data *inMemoryFileData) Data() []byte {
 	return data.data
 }
 
-// writeAt writes the content at the given offset.
+func (data *inMemoryFileData) Size() int {
+	return len(data.data)
+}
+
+// write writes the content at the given offset.
 // If the offset > len(data) fill the gap with 0s.
-func (d *inMemoryFileData) writeAt(content []byte, offset int) int {
+func (d *inMemoryFileData) write(content []byte, offset int) int {
 
 	if offset == len(d.data) {
 		return d.append(content)

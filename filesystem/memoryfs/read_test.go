@@ -517,5 +517,4 @@ func TestReadInChuncks(t *testing.T) {
 	epected = append(epected, 0, 0, 0)
 	assert.Equal(t, 2, nBytes)
 	assert.Equal(t, epected, buff)
-
 }

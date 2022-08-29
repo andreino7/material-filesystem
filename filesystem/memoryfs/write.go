@@ -28,46 +28,67 @@ func (fs *MemoryFileSystem) AppendAll(path *fspath.FileSystemPath, content []byt
 		return err
 	}
 
-	if fileToWrite.info.fileType != file.RegularFile {
-		fs.Unlock()
-		return fserrors.ErrInvalidFileType
+	descriptor, err := fs.doOpen(fileToWrite)
+	fs.Unlock()
+	if err != nil {
+		return err
+	}
+	defer fs.Close(descriptor)
+
+	_, err = fs.doWrite(descriptor, content, func(fd *fileDescriptor) (int, error) {
+		return fd.Write(content)
+	})
+
+	if err != nil {
+		return err
 	}
 
-	fileToWrite.data.Lock()
-	defer fileToWrite.data.Unlock()
-	fs.Unlock()
-
-	fileToWrite.data.append(content)
 	return nil
 }
 
-// WriteAt writes content to the file starting at pos
+// Write writes content to the file and
+// returns the number of bytes written.
+//
+// Returns an error when:
+// - the file is not open
+func (fs *MemoryFileSystem) Write(descriptor string, content []byte) (int, error) {
+	return fs.doWrite(descriptor, content, func(fd *fileDescriptor) (int, error) {
+		return fd.Write(content)
+	})
+}
+
+// WriteAt writes content to the file starting at offset
 // and returns the number of bytes written.
 //
 // Returns an error when:
 // - the file is not open
-func (fs *MemoryFileSystem) WriteAt(fileDescriptor string, content []byte, pos int) (int, error) {
-	if pos < 0 {
+func (fs *MemoryFileSystem) WriteAt(descriptor string, content []byte, offset int) (int, error) {
+	if offset < 0 {
 		return 0, fserrors.ErrInvalid
 	}
 
+	return fs.doWrite(descriptor, content, func(fd *fileDescriptor) (int, error) {
+		return fd.WriteAt(content, offset)
+	})
+}
+
+func (fs *MemoryFileSystem) doWrite(fileDescriptor string, content []byte, writeFn func(fd *fileDescriptor) (int, error)) (int, error) {
 	// Read lock the open file table
 	fs.openFiles.RLock()
 
-	data, found := fs.openFiles.table[fileDescriptor]
+	fd, found := fs.openFiles.table[fileDescriptor]
 	if !found {
 		fs.openFiles.RUnlock()
 		return 0, fserrors.ErrNotOpen
 	}
 
 	// Write lock file
-	data.data.Lock()
-	defer data.data.Unlock()
+	fd.data.Lock()
+	defer fd.data.Unlock()
 
 	// Unlock file table
 	fs.openFiles.RUnlock()
-
-	return data.data.writeAt(content, pos), nil
+	return writeFn(fd)
 }
 
 func (fs *MemoryFileSystem) createFileToWriteIfMissing(parent *inMemoryFile, name string) (*inMemoryFile, error) {

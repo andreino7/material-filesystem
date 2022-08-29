@@ -71,10 +71,13 @@ type FileSystem interface {
 	// Read reads up of len(buff) bytes starting
 	// If there is an error, it will be of type *FileSystemError.
 	Read(fileDescriptor string, buff []byte) (int, error)
-	// WriteAt writes content to the file starting at pos
+	// Write writes content and returns the number of bytes written.
+	// If there is an error, it will be of type *FileSystemError.
+	Write(fileDescriptor string, content []byte) (int, error)
+	// WriteAt writes content to the file starting at offset
 	// and returns the number of bytes written.
 	// If there is an error, it will be of type *FileSystemError.
-	WriteAt(fileDescriptor string, content []byte, pos int) (int, error)
+	WriteAt(fileDescriptor string, content []byte, offset int) (int, error)
 	// Walk walks the file tree rooted at root, calling filterFn for each file or directory in the tree, including root,
 	// and calls walkFn for each file or directory matching the filter.
 	// Optionally follow symbolic links.
