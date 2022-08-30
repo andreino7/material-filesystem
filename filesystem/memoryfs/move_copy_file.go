@@ -97,12 +97,27 @@ func (fs *MemoryFileSystem) renameAndMoveOrCopyDirectory(fileToMove *inMemoryFil
 // If destination is a directory, the source directory and destination directory are merged.
 // if destination is a regular file, the source directory is moved/copied to the destination's parent and renamed.
 func (fs *MemoryFileSystem) moveOrCopyDirectoryToExistingDestination(fileToMove *inMemoryFile, dest *inMemoryFile, isCopy bool) (*inMemoryFile, error) {
+	// validate if not moving to subdir
+	if !isCopy {
+		err := fs.doWalk(fileToMove, func(f file.File) error {
+			if f == dest {
+				return fserrors.ErrInvalid
+			}
+			return nil
+		}, func(f file.File) bool { return true }, false, 0)
+
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	if dest.info.fileType == file.Directory {
 		return fs.mergeDirectories(fileToMove, dest, isCopy)
 	}
 
 	// move/copy to dest parent dir, and rename
 	return fs.renameAndMoveOrCopy(fileToMove, dest.fileMap[".."], fileToMove.info.Name(), isCopy)
+
 }
 
 // mergeDirectories merges two directories and recursively all the subdirectories.
