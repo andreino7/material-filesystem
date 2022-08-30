@@ -21,7 +21,7 @@ A grpc client implementic a very basic command line interface to interact with t
 
 ## Getting started
 
-The latest release is [1.0](). You can find precompiled binaries ready to use. 
+The latest release is [1.0](https://github.com/andreino7/material-filesystem/releases/tag/1.0). You can find precompiled binaries ready to use. 
 
 Please note that they have been tested only on a Mac Intel, there's no guarantee they would work on other OSs or architecutres. 
 
