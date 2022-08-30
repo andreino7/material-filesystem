@@ -77,7 +77,7 @@ func TestMove(t *testing.T) {
 			},
 		},
 		{
-			CaseName: "Source dire and dest dir are same dir",
+			CaseName: "Source dir and dest dir are same dir",
 			SrcPath:  "/dir1",
 			DestPath: "/dir1",
 			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
@@ -101,6 +101,46 @@ func TestMove(t *testing.T) {
 				target := &fserrors.FileSystemError{}
 				assert.True(t, errors.As(err, &target))
 				assert.Equal(t, err, fserrors.ErrSameFile)
+				assert.Nil(t, info)
+			},
+		},
+		{
+			CaseName: "Move to subdir",
+			SrcPath:  "/dir1",
+			DestPath: "/dir1/dir2/dir3",
+			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
+				fs := memoryfs.NewMemoryFileSystem()
+				p, _ := fspath.NewFileSystemPath("/dir1/dir2/dir3/dir4", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
+					return nil, nil, err
+				}
+				return fs, nil, nil
+			},
+			Assertions: func(t *testing.T, fs *memoryfs.MemoryFileSystem, info file.FileInfo, err error) {
+				assert.NotNil(t, err)
+				assert.Equal(t, err, fserrors.ErrInvalid)
+				assert.Nil(t, info)
+			},
+		},
+		{
+			CaseName: "Move to subdir and rename",
+			SrcPath:  "/dir1",
+			DestPath: "/dir1/dir2/dir3/file2",
+			Initialize: func() (*memoryfs.MemoryFileSystem, file.File, error) {
+				fs := memoryfs.NewMemoryFileSystem()
+				p, _ := fspath.NewFileSystemPath("/dir1/dir2/dir3/dir4", nil)
+				if _, err := fs.MkdirAll(p); err != nil {
+					return nil, nil, err
+				}
+				p, _ = fspath.NewFileSystemPath("/dir1/dir2/dir3/file2", nil)
+				if _, err := fs.CreateRegularFile(p); err != nil {
+					return nil, nil, err
+				}
+				return fs, nil, nil
+			},
+			Assertions: func(t *testing.T, fs *memoryfs.MemoryFileSystem, info file.FileInfo, err error) {
+				assert.NotNil(t, err)
+				assert.Equal(t, err, fserrors.ErrInvalid)
 				assert.Nil(t, info)
 			},
 		},
